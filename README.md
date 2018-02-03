@@ -22,7 +22,7 @@ For more informations visit the **[Example-Dev](http:/example.com/mods/typeex/)*
 
 MIT License
 
-Copyright (c) 2018 icelane.net
+Copyright (c) 2018 MrX13415, Yecki
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
