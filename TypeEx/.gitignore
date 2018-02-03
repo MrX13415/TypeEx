@@ -1,0 +1,8 @@
+/bin/
+/.settings/
+/build/
+/.gradle/
+/.project
+/.classpath
+/TypeEx_Client.launch
+/TypeEx_Server.launch
