@@ -1,4 +1,4 @@
-Control -> Code cleanup -> case code to methods
+Control -> Code cleanup -> case code to methods /comments!!!
 Control -> check for "non-char-undefined"keys and exclude them (found ESC(27))
 Control -> home /end / Ins keys
 Control -> Ctrl Modifier (Home, End, Backspace, Del, Left, Right)
