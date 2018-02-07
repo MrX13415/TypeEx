@@ -10,5 +10,5 @@ public class BookUI extends TXGuiScreenBook {
 		super(player, book, isUnsigned);
 		// TODO Auto-generated constructor stub
 	}
-
+	
 }
