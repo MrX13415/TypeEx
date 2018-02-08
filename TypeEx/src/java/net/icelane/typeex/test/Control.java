@@ -44,31 +44,11 @@ public class Control implements AKeyListener{
 				break;
 				
 			case 38: //up
-				txt = getFirstTextPt(cursorpos);
-				if (!txt.contains("\n")) break;
-				int nlPosB = txt.lastIndexOf("\n");
-				int nlPosA = txt.substring(0, nlPosB).lastIndexOf("\n");
-	
-				int curLineLength = cursorpos - nlPosB;
-				int preLineLength = nlPosB - nlPosA;			
-				cursorpos = curLineLength >= preLineLength ? nlPosB : nlPosA + curLineLength;				
+				moveCourserUp();	
 				break;
 				
 			case 40: //down
-				txt = getFirstTextPt(cursorpos);
-				nlPosA = txt.lastIndexOf("\n");
-
-				txt = getLastTextPt(cursorpos);
-				if (!txt.contains("\n")) break;
-				nlPosB = txt.indexOf("\n");
-				int nlPosC = txt.indexOf("\n", nlPosB + 1);
-				if (nlPosC < 0) nlPosC = txt.length();
-					
-				int curLinePos = cursorpos - nlPosA;
-				int postLineLength = nlPosC - nlPosB;		
-				
-				cursorpos += postLineLength < curLinePos ? nlPosC : nlPosB + curLinePos;
-
+				moveCourserDown();
 				break;
 				
 			case 36: // home
@@ -110,6 +90,32 @@ public class Control implements AKeyListener{
 		if (cursorpos < getText().length()) {
 			return getText().substring(cursorpos, getText().length());
 		}else return "";
+	}
+	
+	private void moveCourserDown() {
+		txt = getFirstTextPt(cursorpos);
+		int nlPosA = txt.lastIndexOf("\n");
+
+		txt = getLastTextPt(cursorpos);
+		if (!txt.contains("\n")) return;
+		int nlPosB = txt.indexOf("\n");
+		int nlPosC = txt.indexOf("\n", nlPosB + 1);
+		if (nlPosC < 0) nlPosC = txt.length();
+			
+		int curLinePos = cursorpos - nlPosA;
+		int postLineLength = nlPosC - nlPosB;		
+		
+		cursorpos += postLineLength < curLinePos ? nlPosC : nlPosB + curLinePos;
+	}
+	private void moveCourserUp() {
+		txt = getFirstTextPt(cursorpos);
+		if (!txt.contains("\n")) return;
+		int nlPosB = txt.lastIndexOf("\n");
+		int nlPosA = txt.substring(0, nlPosB).lastIndexOf("\n");
+
+		int curLineLength = cursorpos - nlPosB;
+		int preLineLength = nlPosB - nlPosA;			
+		cursorpos = curLineLength >= preLineLength ? nlPosB : nlPosA + curLineLength;	
 	}
 	
 }
