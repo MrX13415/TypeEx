@@ -111,6 +111,10 @@ public class GUI implements KeyListener{
 		String tb = cursorpos < text.length() ? text.substring(cursorpos, text.length()) : "";	
 		text = ta + "|" + tb;
 			
+		text = text.replaceAll("&", "&amp;");
+		text = text.replaceAll(" ", "&nbsp;");
+		text = text.replaceAll("<", "&lt;");
+		text = text.replaceAll(">", "&gt;");
 		text = text.replaceAll("\r", "");
 		text = text.replaceAll("\n", newLineTemplate);
 		
@@ -122,10 +126,15 @@ public class GUI implements KeyListener{
 	 * @param text
 	 */
 	public String getText() {
-		String text = myLabel.getText().replaceAll(newLineTemplate, "\n");
+		String text = myLabel.getText();
+		text = text.replaceAll("&nbsp;", " ");
+		text = text.replaceAll("&lt;", "<");
+		text = text.replaceAll("&gt;", ">");
+		text = text.replaceAll("&amp;", "&");
+		text = text.replaceAll(newLineTemplate, "\n");
 		text = text.replaceAll(textTemplateBeginn, "");
 		text = text.replaceAll(textTemplateEnd, "");
-		
+
 		// hacking-ish removing our cursor ...
 		if (cursorpos > text.length()) cursorpos = text.length();
 		String ta = cursorpos > 0 ? text.substring(0, cursorpos) : "";
