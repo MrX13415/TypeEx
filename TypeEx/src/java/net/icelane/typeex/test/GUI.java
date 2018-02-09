@@ -25,18 +25,18 @@ public class GUI implements KeyListener{
 	public GUI() {	
 		initializeGui();
 		
-		String txt = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr,\r\n" + 
-				"sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,\r\n" + 
-				"sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.\r\n" + 
-				"Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.\r\n" + 
-				"Lorem ipsum dolor sit amet, consetetur sadipscing elitr,\r\n" + 
-				"sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,\r\n" + 
-				"sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.\r\n" + 
-				"Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.\r\n" + 
-				"Lorem ipsum dolor sit amet, consetetur sadipscing elitr,\r\n" + 
-				"sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,\r\n" + 
-				"sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.\r\n" + 
-				"Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. \r\n";
+		String txt = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr,\n" + 
+				"sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,\n" + 
+				"sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.\n" + 
+				"Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.\n" + 
+				"Lorem ipsum dolor sit amet, consetetur sadipscing elitr,\n" + 
+				"sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,\n" + 
+				"sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.\n" + 
+				"Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.\n" + 
+				"Lorem ipsum dolor sit amet, consetetur sadipscing elitr,\n" + 
+				"sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,\n" + 
+				"sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.\n" + 
+				"Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.";
 		setText(txt, 0);		
 	}
 	
