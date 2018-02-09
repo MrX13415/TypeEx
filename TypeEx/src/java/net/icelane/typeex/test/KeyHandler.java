@@ -122,9 +122,16 @@ public abstract class KeyHandler {
 	}
 	
 	private static void handleKey_Home(TextInfo textinfo, String firstPart, String lastPart) {
-		// test
+		// checks for coursor on first position and start of document
 		if (firstPart.endsWith("\n") || firstPart.length() == 0) return;
-		if (firstPart.indexOf("\n") < textinfo.cursorPosition) textinfo.cursorPosition = 0;
+		
+		//checks for first line and places coursor to start of document
+		if (firstPart.indexOf("\n") > textinfo.cursorPosition) {
+			textinfo.cursorPosition = 0;
+		}else {
+			textinfo.cursorPosition = firstPart.lastIndexOf("\n") +1;
+		}
+		
 	}
 	
 }
