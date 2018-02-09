@@ -30,6 +30,7 @@ public abstract class KeyHandler {
 				
 			case  36: handleKey_Home(textinfo, firstPart, lastPart);
 				break;
+				
 			case  35: // end
 				
 				break;
@@ -41,12 +42,6 @@ public abstract class KeyHandler {
 		return handled;
 	}
 	
-	private static void handleKey_Home(TextInfo textinfo, String firstPart, String lastPart) {
-		if(firstPart.endsWith("\n")|| firstPart.length() == 0) return;
-		if( firstPart.indexOf("\n") < textinfo.cursorPosition) textinfo.cursorPosition = 0;
-		
-	}
-
 	private static void handleKey_BackSpace(TextInfo textinfo, String firstPart, String lastPart) {
 		if (firstPart.length() == 0) return;
 		
@@ -129,4 +124,11 @@ public abstract class KeyHandler {
 				postLineLength < curLinePos ?
 				nlPosC : nlPosB + curLinePos;
 	}
+	
+	private static void handleKey_Home(TextInfo textinfo, String firstPart, String lastPart) {
+		// test
+		if(firstPart.endsWith("\n")|| firstPart.length() == 0) return;
+		if( firstPart.indexOf("\n") < textinfo.cursorPosition) textinfo.cursorPosition = 0;		
+	}
+
 }
