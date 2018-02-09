@@ -145,16 +145,15 @@ public abstract class KeyHandler {
 	}
 	
 	private static void handleKey_Home(TextInfo textinfo, String firstPart, String lastPart) {
-		// checks for coursor on first position and start of document
+		// Checks for cursor on first position and start of document.
 		if (firstPart.endsWith("\n") || firstPart.length() == 0) return;
 		
-		//checks for first line and places coursor to start of document
+		// Checks for first line and places cursor to start of document.
 		if (firstPart.indexOf("\n") > textinfo.cursorPosition) {
 			textinfo.cursorPosition = 0;
-		}else {
-			textinfo.cursorPosition = firstPart.lastIndexOf("\n") +1;
-		}
-		
+		} else {
+			textinfo.cursorPosition = firstPart.lastIndexOf("\n") + 1;
+		}		
 	}
 	
 	private static void handleKey_End(TextInfo textinfo, String firstPart, String lastPart) {
