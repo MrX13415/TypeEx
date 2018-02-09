@@ -41,12 +41,7 @@ public abstract class KeyHandler {
 		
 		return handled;
 	}
-	
-<<<<<<< HEAD
 
-
-=======
->>>>>>> branch 'dev' of https://github.com/MrX13415/TypeEx.git
 	private static void handleKey_BackSpace(TextInfo textinfo, String firstPart, String lastPart) {
 		if (firstPart.length() == 0) return;
 		
