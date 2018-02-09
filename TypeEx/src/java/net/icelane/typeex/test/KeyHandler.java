@@ -80,7 +80,7 @@ public abstract class KeyHandler {
 	}
 	
 	private static void handleKey_Del(TextInfo textinfo, String firstPart, String lastPart) {
-		if (firstPart.length() == 0) return;
+		if (lastPart.length() == 0) return;
 		
 		// Remove a char from the beginning of the last text part.
 		lastPart = lastPart.substring(1, lastPart.length());
