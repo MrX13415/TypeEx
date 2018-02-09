@@ -84,7 +84,7 @@ public abstract class KeyHandler {
 		// move the cursor position one to the left.
 		textinfo.cursorPosition =
 				textinfo.cursorPosition <= 0 ?
-				0 : --textinfo.cursorPosition;
+				0 : textinfo.cursorPosition - charCount;
 		
 		textinfo.text = firstPart + lastPart;
 	}
