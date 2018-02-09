@@ -81,16 +81,14 @@ public abstract class KeyHandler {
 		
 	private static void handleKey_ArrowUp(TextInfo textinfo, String firstPart, String lastPart) {
 		if (!firstPart.contains("\n")) return;
-		
-		// Index of the last new line char in the first text part. 
+
+		// Pos A: Index of the new line char before the last new line char.
+		// Pos B: Index of the last new line char in the first text part.
 		int nlPosB = firstPart.lastIndexOf("\n");
-		// Index of the new line char before the last new line char.
 		int nlPosA = firstPart.substring(0, nlPosB).lastIndexOf("\n");
 
-		// Cursor position in the current line.
-		int curLinePos = textinfo.cursorPosition - nlPosB;
-		// Line length of the previous line.
-		int preLineLength = nlPosB - nlPosA;			
+		int curLinePos = textinfo.cursorPosition - nlPosB;	// Cursor position in the current line.
+		int preLineLength = nlPosB - nlPosA;				// Line length of the previous line.
 		
 		// If the length of the current line is greater then
 		// the length of the previous line, then just go to the end of the previous line.    
@@ -103,19 +101,17 @@ public abstract class KeyHandler {
 	private static void handleKey_ArrowDown(TextInfo textinfo, String firstPart, String lastPart) {
 		if (!lastPart.contains("\n")) return;
 		
-		// Index of the last new line char in the first text part. 
+		// Pos A: Index of the last new line char in the first text part. 
+		// Pos B: Index of the first new line char in the last text part.
+		// Pos C: Index of the second new line char in the last text part.	
 		int nlPosA = firstPart.lastIndexOf("\n");
-		// Index of the first new line char in the last text part.
-		int nlPosB = lastPart.indexOf("\n");	
-		// Index of the second new line char in the last text part.		
-		int nlPosC = lastPart.indexOf("\n", nlPosB + 1);
-		// No second line, so us the end of the text as pos. C.
-		if (nlPosC < 0) nlPosC = lastPart.length();
+		int nlPosB = lastPart.indexOf("\n");			
+		int nlPosC = lastPart.indexOf("\n", nlPosB + 1);		
 		
-		// Cursor position in the current line.
-		int curLinePos = textinfo.cursorPosition - nlPosA;
-		// Line length of next line.
-		int postLineLength = nlPosC - nlPosB;		
+		if (nlPosC < 0) nlPosC = lastPart.length();			// No second line, so us the end of the text as pos. C.
+		
+		int curLinePos = textinfo.cursorPosition - nlPosA; 	// Cursor position in the current line.
+		int postLineLength = nlPosC - nlPosB;				// Line length of next line.
 		
 		// If the length of the next line is smaller then
 		// the length of the current line, then just go to the end of the next line.    
