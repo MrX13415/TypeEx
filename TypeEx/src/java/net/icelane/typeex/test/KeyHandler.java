@@ -69,21 +69,24 @@ public abstract class KeyHandler {
 
 	private static void handleKey_BackSpace(TextInfo textinfo, String firstPart, String lastPart) {
 		if (firstPart.length() == 0) return;
+		
+		int charCount = 1;
+		
 		if (KeyInfo.isControlHeld()) {
-			firstPart = firstPart.substring(0,firstPart.lastIndexOf(" "));
+			charCount = 1; // stuff here ..
+		}else if (KeyInfo.isControlHeld() && KeyInfo.isShiftHeld()) {
 			
-		}else {
-			// Remove a char from end of the first text part.
-			firstPart = firstPart.substring(0, firstPart.length() - 1);
-			
-			// move the cursor position one to the left.
-			textinfo.cursorPosition =
-					textinfo.cursorPosition <= 0 ?
-					0 : --textinfo.cursorPosition;
-			
-			textinfo.text = firstPart + lastPart;
 		}
 		
+		// Remove a char from end of the first text part.
+		firstPart = firstPart.substring(0, firstPart.length() - charCount);
+		
+		// move the cursor position one to the left.
+		textinfo.cursorPosition =
+				textinfo.cursorPosition <= 0 ?
+				0 : --textinfo.cursorPosition;
+		
+		textinfo.text = firstPart + lastPart;
 	}
 	
 	private static void handleKey_Del(TextInfo textinfo, String firstPart, String lastPart) {
