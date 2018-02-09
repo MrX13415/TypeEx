@@ -12,8 +12,8 @@ import javax.swing.JLabel;
 
 public class GUI implements KeyListener{
 	
-	public static final String textTemplateBeginn = "<html><body>";
-	public static final String textTemplateEnd = "</body></html>";
+	public static final String textTemplateBeginn = "<html><body><nobr>";
+	public static final String textTemplateEnd = "</nobr></body></html>";
 	public static final String newLineTemplate = "<br>";
 	
 	private JFrame myWindow;
@@ -49,7 +49,7 @@ public class GUI implements KeyListener{
 		myLabel.setOpaque(true);
 		myLabel.setVerticalAlignment(JLabel.TOP);
 		myLabel.setFont(new Font("Consolas", Font.PLAIN, 15));
-		
+
 		myWindow.setBounds(200, 200, 500, 500);
 		myWindow.setMinimumSize(new Dimension(500, 500));
 		myWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
