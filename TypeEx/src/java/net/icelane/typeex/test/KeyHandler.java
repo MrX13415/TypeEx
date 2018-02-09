@@ -31,6 +31,8 @@ public abstract class KeyHandler {
 		boolean handled = true;
 		
 		switch(keyCode) {
+			case  27: break; // ESC key writes a char otherwise
+			
 			case   8: handleKey_BackSpace(textinfo, firstPart, lastPart);
 				break;
 				
