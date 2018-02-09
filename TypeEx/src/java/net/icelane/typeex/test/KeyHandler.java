@@ -23,14 +23,14 @@ public abstract class KeyHandler {
 	 * @param textinfo A <code>TextInfo</code> object.
 	 * @return
 	 */
-	public static boolean handleKey(int keyCode, TextInfo textinfo) {
+	public static boolean handleKey(KeyInfo keyinfo, TextInfo textinfo) {
 		// Retrieving first and last part early for performance reasons.
 		String firstPart = textinfo.firstPart();
 		String lastPart = textinfo.lastPart();
 		
 		boolean handled = true;
 		
-		switch(keyCode) {
+		switch(keyinfo.getKeyCode()) {
 			case  27: break; // ESC key writes a char otherwise
 			
 			case   8: handleKey_BackSpace(textinfo, firstPart, lastPart);
@@ -56,9 +56,10 @@ public abstract class KeyHandler {
 				
 			case  35: handleKey_End(textinfo, firstPart, lastPart);
 				break;
-			
-			default: handled = false;
-				break;
+
+		
+		default: handled = false;
+			break;
 		}
 		
 		return handled;
