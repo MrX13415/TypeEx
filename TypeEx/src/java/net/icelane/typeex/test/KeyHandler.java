@@ -28,8 +28,7 @@ public abstract class KeyHandler {
 			case  40: handleKey_ArrowDown(textinfo, firstPart, lastPart);
 				break;
 				
-			case  36: // home
-				
+			case  36: handleKey_Home(textinfo, firstPart, lastPart);
 				break;
 			case  35: // end
 				
@@ -42,6 +41,12 @@ public abstract class KeyHandler {
 		return handled;
 	}
 	
+	private static void handleKey_Home(TextInfo textinfo, String firstPart, String lastPart) {
+		if(firstPart.endsWith("\n")|| firstPart.length() == 0) return;
+		if( firstPart.indexOf("\n") < textinfo.cursorPosition) textinfo.cursorPosition = 0;
+		
+	}
+
 	private static void handleKey_BackSpace(TextInfo textinfo, String firstPart, String lastPart) {
 		if (firstPart.length() == 0) return;
 		
