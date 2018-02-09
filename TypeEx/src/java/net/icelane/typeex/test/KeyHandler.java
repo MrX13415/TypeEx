@@ -3,13 +3,13 @@ package net.icelane.typeex.test;
 
 /**
  * Handle keys and alter the given <code>TextInfo</code> object
- * accordingly so it mimics the behavior of the text edit control.<br>
+ * accordingly, so it mimics the behavior of the text edit control.<br>
  */
 public abstract class KeyHandler {
 
 	/**
 	 * Handle keys and alter the given <code>TextInfo</code> object
-	 * accordingly so it mimics the behavior of the text edit control.<br>
+	 * accordingly, so it mimics the behavior of the text edit control.<br>
 	 * <br>
 	 * The following keys will be handle by this function:<br>
 	 *  - Backspace<br>
