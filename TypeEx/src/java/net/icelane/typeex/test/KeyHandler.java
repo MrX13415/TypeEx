@@ -158,6 +158,14 @@ public abstract class KeyHandler {
 	}
 	
 	private static void handleKey_End(TextInfo textinfo, String firstPart, String lastPart) {
+		// Checks for cursor on last position and end of document
+		if (lastPart.startsWith("\n") || textinfo.cursorPosition == textinfo.text.length()) return;
+		
+		if (lastPart.indexOf("\n") == 0) {
+			textinfo.cursorPosition = textinfo.text.length();
+		}else {
+			textinfo.cursorPosition += lastPart.indexOf("\n");
+		}
 		
 	}
 	
