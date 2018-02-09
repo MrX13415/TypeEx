@@ -1,6 +1,5 @@
 package net.icelane.typeex.test;
 
-
 /**
  * Handle keys and alter the given <code>TextInfo</code> object
  * accordingly, so it mimics the behavior of the text edit control.<br>
@@ -62,8 +61,6 @@ public abstract class KeyHandler {
 		
 		return handled;
 	}
-
-
 
 	private static void handleKey_BackSpace(TextInfo textinfo, String firstPart, String lastPart) {
 		if (firstPart.length() == 0) return;
