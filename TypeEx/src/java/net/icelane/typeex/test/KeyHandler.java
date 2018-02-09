@@ -1,7 +1,29 @@
 package net.icelane.typeex.test;
 
+
+/**
+ * Handle keys and alter the given <code>TextInfo</code> object
+ * accordingly so it mimics the behavior of the text edit control.<br>
+ */
 public abstract class KeyHandler {
 
+	/**
+	 * Handle keys and alter the given <code>TextInfo</code> object
+	 * accordingly so it mimics the behavior of the text edit control.<br>
+	 * <br>
+	 * The following keys will be handle by this function:<br>
+	 *  - Backspace<br>
+	 *  - Del<br>
+	 *  - Arrow keys (Left, Right, Up, Down)<br>
+	 *  - Home*<br>
+	 *  - End*<br>
+	 *  <br>
+	 *  *Also handled on the num pad.<br>
+	 *  
+	 * @param keyCode A keyCode of the key to take care of.
+	 * @param textinfo A <code>TextInfo</code> object.
+	 * @return
+	 */
 	public static boolean handleKey(int keyCode, TextInfo textinfo) {
 		// Retrieving first and last part early for performance reasons.
 		String firstPart = textinfo.firstPart();

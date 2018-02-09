@@ -19,7 +19,7 @@ public class Control implements AKeyListener{
 		//debug: System.out.println(String.format("%s <--> %s", typedChar, keyCode));
 		
 		textinfo.text = getText();
-	
+		
 		// handle special keys ...
 		boolean keyHandled = KeyHandler.handleKey(keyCode, textinfo);
 		
