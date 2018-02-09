@@ -94,8 +94,18 @@ public abstract class KeyHandler {
 	private static void handleKey_Del(TextInfo textinfo, String firstPart, String lastPart) {
 		if (lastPart.length() == 0) return;
 		
+		int charCount = 1;
+		
+		if (KeyInfo.isControlHeld() && KeyInfo.isShiftHeld()) {
+			int nlPos = lastPart.indexOf("\n");
+			charCount = nlPos > 0 ? nlPos : lastPart.length() ;
+			
+		}else if (KeyInfo.isControlHeld()) {
+
+		}
+		
 		// Remove a char from the beginning of the last text part.
-		lastPart = lastPart.substring(1, lastPart.length());
+		lastPart = lastPart.substring(charCount, lastPart.length());
 		
 		textinfo.text = firstPart + lastPart;
 	}
@@ -172,7 +182,7 @@ public abstract class KeyHandler {
 		// Checks for cursor on last position and end of document
 		if (lastPart.startsWith("\n") || textinfo.cursorPosition == textinfo.text.length()) return;
 		
-		if (lastPart.indexOf("\n") == 0) {
+		if (lastPart.indexOf("\n") == -1) {
 			textinfo.cursorPosition = textinfo.text.length();
 		}else {
 			textinfo.cursorPosition += lastPart.indexOf("\n");
