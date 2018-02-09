@@ -1,6 +1,5 @@
 package net.icelane.typeex.test;
 
-
 /**
  * Handle keys and alter the given <code>TextInfo</code> object
  * accordingly, so it mimics the behavior of the text edit control.<br>
@@ -63,8 +62,6 @@ public abstract class KeyHandler {
 		return handled;
 	}
 
-
-
 	private static void handleKey_BackSpace(TextInfo textinfo, String firstPart, String lastPart) {
 		if (firstPart.length() == 0) return;
 		
@@ -80,7 +77,7 @@ public abstract class KeyHandler {
 	}
 	
 	private static void handleKey_Del(TextInfo textinfo, String firstPart, String lastPart) {
-		if (firstPart.length() == 0) return;
+		if (lastPart.length() == 0) return;
 		
 		// Remove a char from the beginning of the last text part.
 		lastPart = lastPart.substring(1, lastPart.length());
@@ -145,16 +142,15 @@ public abstract class KeyHandler {
 	}
 	
 	private static void handleKey_Home(TextInfo textinfo, String firstPart, String lastPart) {
-		// checks for coursor on first position and start of document
+		// Checks for cursor on first position and start of document.
 		if (firstPart.endsWith("\n") || firstPart.length() == 0) return;
 		
-		//checks for first line and places coursor to start of document
+		// Checks for first line and places cursor to start of document.
 		if (firstPart.indexOf("\n") > textinfo.cursorPosition) {
 			textinfo.cursorPosition = 0;
-		}else {
-			textinfo.cursorPosition = firstPart.lastIndexOf("\n") +1;
-		}
-		
+		} else {
+			textinfo.cursorPosition = firstPart.lastIndexOf("\n") + 1;
+		}		
 	}
 	
 	private static void handleKey_End(TextInfo textinfo, String firstPart, String lastPart) {
