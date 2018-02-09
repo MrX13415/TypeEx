@@ -3,6 +3,7 @@ package net.icelane.typeex.test;
 public abstract class KeyHandler {
 
 	public static boolean handleKey(int keyCode, TextInfo textinfo) {
+		// Retrieving first and last part early for performance reasons.
 		String firstPart = textinfo.firstPart();
 		String lastPart = textinfo.lastPart();
 		
@@ -21,7 +22,7 @@ public abstract class KeyHandler {
 			case  39: handleKey_ArrowRight(textinfo, firstPart, lastPart);
 				break;
 				
-			case  38:  handleKey_ArrowUp(textinfo, firstPart, lastPart);	
+			case  38: handleKey_ArrowUp(textinfo, firstPart, lastPart);	
 				break;
 				
 			case  40: handleKey_ArrowDown(textinfo, firstPart, lastPart);
@@ -42,20 +43,26 @@ public abstract class KeyHandler {
 	}
 	
 	private static void handleKey_BackSpace(TextInfo textinfo, String firstPart, String lastPart) {
-		String txt = firstPart;
-		txt = (txt.length() > 0 ? txt.substring(0, txt.length() - 1) : "") + lastPart; //getLastTextPt(cursorPositon);
+		if (firstPart.length() == 0) return;
 		
-		textinfo.text = txt;
+		// Remove a char from end of the first text part.
+		firstPart = firstPart.substring(0, firstPart.length() - 1);
+		
+		// move the cursor position one to the left.
 		textinfo.cursorPosition =
 				textinfo.cursorPosition <= 0 ?
 				0 : --textinfo.cursorPosition;
+		
+		textinfo.text = firstPart + lastPart;
 	}
 	
 	private static void handleKey_Del(TextInfo textinfo, String firstPart, String lastPart) {
-		String txt = lastPart;
-		txt = firstPart + (txt.length() > 0 ? txt.substring(1, txt.length()) : "");
+		if (firstPart.length() == 0) return;
 		
-		textinfo.text = txt;
+		// Remove a char from the beginning of the last text part.
+		lastPart = lastPart.substring(1, lastPart.length());
+		
+		textinfo.text = firstPart + lastPart;
 	}
 	
 	private static void handleKey_ArrowLeft(TextInfo textinfo, String firstPart, String lastPart) {
