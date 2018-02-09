@@ -23,40 +23,40 @@ public abstract class KeyHandler {
 	 * @param textinfo A <code>TextInfo</code> object.
 	 * @return
 	 */
-	public static boolean handleKey(int keyCode, TextInfo textinfo) {
+	public static boolean handleKey(KeyInfo keyinfo, TextInfo textinfo) {
 		// Retrieving first and last part early for performance reasons.
 		String firstPart = textinfo.firstPart();
 		String lastPart = textinfo.lastPart();
 		
 		boolean handled = true;
 		
-		switch(keyCode) {
-			case   8: handleKey_BackSpace(textinfo, firstPart, lastPart);
-				break;
-				
-			case 127: handleKey_Del(textinfo, firstPart, lastPart);
-				break;
-				
-			case  37: handleKey_ArrowLeft(textinfo, firstPart, lastPart);
-				break;
-				
-			case  39: handleKey_ArrowRight(textinfo, firstPart, lastPart);
-				break;
-				
-			case  38: handleKey_ArrowUp(textinfo, firstPart, lastPart);	
-				break;
-				
-			case  40: handleKey_ArrowDown(textinfo, firstPart, lastPart);
-				break;
-				
-			case  36: handleKey_Home(textinfo, firstPart, lastPart);
-				break;
-				
-			case  35: handleKey_End(textinfo, firstPart, lastPart);
-				break;
+		switch(keyinfo.getKeyCode()) {
+		case   8: handleKey_BackSpace(textinfo, firstPart, lastPart);
+			break;
 			
-			default: handled = false;
-				break;
+		case 127: handleKey_Del(textinfo, firstPart, lastPart);
+			break;
+			
+		case  37: handleKey_ArrowLeft(textinfo, firstPart, lastPart);
+			break;
+			
+		case  39: handleKey_ArrowRight(textinfo, firstPart, lastPart);
+			break;
+			
+		case  38: handleKey_ArrowUp(textinfo, firstPart, lastPart);	
+			break;
+			
+		case  40: handleKey_ArrowDown(textinfo, firstPart, lastPart);
+			break;
+			
+		case  36: handleKey_Home(textinfo, firstPart, lastPart);
+			break;
+			
+		case  35: handleKey_End(textinfo, firstPart, lastPart);
+			break;
+		
+		default: handled = false;
+			break;
 		}
 		
 		return handled;

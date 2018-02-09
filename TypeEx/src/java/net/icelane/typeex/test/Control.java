@@ -15,17 +15,25 @@ public class Control implements AKeyListener{
 	}
 
 	@Override
-	public void keyTyped(char typedChar, int keyCode, int modifier) {
-		//debug: System.out.println(String.format("%s <--> %s", typedChar, keyCode));
+	public void keyTyped(KeyInfo keyinfo) {
+		//debug:
+		System.out.println(String.format("%s c: %s a: %s s: %s m: %s",
+				keyinfo.toString(),
+				KeyInfo.isControlHeld(),
+				KeyInfo.isAltHeld(),
+				KeyInfo.isShiftHeld(),
+				KeyInfo.isMetaHeld()));
+		
+		if (!keyinfo.getKeyState()) return;
 		
 		textinfo.text = getText();
 		
 		// handle special keys ...
-		boolean keyHandled = KeyHandler.handleKey(keyCode, textinfo);
+		boolean keyHandled = KeyHandler.handleKey(keyinfo, textinfo);
 		
 		// handle normal char keys ...
-		if (!keyHandled && typedChar != KeyEvent.CHAR_UNDEFINED) {			
-			textinfo.text = textinfo.firstPart() + typedChar + textinfo.lastPart();
+		if (!keyHandled && keyinfo.getKeyChar() != KeyEvent.CHAR_UNDEFINED) {			
+			textinfo.text = textinfo.firstPart() + keyinfo.getKeyChar() + textinfo.lastPart();
 			textinfo.cursorPosition++;
 		}
 		

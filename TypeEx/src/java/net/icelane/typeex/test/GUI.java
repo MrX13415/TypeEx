@@ -66,13 +66,19 @@ public class GUI implements KeyListener{
 
 	@Override
 	public void keyPressed(KeyEvent e) {	
-		for (AKeyListener aKeyListener : listener) {
-			aKeyListener.keyTyped(e.getKeyChar(), e.getKeyCode(), e.getModifiers());
+		for (AKeyListener aKeyListener : listener) {		
+			KeyInfo kinfo = new KeyInfo(e.getKeyCode(), e.getKeyChar(), true);
+			aKeyListener.keyTyped(kinfo);
 		}
 	}
 
 	@Override
-	public void keyReleased(KeyEvent e) { }
+	public void keyReleased(KeyEvent e) {
+		for (AKeyListener aKeyListener : listener) {		
+			KeyInfo kinfo = new KeyInfo(e.getKeyCode(), e.getKeyChar(), false);
+			aKeyListener.keyTyped(kinfo);
+		}
+	}
 
 	@Override
 	public void keyTyped(KeyEvent e) { }
