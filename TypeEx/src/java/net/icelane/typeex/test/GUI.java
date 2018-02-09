@@ -3,13 +3,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsDevice;
-import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.geom.AffineTransform;
-import java.awt.image.ColorModel;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
@@ -29,6 +24,20 @@ public class GUI implements KeyListener{
 	
 	public GUI() {	
 		initializeGui();
+		
+		String txt = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr,\r\n" + 
+				"sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,\r\n" + 
+				"sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.\r\n" + 
+				"Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.\r\n" + 
+				"Lorem ipsum dolor sit amet, consetetur sadipscing elitr,\r\n" + 
+				"sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,\r\n" + 
+				"sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.\r\n" + 
+				"Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.\r\n" + 
+				"Lorem ipsum dolor sit amet, consetetur sadipscing elitr,\r\n" + 
+				"sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,\r\n" + 
+				"sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.\r\n" + 
+				"Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. \r\n";
+		setText(txt, 0);		
 	}
 	
 	// WORKING GUI ... YAAAAHHH! (and bugs I guess)
@@ -112,6 +121,7 @@ public class GUI implements KeyListener{
 		text = text.replaceAll(textTemplateEnd, "");
 		
 		// hacking-ish removing our cursor ...
+		if (cursorpos > text.length()) cursorpos = text.length();
 		String ta = cursorpos > 0 ? text.substring(0, cursorpos) : "";
 		String tb = cursorpos < text.length() ? text.substring(cursorpos + 1) : "";	
 		text = ta + tb;
