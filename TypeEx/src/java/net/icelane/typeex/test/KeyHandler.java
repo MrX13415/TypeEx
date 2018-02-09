@@ -72,10 +72,12 @@ public abstract class KeyHandler {
 		
 		int charCount = 1;
 		
-		if (KeyInfo.isControlHeld()) {
-			charCount = 1; // stuff here ..
-		}else if (KeyInfo.isControlHeld() && KeyInfo.isShiftHeld()) {
+		if (KeyInfo.isControlHeld() && KeyInfo.isShiftHeld()) {
+			int nlPos = firstPart.lastIndexOf("\n");
+			charCount = textinfo.cursorPosition - nlPos - 1;
 			
+		}else if (KeyInfo.isControlHeld()) {
+
 		}
 		
 		// Remove a char from end of the first text part.
@@ -84,7 +86,7 @@ public abstract class KeyHandler {
 		// move the cursor position one to the left.
 		textinfo.cursorPosition =
 				textinfo.cursorPosition <= 0 ?
-				0 : --textinfo.cursorPosition;
+				0 : textinfo.cursorPosition - charCount;
 		
 		textinfo.text = firstPart + lastPart;
 	}
