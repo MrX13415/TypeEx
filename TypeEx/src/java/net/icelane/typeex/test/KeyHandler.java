@@ -1,5 +1,7 @@
 package net.icelane.typeex.test;
 
+import javax.annotation.RegEx;
+
 /**
  * Handle keys and alter the given <code>TextInfo</code> object
  * accordingly, so it mimics the behavior of the text edit control.<br>
@@ -67,16 +69,21 @@ public abstract class KeyHandler {
 
 	private static void handleKey_BackSpace(TextInfo textinfo, String firstPart, String lastPart) {
 		if (firstPart.length() == 0) return;
+		if (KeyInfo.isControlHeld()) {
+			firstPart = firstPart.substring(0,firstPart.lastIndexOf(" "));
+			
+		}else {
+			// Remove a char from end of the first text part.
+			firstPart = firstPart.substring(0, firstPart.length() - 1);
+			
+			// move the cursor position one to the left.
+			textinfo.cursorPosition =
+					textinfo.cursorPosition <= 0 ?
+					0 : --textinfo.cursorPosition;
+			
+			textinfo.text = firstPart + lastPart;
+		}
 		
-		// Remove a char from end of the first text part.
-		firstPart = firstPart.substring(0, firstPart.length() - 1);
-		
-		// move the cursor position one to the left.
-		textinfo.cursorPosition =
-				textinfo.cursorPosition <= 0 ?
-				0 : --textinfo.cursorPosition;
-		
-		textinfo.text = firstPart + lastPart;
 	}
 	
 	private static void handleKey_Del(TextInfo textinfo, String firstPart, String lastPart) {
