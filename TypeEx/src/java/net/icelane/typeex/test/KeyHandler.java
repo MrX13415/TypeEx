@@ -8,11 +8,22 @@ import java.util.regex.Pattern;
  * accordingly, so it mimics the behavior of the text edit control.<br>
  */
 public abstract class KeyHandler {
-	//Check for charackters that are not part of the english alphabet and are not whitespaces or new lines (special charackters) 
-	//or new lines 
-	//or any list of charakters followed by any list of whitespaces
-	private static final Pattern del_WordPattern = Pattern.compile("^([^A-za-z][^\\S\\n]*|\\n|\\w*\\s*)");
-	private static final Pattern back_WordPattern = Pattern.compile("([^A-za-z][^\\S\\n]*|\\n|\\w+\\s*)$");
+	
+	/**
+	 * At start:
+	 * group 0: Check for one non word character followed by any whitespaces but not new lines. 
+	 * group 1: Check for new lines 
+	 * group 2: Check any word characters followed by any whitespaces.
+	 */
+	private static final Pattern del_WordPattern = Pattern.compile("^(\\W[^\\S\\n]*|\\n|\\w*\\s*)", Pattern.UNICODE_CHARACTER_CLASS);
+	
+	/**
+	 * At end:
+	 * group 0: Check for one non word character followed by any whitespaces but not new lines. 
+	 * group 1: Check for new lines 
+	 * group 2: Check at least one word character followed by any whitespaces.
+	 */
+	private static final Pattern back_WordPattern = Pattern.compile("(\\W[^\\S\\n]*|\\n|\\w+\\s*)$", Pattern.UNICODE_CHARACTER_CLASS);
 		
 	/**
 	 * Handle keys and alter the given <code>TextInfo</code> object
