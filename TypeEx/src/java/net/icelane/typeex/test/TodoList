@@ -1,5 +1,4 @@
 Control -> Ins keys
-Control -> Ctrl Modifier (Home, End, Left, Right)
 Control -> Cursormove by mouse
 Control -> Marking (Ctrl+A, Shift+left/right, shift+ctrl+left/right, shift+home/end, shift+ctrl+home/end, hold LMB, shift+LMB)
 Control -> Copy/Cut/Paste
