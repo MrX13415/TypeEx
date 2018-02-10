@@ -1,6 +1,9 @@
 package net.icelane.typeex.test;
 
-import javax.annotation.RegEx;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import scala.reflect.macros.internal.macroImpl;
 
 /**
  * Handle keys and alter the given <code>TextInfo</code> object
@@ -8,6 +11,9 @@ import javax.annotation.RegEx;
  */
 public abstract class KeyHandler {
 
+	private static final Pattern del_wordPattern = Pattern.compile("\\s*\\w*\\s+");
+	private static final Pattern back_WordPattern = Pattern.compile("\\s*\\w*");
+	
 	/**
 	 * Handle keys and alter the given <code>TextInfo</code> object
 	 * accordingly, so it mimics the behavior of the text edit control.<br>
@@ -97,11 +103,13 @@ public abstract class KeyHandler {
 		int charCount = 1;
 		
 		if (KeyInfo.isControlHeld() && KeyInfo.isShiftHeld()) {
-			int nlPos = lastPart.indexOf("\n");
-			charCount = nlPos > 0 ? nlPos : lastPart.length() ;
+			charCount = lastPart.indexOf("\n");
+			if (charCount <= 0) charCount = lastPart.length();
 			
 		}else if (KeyInfo.isControlHeld()) {
-
+			Matcher matcher = del_wordPattern.matcher(lastPart);
+			charCount = matcher.find() ? matcher.group(0).length() : 0;
+			if (charCount <= 0) charCount = lastPart.length();
 		}
 		
 		// Remove a char from the beginning of the last text part.
