@@ -13,10 +13,18 @@ public class TextInfo {
 	 * The position of the cursor in the text.
 	 */
 	public int cursorPosition;
+	
+	public int markStart;
+	public int markEnd;
+	
 	/**
 	 * Weather overwriting of characters is enabled.
 	 */
 	public boolean overwrite; 
+	
+	public boolean isMarked;
+	
+	
 	
 	/**
 	 * Returns the first part of the text, from the beginning to the current cursor position.
