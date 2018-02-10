@@ -50,33 +50,32 @@ public abstract class KeyHandler {
 		boolean handled = true;
 		
 		switch(keyinfo.getKeyCode()) {
-			case  27: break; // ESC key writes a char otherwise
-			
-			case   8: handleKey_BackSpace(textinfo, firstPart, lastPart);
-				break;
-				
-			case 127: handleKey_Del(textinfo, firstPart, lastPart);
-				break;
-				
-			case  37: handleKey_ArrowLeft(textinfo, firstPart, lastPart);
-				break;
-				
-			case  39: handleKey_ArrowRight(textinfo, firstPart, lastPart);
-				break;
-				
-			case  38: handleKey_ArrowUp(textinfo, firstPart, lastPart);	
-				break;
-				
-			case  40: handleKey_ArrowDown(textinfo, firstPart, lastPart);
-				break;
-				
-			case  36: handleKey_Home(textinfo, firstPart, lastPart);
-				break;
-				
-			case  35: handleKey_End(textinfo, firstPart, lastPart);
-				break;
-
+		case  27: break; // ESC key writes a char otherwise
 		
+		case   8: handleKey_BackSpace(textinfo, firstPart, lastPart);
+			break;
+			
+		case 127: handleKey_Del(textinfo, firstPart, lastPart);
+			break;
+			
+		case  37: handleKey_ArrowLeft(textinfo, firstPart, lastPart);
+			break;
+			
+		case  39: handleKey_ArrowRight(textinfo, firstPart, lastPart);
+			break;
+			
+		case  38: handleKey_ArrowUp(textinfo, firstPart, lastPart);	
+			break;
+			
+		case  40: handleKey_ArrowDown(textinfo, firstPart, lastPart);
+			break;
+			
+		case  36: handleKey_Home(textinfo, firstPart, lastPart);
+			break;
+			
+		case  35: handleKey_End(textinfo, firstPart, lastPart);
+			break;
+
 		default: handled = false;
 			break;
 		}
