@@ -37,11 +37,11 @@ public class Control implements AKeyListener{
 			// Handle overwrite mode ...
 			if (textinfo.overwrite && lastPart.length() > 0)
 				lastPart = lastPart.substring(1);
-				
+
 			textinfo.text = textinfo.firstPart() + keyinfo.getKeyChar() + lastPart;
 			textinfo.cursorPosition++;
 		}
-		if(!keyinfo.isShiftHeld()) textinfo.isMarked = false;
+		if(!keyinfo.isShiftHeld()) textinfo.isMarked = false; //notActualLocation
 		// update ui
 		setText(textinfo);
 	}

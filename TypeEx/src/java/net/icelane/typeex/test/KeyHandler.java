@@ -7,6 +7,8 @@ import javax.xml.soap.Text;
 
 import org.apache.logging.log4j.core.pattern.MarkerSimpleNamePatternConverter;
 
+import net.minecraft.server.DebugLoggingPrintStream;
+
 /**
  * Handle keys and alter the given <code>TextInfo</code> object
  * accordingly, so it mimics the behavior of the text edit control.
@@ -266,21 +268,19 @@ public abstract class KeyHandler {
 		if (!textinfo.isMarked) {
 			textinfo.isMarked = true;
 			textinfo.markStart = cursorPositionBeforeMoving;
-			textinfo.markEnd = textinfo.cursorPosition;			
-		}else {
-			textinfo.setMarkEnd();
-		}
-		if (textinfo.markStart == textinfo.markEnd) {
-			textinfo.isMarked = false; return;
-		}
+			textinfo.markEnd = textinfo.cursorPosition;		
+			
+		}else textinfo.setMarkEnd();
+		
+		debugSelectionText(textinfo);
+	}
+	private static void debugSelectionText(TextInfo textinfo){
 		if (textinfo.markStart > textinfo.markEnd) {
 			System.out.println("I have marked "+ textinfo.text.substring(textinfo.markEnd, textinfo.markStart));
 		}else {
 			System.out.println("I have marked "+ textinfo.text.substring(textinfo.markStart, textinfo.markEnd));
 		}
-
 	}
-
 	private static void handleKey_Ins(TextInfo textinfo, String firstPart, String lastPart) {
 		textinfo.overwrite = !textinfo.overwrite;
 	}
