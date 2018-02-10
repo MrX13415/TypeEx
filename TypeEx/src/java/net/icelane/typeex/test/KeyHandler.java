@@ -27,7 +27,7 @@ public abstract class KeyHandler {
 	 * Group 1: Check for new lines.<br>
 	 * Group 2: Check at least one word character followed by any whitespaces.<br>
 	 */
-	private static final Pattern LastWordPattern = Pattern.compile("(\\W[^\\S\\n]*|\\n|\\w+\\s*)$", Pattern.UNICODE_CHARACTER_CLASS);
+	private static final Pattern LastWordPattern = Pattern.compile("(\\W[^\\S\\n]*|\\n|\\w+[^\\S\\n]*)$", Pattern.UNICODE_CHARACTER_CLASS);
 		
 	/**
 	 * Handle keys and alter the given <code>TextInfo</code> object
@@ -161,7 +161,7 @@ public abstract class KeyHandler {
 		if (KeyInfo.isControlHeld() && KeyInfo.isShiftHeld()) {
 			// Number of chars to the end of the line from the cursor.
 			charCount = lastPart.indexOf("\n");
-			if (charCount <= 0) charCount = lastPart.length();
+			if (charCount < 0) charCount = lastPart.length();
 			
 		}else if (KeyInfo.isControlHeld()) {
 			charCount = getFirstWordLength(lastPart);
