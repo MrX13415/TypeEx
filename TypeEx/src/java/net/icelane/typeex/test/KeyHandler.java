@@ -187,27 +187,25 @@ public abstract class KeyHandler {
 	}
 	
 	private static void handleKey_Home(TextInfo textinfo, String firstPart, String lastPart) {
-		// Checks for cursor on first position and start of document.
-		if (firstPart.endsWith("\n") || firstPart.length() == 0) return;
+		if (firstPart.length() == 0) return;
 		
-		// Checks for first line and places cursor to start of document.
-		if (firstPart.indexOf("\n") > textinfo.cursorPosition) {
-			textinfo.cursorPosition = 0;
-		} else {
-			textinfo.cursorPosition = firstPart.lastIndexOf("\n") + 1;
-		}		
+		// Find beginning of the previous line.
+		int nlPos = firstPart.lastIndexOf("\n") + 1;
+		
+		if (KeyInfo.isControlHeld()) nlPos = 0;		// Always move to the beginning of the text.
+		textinfo.cursorPosition = nlPos;			// Move to the beginning of line.
 	}
 	
 	private static void handleKey_End(TextInfo textinfo, String firstPart, String lastPart) {
-		// Checks for cursor on last position and end of document
-		if (lastPart.startsWith("\n") || textinfo.cursorPosition == textinfo.text.length()) return;
+		if (lastPart.length() == 0) return;
+
+		// Find end of the current line.
+		int nlPos = lastPart.indexOf("\n");
 		
-		if (lastPart.indexOf("\n") == -1) {
-			textinfo.cursorPosition = textinfo.text.length();
-		}else {
-			textinfo.cursorPosition += lastPart.indexOf("\n");
-		}
-		
+		if (KeyInfo.isControlHeld() || nlPos < 0)
+			textinfo.cursorPosition = textinfo.text.length();	// Move to the end of the text.
+		else
+			textinfo.cursorPosition += nlPos;					// Move to the end of line.
 	}
 	
 }
