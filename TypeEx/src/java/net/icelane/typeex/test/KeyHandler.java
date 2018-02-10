@@ -81,7 +81,7 @@ public abstract class KeyHandler {
 			charCount = textinfo.cursorPosition - charCount - 1;
 			
 		}else if (KeyInfo.isControlHeld()) {
-			Matcher matcher = back_WordPattern.matcher(firstPart);;
+			Matcher matcher = back_WordPattern.matcher(firstPart);
 			charCount = matcher.find() ? matcher.group(0).length() : 0;
 			if (charCount <= 0) charCount = firstPart.length();
 		}
