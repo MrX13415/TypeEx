@@ -12,7 +12,7 @@ public abstract class KeyHandler {
 	/**
 	 * At start:
 	 * group 0: Check for one non word character followed by any whitespaces but not new lines. 
-	 * group 1: Check for new lines 
+	 * group 1: Check for new lines.
 	 * group 2: Check any word characters followed by any whitespaces.
 	 */
 	private static final Pattern del_WordPattern = Pattern.compile("^(\\W[^\\S\\n]*|\\n|\\w*\\s*)", Pattern.UNICODE_CHARACTER_CLASS);
@@ -20,7 +20,7 @@ public abstract class KeyHandler {
 	/**
 	 * At end:
 	 * group 0: Check for one non word character followed by any whitespaces but not new lines. 
-	 * group 1: Check for new lines 
+	 * group 1: Check for new lines.
 	 * group 2: Check at least one word character followed by any whitespaces.
 	 */
 	private static final Pattern back_WordPattern = Pattern.compile("(\\W[^\\S\\n]*|\\n|\\w+\\s*)$", Pattern.UNICODE_CHARACTER_CLASS);
