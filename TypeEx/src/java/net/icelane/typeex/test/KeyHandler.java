@@ -40,7 +40,7 @@ public abstract class KeyHandler {
 	 *  
 	 * @param keyinfo A <code>KeyInfo</code> object.
 	 * @param textinfo A <code>TextInfo</code> object.
-	 * @return
+	 * @return weather the given key in the <code>KeyInfo</code> object, has been handled.
 	 */
 	public static boolean handleKey(KeyInfo keyinfo, TextInfo textinfo) {
 		// Retrieving first and last part early for performance reasons.
