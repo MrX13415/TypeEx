@@ -13,7 +13,7 @@ public abstract class KeyHandler {
 	//or any list of charakters followed by any list of whitespaces
 	private static final Pattern del_WordPattern = Pattern.compile("^([^A-za-z][^\\S\\n]*|\\n|\\w*\\s*)");
 	private static final Pattern back_WordPattern = Pattern.compile("([^A-za-z][^\\S\\n]*|\\n|\\w+\\s*)$");
-	
+		
 	/**
 	 * Handle keys and alter the given <code>TextInfo</code> object
 	 * accordingly, so it mimics the behavior of the text edit control.<br>
@@ -25,7 +25,7 @@ public abstract class KeyHandler {
 	 *  - Home*<br>
 	 *  - End*<br>
 	 *  <br>
-	 *  *Also handled on the num pad.<br>
+	 *  *Also handled on the numpad.<br>
 	 *  
 	 * @param keyCode A keyCode of the key to take care of.
 	 * @param textinfo A <code>TextInfo</code> object.
