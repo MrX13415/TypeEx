@@ -127,20 +127,18 @@ public abstract class KeyHandler {
 		int charCount = 1;
 		
 		if (KeyInfo.isControlHeld() && KeyInfo.isShiftHeld()) {
+			// Number of chars from the beginning of the line to the cursor.
 			charCount = firstPart.lastIndexOf("\n");
 			charCount = textinfo.cursorPosition - charCount - 1;
 			
 		}else if (KeyInfo.isControlHeld()) {
 			charCount = getLastWordLength(firstPart);
-//			Matcher matcher = LastWordPattern.matcher(firstPart);
-//			charCount = matcher.find() ? matcher.group(0).length() : 0;
-//			if (charCount <= 0) charCount = firstPart.length();
 		}
 		
-		// Remove a char from end of the first text part.
+		// Remove a number of chars from end of the first text part.
 		firstPart = firstPart.substring(0, firstPart.length() - charCount);
 		
-		// move the cursor position one to the left.
+		// move the cursor position to the left.
 		textinfo.cursorPosition =
 				textinfo.cursorPosition <= 0 ?
 				0 : textinfo.cursorPosition - charCount;
@@ -149,39 +147,47 @@ public abstract class KeyHandler {
 	}
 	
 	private static void handleKey_Del(TextInfo textinfo, String firstPart, String lastPart) {
-		if (lastPart.length() == 0) return;
+		if (lastPart.length() == 0) return;	
 		
 		int charCount = 1;
 		
 		if (KeyInfo.isControlHeld() && KeyInfo.isShiftHeld()) {
+			// Number of chars to the end of the line from the cursor.
 			charCount = lastPart.indexOf("\n");
 			if (charCount <= 0) charCount = lastPart.length();
 			
 		}else if (KeyInfo.isControlHeld()) {
 			charCount = getFirstWordLength(lastPart);
-//			Matcher matcher = FirstWordPattern.matcher(lastPart);
-//			charCount = matcher.find() ? matcher.group(0).length() : 0;
-//			if (charCount <= 0) charCount = lastPart.length();
 		}
 		
-		// Remove a char from the beginning of the last text part.
+		// Remove a number of chars from the beginning of the last text part.
 		lastPart = lastPart.substring(charCount, lastPart.length());
 		
 		textinfo.text = firstPart + lastPart;
 	}
 	
 	private static void handleKey_ArrowLeft(TextInfo textinfo, String firstPart, String lastPart) {
+		int charCount = 1;
+		
+		if (KeyInfo.isControlHeld()) 
+			charCount = getLastWordLength(firstPart);
+		
 		// Move the cursor position one to the left.
 		textinfo.cursorPosition =
 				textinfo.cursorPosition <= 0 ?
-				0 : --textinfo.cursorPosition;
+				0 : textinfo.cursorPosition - charCount;
 	}
 	
 	private static void handleKey_ArrowRight(TextInfo textinfo, String firstPart, String lastPart) {
+		int charCount = 1;
+		
+		if (KeyInfo.isControlHeld())
+			charCount = getFirstWordLength(lastPart);
+		
 		// Move the cursor position one to the right.
 		textinfo.cursorPosition =
 				textinfo.cursorPosition >= textinfo.text.length() ?
-				textinfo.text.length() : ++textinfo.cursorPosition;
+				textinfo.text.length() : textinfo.cursorPosition + charCount;
 	}
 		
 	private static void handleKey_ArrowUp(TextInfo textinfo, String firstPart, String lastPart) {
