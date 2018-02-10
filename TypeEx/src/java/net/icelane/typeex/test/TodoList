@@ -1,7 +1,5 @@
-Control -> Code cleanup -> case code to methods /comments!!!
-Control -> check for "non-char-undefined"keys and exclude them (found ESC(27))
-Control -> home /end / Ins keys
-Control -> Ctrl Modifier (Home, End, Backspace, Del, Left, Right)
+Control -> Ins keys
+Control -> Ctrl Modifier (Home, End, Left, Right)
 Control -> Cursormove by mouse
 Control -> Marking (Ctrl+A, Shift+left/right, shift+ctrl+left/right, shift+home/end, shift+ctrl+home/end, hold LMB, shift+LMB)
 Control -> Copy/Cut/Paste
