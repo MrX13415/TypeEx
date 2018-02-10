@@ -11,7 +11,7 @@ public class Control implements AKeyListener{
 	public Control(GUI gui) {
 		this.gui = gui;	 
 		gui.addListener(this); 
-		
+		textinfo = this.gui.getText();	
 	}
 
 	@Override
@@ -26,8 +26,6 @@ public class Control implements AKeyListener{
 				textinfo.overwrite));
 		
 		if (!keyinfo.getKeyState()) return;
-		
-		textinfo.text = getText();
 		
 		// handle special keys ...
 		boolean keyHandled = KeyHandler.handleKey(keyinfo, textinfo);
@@ -49,11 +47,11 @@ public class Control implements AKeyListener{
 	}
 	
 	private void setText(TextInfo textInfo) {
-		gui.setText(textInfo.text, textInfo.cursorPosition);
+		gui.setText(textInfo);
 	}
 	
-	private String getText() {
-		return gui.getText();
-	}
+//	private String getText() {
+//		return gui.getText();
+//	}
 	
 }
