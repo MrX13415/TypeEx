@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
  */
 public abstract class KeyHandler {
 
-	private static final Pattern del_wordPattern = Pattern.compile("^([^A-za-z][^\\S\\n]*|\\n|\\w*\\s*)");  //\\s*\\w*\\s+
+	private static final Pattern del_WordPattern = Pattern.compile("^([^A-za-z][^\\S\\n]*|\\n|\\w*\\s*)");
 	private static final Pattern back_WordPattern = Pattern.compile("([^A-za-z][^\\S\\n]*|\\n|\\w+\\s*)$");
 	
 	/**
@@ -107,7 +107,7 @@ public abstract class KeyHandler {
 			if (charCount <= 0) charCount = lastPart.length();
 			
 		}else if (KeyInfo.isControlHeld()) {
-			Matcher matcher = del_wordPattern.matcher(lastPart);
+			Matcher matcher = del_WordPattern.matcher(lastPart);
 			charCount = matcher.find() ? matcher.group(0).length() : 0;
 			if (charCount <= 0) charCount = lastPart.length();
 		}
