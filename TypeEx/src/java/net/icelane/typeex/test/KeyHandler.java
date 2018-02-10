@@ -8,7 +8,9 @@ import java.util.regex.Pattern;
  * accordingly, so it mimics the behavior of the text edit control.<br>
  */
 public abstract class KeyHandler {
-
+	//Check for charackters that are not part of the english alphabet and are not whitespaces or new lines (special charackters) 
+	//or new lines 
+	//or any list of charakters followed by any list of whitespaces
 	private static final Pattern del_WordPattern = Pattern.compile("^([^A-za-z][^\\S\\n]*|\\n|\\w*\\s*)");
 	private static final Pattern back_WordPattern = Pattern.compile("([^A-za-z][^\\S\\n]*|\\n|\\w+\\s*)$");
 	
