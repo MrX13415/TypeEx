@@ -9,8 +9,8 @@ import java.util.regex.Pattern;
  */
 public abstract class KeyHandler {
 
-	private static final Pattern del_wordPattern = Pattern.compile("\\s*\\w*\\s+");
-	private static final Pattern back_WordPattern = Pattern.compile("(.|\\n|\\w+\\s*)$");
+	private static final Pattern del_wordPattern = Pattern.compile("^([^A-za-z][^\\S\\n]*|\\n|\\w*\\s*)");  //\\s*\\w*\\s+
+	private static final Pattern back_WordPattern = Pattern.compile("([^A-za-z][^\\S\\n]*|\\n|\\w+\\s*)$");
 	
 	/**
 	 * Handle keys and alter the given <code>TextInfo</code> object
