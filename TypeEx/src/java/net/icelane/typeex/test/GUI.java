@@ -50,8 +50,8 @@ public class GUI implements KeyListener{
 		myLabel.setVerticalAlignment(JLabel.TOP);
 		myLabel.setFont(new Font("Consolas", Font.PLAIN, 15));
 
-		myWindow.setBounds(200, 200, 500, 500);
-		myWindow.setMinimumSize(new Dimension(500, 500));
+		myWindow.setBounds(400, 200, 500, 500);
+		myWindow.setMinimumSize(new Dimension(800, 500));
 		myWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		myWindow.addKeyListener(this);
 		
