@@ -36,7 +36,7 @@ public class Control implements AKeyListener{
 			textinfo.text = textinfo.firstPart() + keyinfo.getKeyChar() + textinfo.lastPart();
 			textinfo.cursorPosition++;
 		}
-		
+				
 		// update ui
 		setText(textinfo);
 	}

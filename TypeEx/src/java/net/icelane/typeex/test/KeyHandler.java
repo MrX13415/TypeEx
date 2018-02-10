@@ -5,23 +5,23 @@ import java.util.regex.Pattern;
 
 /**
  * Handle keys and alter the given <code>TextInfo</code> object
- * accordingly, so it mimics the behavior of the text edit control.<br>
+ * accordingly, so it mimics the behavior of the text edit control.
  */
 public abstract class KeyHandler {
 	
 	/**
-	 * At start:
-	 * group 0: Check for one non word character followed by any whitespaces but not new lines. 
-	 * group 1: Check for new lines.
-	 * group 2: Check any word characters followed by any whitespaces.
+	 * At start:<br>
+	 * group 0: Check for one non word character followed by any whitespaces but not new lines.<br> 
+	 * group 1: Check for new lines.<br>
+	 * group 2: Check any word characters followed by any whitespaces.<br>
 	 */
 	private static final Pattern del_WordPattern = Pattern.compile("^(\\W[^\\S\\n]*|\\n|\\w*\\s*)", Pattern.UNICODE_CHARACTER_CLASS);
 	
 	/**
-	 * At end:
-	 * group 0: Check for one non word character followed by any whitespaces but not new lines. 
-	 * group 1: Check for new lines.
-	 * group 2: Check at least one word character followed by any whitespaces.
+	 * At end:<br>
+	 * group 0: Check for one non word character followed by any whitespaces but not new lines.<br>
+	 * group 1: Check for new lines.<br>
+	 * group 2: Check at least one word character followed by any whitespaces.<br>
 	 */
 	private static final Pattern back_WordPattern = Pattern.compile("(\\W[^\\S\\n]*|\\n|\\w+\\s*)$", Pattern.UNICODE_CHARACTER_CLASS);
 		
