@@ -38,7 +38,7 @@ public abstract class KeyHandler {
 	 *  <br>
 	 *  *Also handled on the numpad.<br>
 	 *  
-	 * @param keyCode A keyCode of the key to take care of.
+	 * @param keyinfo A <code>KeyInfo</code> object.
 	 * @param textinfo A <code>TextInfo</code> object.
 	 * @return
 	 */
