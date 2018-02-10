@@ -10,20 +10,20 @@ import java.util.regex.Pattern;
 public abstract class KeyHandler {
 	
 	/**
-	 * At start:<br>
-	 * group 0: Check for one non word character followed by any whitespaces but not new lines.<br> 
-	 * group 1: Check for new lines.<br>
-	 * group 2: Check any word characters followed by any whitespaces.<br>
+	 * At text start:<br>
+	 * Group 0: Check for one non word character followed by any whitespaces but not new lines.<br> 
+	 * Group 1: Check for new lines.<br>
+	 * Group 2: Check any word characters followed by any whitespaces.<br>
 	 */
-	private static final Pattern del_WordPattern = Pattern.compile("^(\\W[^\\S\\n]*|\\n|\\w*\\s*)", Pattern.UNICODE_CHARACTER_CLASS);
+	private static final Pattern FirstWordPattern = Pattern.compile("^(\\W[^\\S\\n]*|\\n|\\w*\\s*)", Pattern.UNICODE_CHARACTER_CLASS);
 	
 	/**
-	 * At end:<br>
-	 * group 0: Check for one non word character followed by any whitespaces but not new lines.<br>
-	 * group 1: Check for new lines.<br>
-	 * group 2: Check at least one word character followed by any whitespaces.<br>
+	 * At text end:<br>
+	 * Group 0: Check for one non word character followed by any whitespaces but not new lines.<br>
+	 * Group 1: Check for new lines.<br>
+	 * Group 2: Check at least one word character followed by any whitespaces.<br>
 	 */
-	private static final Pattern back_WordPattern = Pattern.compile("(\\W[^\\S\\n]*|\\n|\\w+\\s*)$", Pattern.UNICODE_CHARACTER_CLASS);
+	private static final Pattern LastWordPattern = Pattern.compile("(\\W[^\\S\\n]*|\\n|\\w+\\s*)$", Pattern.UNICODE_CHARACTER_CLASS);
 		
 	/**
 	 * Handle keys and alter the given <code>TextInfo</code> object
@@ -83,6 +83,44 @@ public abstract class KeyHandler {
 		return handled;
 	}
 
+	/**
+	 * Returns the length of the first word of the given text.<br>
+	 * A word is determined by multiple characters followed
+	 * by any whitespace character at the end of beginning.
+	 * @param text A text to match.
+	 * @return The length of the first word or the length of the given text.
+	 */
+	public static int getFirstWordLength(String text) {	
+		return getGroupLength(FirstWordPattern, text);
+	}
+	
+	/**
+	 * Returns the length of the last word of the given text.<br>
+	 * A word is determined by multiple characters followed
+	 * by any whitespace character at the end of beginning.
+	 * @param text A text to match.
+	 * @return The length of the last word or the length of the given text.
+	 */
+	public static int getLastWordLength(String text) {
+		return getGroupLength(LastWordPattern, text);
+	}
+	
+	/**
+	 * Returns the length of the first group match by the given pattern.
+	 * If no match was found or the length of the first group is zero,
+	 * the length of the given text is returned.
+	 * @param pattern The pattern.
+	 * @param text A text to match.
+	 * @return The length of the first matched group or the length of the given group.
+	 */
+	public static int getGroupLength(Pattern pattern, String text) {
+		Matcher matcher = pattern.matcher(text);
+		
+		int charCount = matcher.find() ? matcher.group(0).length() : 0;		
+		if (charCount <= 0) charCount = text.length();
+		return charCount;
+	}
+	
 	private static void handleKey_BackSpace(TextInfo textinfo, String firstPart, String lastPart) {
 		if (firstPart.length() == 0) return;
 		
@@ -93,9 +131,10 @@ public abstract class KeyHandler {
 			charCount = textinfo.cursorPosition - charCount - 1;
 			
 		}else if (KeyInfo.isControlHeld()) {
-			Matcher matcher = back_WordPattern.matcher(firstPart);
-			charCount = matcher.find() ? matcher.group(0).length() : 0;
-			if (charCount <= 0) charCount = firstPart.length();
+			charCount = getLastWordLength(firstPart);
+//			Matcher matcher = LastWordPattern.matcher(firstPart);
+//			charCount = matcher.find() ? matcher.group(0).length() : 0;
+//			if (charCount <= 0) charCount = firstPart.length();
 		}
 		
 		// Remove a char from end of the first text part.
@@ -119,9 +158,10 @@ public abstract class KeyHandler {
 			if (charCount <= 0) charCount = lastPart.length();
 			
 		}else if (KeyInfo.isControlHeld()) {
-			Matcher matcher = del_WordPattern.matcher(lastPart);
-			charCount = matcher.find() ? matcher.group(0).length() : 0;
-			if (charCount <= 0) charCount = lastPart.length();
+			charCount = getFirstWordLength(lastPart);
+//			Matcher matcher = FirstWordPattern.matcher(lastPart);
+//			charCount = matcher.find() ? matcher.group(0).length() : 0;
+//			if (charCount <= 0) charCount = lastPart.length();
 		}
 		
 		// Remove a char from the beginning of the last text part.
