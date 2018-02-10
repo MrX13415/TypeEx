@@ -76,12 +76,15 @@ public abstract class KeyHandler {
 		case  35: handleKey_End(textinfo, firstPart, lastPart);
 			break;
 
+		case 155: handleKey_Ins(textinfo, firstPart, lastPart);
+		
 		default: handled = false;
 			break;
 		}
 		
 		return handled;
 	}
+
 
 	/**
 	 * Returns the length of the first word of the given text.<br>
@@ -252,6 +255,10 @@ public abstract class KeyHandler {
 			textinfo.cursorPosition = textinfo.text.length();	// Move to the end of the text.
 		else
 			textinfo.cursorPosition += nlPos;					// Move to the end of line.
+	}
+
+	private static void handleKey_Ins(TextInfo textinfo, String firstPart, String lastPart) {
+		textinfo.overwrite = !textinfo.overwrite;
 	}
 	
 }
