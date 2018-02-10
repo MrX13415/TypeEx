@@ -77,7 +77,8 @@ public abstract class KeyHandler {
 			charCount = textinfo.cursorPosition - nlPos - 1;
 			
 		}else if (KeyInfo.isControlHeld()) {
-
+			int spcPos = firstPart.lastIndexOf(" ");
+			charCount = textinfo.cursorPosition - spcPos - 1;
 		}
 		
 		// Remove a char from end of the first text part.
@@ -172,7 +173,7 @@ public abstract class KeyHandler {
 		// Checks for cursor on last position and end of document
 		if (lastPart.startsWith("\n") || textinfo.cursorPosition == textinfo.text.length()) return;
 		
-		if (lastPart.indexOf("\n") == 0) {
+		if (lastPart.indexOf("\n") == -1) {
 			textinfo.cursorPosition = textinfo.text.length();
 		}else {
 			textinfo.cursorPosition += lastPart.indexOf("\n");
