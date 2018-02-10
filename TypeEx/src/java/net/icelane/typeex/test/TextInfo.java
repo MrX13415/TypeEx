@@ -34,6 +34,10 @@ public class TextInfo {
 		return lastPart(text, cursorPosition);
 	}
 	
+	public LineInfo currentLine() {
+		return new LineInfo(this);
+	}
+	
 	/**
 	 * Returns the first part of the given text, from the beginning to the given cursor position.
 	 * @param text The text to split.
@@ -58,5 +62,42 @@ public class TextInfo {
 			return text.substring(cursorpos, text.length());
 		}
 		return "";
+	}
+		
+	public class LineInfo {	
+		private TextInfo textinfo;
+		private String line;
+		private int startPos;
+		private int endPos;
+		
+		public LineInfo(TextInfo textinfo) {
+			super();
+			this.textinfo = textinfo;
+			getLineInfo();
+		}
+
+		private void getLineInfo() {
+			this.startPos = firstPart(text, textinfo.cursorPosition).lastIndexOf("\n", textinfo.cursorPosition) + 1;			
+			this.endPos = text.indexOf("\n", textinfo.cursorPosition);
+			if (endPos <= 0) endPos = text.length();
+			
+			this.line = text.substring(startPos, endPos);
+		}
+		
+		public TextInfo getTextInfo() {
+			return textinfo;
+		}
+		
+		public String text() {
+			return line;
+		}
+
+		public int startPos() {
+			return startPos;
+		}
+
+		public int endPos() {
+			return endPos;
+		}			
 	}
 }
