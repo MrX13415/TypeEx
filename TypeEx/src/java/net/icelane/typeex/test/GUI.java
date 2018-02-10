@@ -3,12 +3,19 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+
+import org.apache.commons.lang3.StringUtils;
 
 public class GUI implements KeyListener{
 	
@@ -20,12 +27,14 @@ public class GUI implements KeyListener{
 	private JLabel myLabel;
 	
 	private ArrayList<AKeyListener> listener = new ArrayList<>();
-	private int cursorpos;
+	private TextInfo textinfo;
+
 	
 	public GUI() {	
 		initializeGui();
 		
-		String txt = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr,\n" + 
+		textinfo = new TextInfo();
+		textinfo.text = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr,\n" + 
 				"sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,\n" + 
 				"sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.\n" + 
 				"Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.\n" + 
@@ -37,19 +46,29 @@ public class GUI implements KeyListener{
 				"sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,\n" + 
 				"sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.\n" + 
 				"Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.";
-		setText(txt, 0);		
+		textinfo.cursorPosition = textinfo.text.length();
+		setText(textinfo);		
 	}
 	
 	// WORKING GUI ... YAAAAHHH! (and bugs I guess)
 	public void initializeGui() {
 		myWindow = new JFrame();
-		myLabel = new JLabel();
+		
+		myLabel = new JLabel() {
+			private static final long serialVersionUID = 7611324292363152736L;
+
+			public void paint(Graphics g) {
+				super.paint(g);
+				drawCursor(g);				
+			};
+		};
 		
 		myLabel.setBackground(Color.WHITE);
 		myLabel.setOpaque(true);
 		myLabel.setVerticalAlignment(JLabel.TOP);
 		myLabel.setFont(new Font("Consolas", Font.PLAIN, 15));
-
+		//myLabel.setForeground(Color.BLACK);
+		
 		myWindow.setBounds(400, 200, 500, 500);
 		myWindow.setMinimumSize(new Dimension(800, 500));
 		myWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -99,18 +118,71 @@ public class GUI implements KeyListener{
 		this.myLabel = myLabel;
 	}
 	
+	public void drawCursor(Graphics gx) {
+        Graphics2D g = (Graphics2D)gx;
+        g.setRenderingHint(
+                RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
+        		
+		FontMetrics fontMetric = myLabel.getFontMetrics(myLabel.getFont());
+		
+		String firstPart = textinfo.firstPart();
+		String lastPart = textinfo.lastPart();
+		String curLineFP = firstPart.substring(firstPart.lastIndexOf("\n") + 1);
+		int nlPos = lastPart.indexOf("\n");
+		String curLineLP = lastPart.substring(0, nlPos >= 0 ? nlPos : lastPart.length());
+		
+		Rectangle2D clfBounds = fontMetric.getStringBounds(curLineFP, g);
+		//Rectangle2D cllBounds = fontMetric.getStringBounds(curLineLP, g);
+
+		int x, y, w, h;
+		Color back = new Color(230, 239, 255);
+		Color cursor = new Color(255/2, 0, 255);
+		Color cltext = myLabel.getForeground();
+		
+		// background ...
+		x = 0;
+		y = fontMetric.getHeight() * StringUtils.countMatches(firstPart, "\n") + fontMetric.getLeading();
+		//w = (int) (clfBounds.getWidth() + cllBounds.getWidth());
+		w = myLabel.getWidth();
+		h = (int) clfBounds.getHeight();		
+		g.setColor(back);
+		g.fillRect(x, y, w, h);
+		
+		// current line text ...
+		g.setFont(myLabel.getFont());
+		g.setColor(cltext);
+		g.drawString(curLineFP + curLineLP, x, y + fontMetric.getAscent());
+		
+		// cursor ...
+		x = (int) clfBounds.getWidth();
+		w = 1;
+		h = h + 1;
+		
+		if (textinfo.overwrite && lastPart.length() > 0) {
+			y = y + h - 2;
+			h = 2;
+			w = (int) fontMetric.getStringBounds(lastPart, 0, 1, g).getWidth();
+			if (w <= 0) w = 8;
+		}
+			
+		g.setColor(cursor);
+		g.fillRect(x, y, w, h);		
+	}
+	
 	/**
 	 * Creepieingly adding text ...
 	 * @param text
 	 */
-	public void setText(String text, int cursorpos) {
-		this.cursorpos = cursorpos;
-
+	public void setText(TextInfo textinfo) {
+		this.textinfo = textinfo;
+		String text = textinfo.text;
+		
 		// adding a hack-ish cursor ...
-		String ta = cursorpos > 0 ? text.substring(0, cursorpos) : "";
-		String tb = cursorpos < text.length() ? text.substring(cursorpos, text.length()) : "";	
-		text = ta + "|" + tb;
-			
+//		String ta = textinfo.cursorPosition > 0 ? text.substring(0, textinfo.cursorPosition) : "";
+//		String tb = textinfo.cursorPosition < text.length() ? text.substring(textinfo.cursorPosition, text.length()) : "";	
+//		text = ta + (textinfo.overwrite ? "\u00A6" : "\u007C") + tb;
+	
 		text = text.replaceAll("&", "&amp;");
 		text = text.replaceAll(" ", "&nbsp;");
 		text = text.replaceAll("<", "&lt;");
@@ -119,29 +191,31 @@ public class GUI implements KeyListener{
 		text = text.replaceAll("\n", newLineTemplate);
 		
 		myLabel.setText(String.format("%s%s%s", textTemplateBeginn, text, textTemplateEnd));
+		myLabel.repaint();
 	}
 	
 	/**
 	 * Creepieingly returning text ...
 	 * @param text
 	 */
-	public String getText() {
-		String text = myLabel.getText();
-		text = text.replaceAll("&nbsp;", " ");
-		text = text.replaceAll("&lt;", "<");
-		text = text.replaceAll("&gt;", ">");
-		text = text.replaceAll("&amp;", "&");
-		text = text.replaceAll(newLineTemplate, "\n");
-		text = text.replaceAll(textTemplateBeginn, "");
-		text = text.replaceAll(textTemplateEnd, "");
+	public TextInfo getText() {
+//		String text = myLabel.getText();
+//		
+//		text = text.replaceAll("&nbsp;", " ");
+//		text = text.replaceAll("&lt;", "<");
+//		text = text.replaceAll("&gt;", ">");
+//		text = text.replaceAll("&amp;", "&");
+//		text = text.replaceAll(newLineTemplate, "\n");
+//		text = text.replaceAll(textTemplateBeginn, "");
+//		text = text.replaceAll(textTemplateEnd, "");
 
 		// hacking-ish removing our cursor ...
-		if (cursorpos > text.length()) cursorpos = text.length();
-		String ta = cursorpos > 0 ? text.substring(0, cursorpos) : "";
-		String tb = cursorpos < text.length() ? text.substring(cursorpos + 1) : "";	
-		text = ta + tb;
+//		if (textinfo.cursorPosition > text.length()) textinfo.cursorPosition = text.length();
+//		String ta = textinfo.cursorPosition > 0 ? text.substring(0, textinfo.cursorPosition) : "";
+//		String tb = textinfo.cursorPosition < text.length() ? text.substring(textinfo.cursorPosition + 1) : "";	
+//		text = ta + tb;
 		
-		return text;
+		return textinfo;
 	}
 }
 
