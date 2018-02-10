@@ -50,7 +50,7 @@ public abstract class KeyHandler {
 		// Retrieving first and last part early for performance reasons.
 		String firstPart = textinfo.firstPart();
 		String lastPart = textinfo.lastPart();
-		
+		int trackStartCursor = textinfo.cursorPosition;
 		boolean handled = true;
 		
 		switch(keyinfo.getKeyCode()) {
@@ -84,6 +84,10 @@ public abstract class KeyHandler {
 		
 		default: handled = false;
 			break;
+			
+			
+		}if (KeyInfo.isShiftHeld()) {
+			handleShiftToMark(textinfo, trackStartCursor);
 		}
 		
 		return handled;
@@ -175,7 +179,6 @@ public abstract class KeyHandler {
 	
 	private static void handleKey_ArrowLeft(TextInfo textinfo, String firstPart, String lastPart) {
 		int charCount = 1;
-		int trackStartCursor = textinfo.cursorPosition;
 		if (KeyInfo.isControlHeld()) 
 			charCount = getLastWordLength(firstPart);
 		
@@ -183,14 +186,10 @@ public abstract class KeyHandler {
 		textinfo.cursorPosition =
 				textinfo.cursorPosition <= 0 ?
 				0 : textinfo.cursorPosition - charCount;
-		if (KeyInfo.isShiftHeld()) {
-			handleShiftToMark(textinfo, trackStartCursor);
-		}
 	}
 	
 	private static void handleKey_ArrowRight(TextInfo textinfo, String firstPart, String lastPart) {
 		int charCount = 1;
-		int trackStartCursor = textinfo.cursorPosition;
 		if (KeyInfo.isControlHeld())
 			charCount = getFirstWordLength(lastPart);
 		
@@ -198,14 +197,10 @@ public abstract class KeyHandler {
 		textinfo.cursorPosition =
 				textinfo.cursorPosition >= textinfo.text.length() ?
 				textinfo.text.length() : textinfo.cursorPosition + charCount;
-		if (KeyInfo.isShiftHeld()) {
-			handleShiftToMark(textinfo, trackStartCursor);
-		}
 	}
 		
 	private static void handleKey_ArrowUp(TextInfo textinfo, String firstPart, String lastPart) {
 		if (!firstPart.contains("\n")) return;
-		int trackStartCursor = textinfo.cursorPosition;
 		// Pos A: Index of the new line char before the last new line char.
 		// Pos B: Index of the last new line char in the first text part.
 		int nlPosB = firstPart.lastIndexOf("\n");
@@ -221,14 +216,10 @@ public abstract class KeyHandler {
 				curLinePos >= preLineLength ?
 				nlPosB : nlPosA + curLinePos;
 				
-		if (KeyInfo.isShiftHeld()) {
-			handleShiftToMark(textinfo, trackStartCursor);
-		}
 	}
 	
 	private static void handleKey_ArrowDown(TextInfo textinfo, String firstPart, String lastPart) {
 		if (!lastPart.contains("\n")) return;
-		int trackStartCursor = textinfo.cursorPosition;
 		// Pos A: Index of the last new line char in the first text part. 
 		// Pos B: Index of the first new line char in the last text part.
 		// Pos C: Index of the second new line char in the last text part.	
@@ -247,51 +238,47 @@ public abstract class KeyHandler {
 		textinfo.cursorPosition +=
 				postLineLength < curLinePos ?
 				nlPosC : nlPosB + curLinePos;
-		if (KeyInfo.isShiftHeld()) {
-			handleShiftToMark(textinfo, trackStartCursor);
-		}
 	}
 	
 	private static void handleKey_Home(TextInfo textinfo, String firstPart, String lastPart) {
 		if (firstPart.length() == 0) return;
-		int trackStartCursor = textinfo.cursorPosition;
 		// Find beginning of the previous line.
 		int nlPos = firstPart.lastIndexOf("\n") + 1;
 		
 		if (KeyInfo.isControlHeld()) nlPos = 0;		// Always move to the beginning of the text.
 		textinfo.cursorPosition = nlPos;			// Move to the beginning of line.
 		
-		if (KeyInfo.isShiftHeld()) {
-			handleShiftToMark(textinfo, trackStartCursor);
-		}
+	
 	}
 	
 	private static void handleKey_End(TextInfo textinfo, String firstPart, String lastPart) {
 		if (lastPart.length() == 0) return;
-		int trackStartCursor = textinfo.cursorPosition;
+	
 		// Find end of the current line.
 		int nlPos = lastPart.indexOf("\n");
 		if (KeyInfo.isControlHeld() || nlPos < 0)
 			textinfo.cursorPosition = textinfo.text.length();	// Move to the end of the text.
 		else
 			textinfo.cursorPosition += nlPos;					// Move to the end of line.
-		if (KeyInfo.isShiftHeld()) {
-			handleShiftToMark(textinfo, trackStartCursor);
-		}
+		
 	}
 	private static void handleShiftToMark(TextInfo textinfo, int cursorPositionBeforeMoving) {
 		if (!textinfo.isMarked) {
 			textinfo.isMarked = true;
 			textinfo.markStart = cursorPositionBeforeMoving;
-			textinfo.markEnd = textinfo.cursorPosition;
-		}else if (textinfo.markStart == textinfo.markStart) {
-			textinfo.isMarked = false;			
+			textinfo.markEnd = textinfo.cursorPosition;			
 		}else {
-			textinfo.markEnd = textinfo.cursorPosition;
+			textinfo.setMarkEnd();
 		}
-		 
-		
-		System.out.println("I have marked"+ textinfo.text.substring(textinfo.markEnd, textinfo.markStart));
+		if (textinfo.markStart == textinfo.markEnd) {
+			textinfo.isMarked = false; return;
+		}
+		if (textinfo.markStart > textinfo.markEnd) {
+			System.out.println("I have marked "+ textinfo.text.substring(textinfo.markEnd, textinfo.markStart));
+		}else {
+			System.out.println("I have marked "+ textinfo.text.substring(textinfo.markStart, textinfo.markEnd));
+		}
+
 	}
 
 	private static void handleKey_Ins(TextInfo textinfo, String firstPart, String lastPart) {

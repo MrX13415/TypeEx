@@ -24,7 +24,9 @@ public class TextInfo {
 	
 	public boolean isMarked;
 	
-	
+	public void setMarkEnd() {
+		markEnd = cursorPosition;
+	}
 	
 	/**
 	 * Returns the first part of the text, from the beginning to the current cursor position.
@@ -108,4 +110,5 @@ public class TextInfo {
 			return endPos;
 		}			
 	}
+
 }

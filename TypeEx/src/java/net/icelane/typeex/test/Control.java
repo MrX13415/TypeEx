@@ -41,7 +41,7 @@ public class Control implements AKeyListener{
 			textinfo.text = textinfo.firstPart() + keyinfo.getKeyChar() + lastPart;
 			textinfo.cursorPosition++;
 		}
-				
+		if(!keyinfo.isShiftHeld()) textinfo.isMarked = false;
 		// update ui
 		setText(textinfo);
 	}
