@@ -32,6 +32,8 @@ public class Control implements AKeyListener{
 		
 		// handle normal char keys ...
 		if (!keyHandled && keyinfo.getKeyChar() != KeyEvent.CHAR_UNDEFINED) {					
+			textinfo.selected = false;
+			
 			String lastPart = textinfo.lastPart();
 			
 			// Handle overwrite mode ...
@@ -41,7 +43,7 @@ public class Control implements AKeyListener{
 			textinfo.text = textinfo.firstPart() + keyinfo.getKeyChar() + lastPart;
 			textinfo.cursorPosition++;
 		}
-		if(!keyinfo.isShiftHeld()) textinfo.isMarked = false; //notActualLocation
+
 		// update ui
 		setText(textinfo);
 	}

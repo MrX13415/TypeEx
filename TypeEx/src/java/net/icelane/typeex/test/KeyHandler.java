@@ -3,12 +3,6 @@ package net.icelane.typeex.test;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.xml.soap.Text;
-
-import org.apache.logging.log4j.core.pattern.MarkerSimpleNamePatternConverter;
-
-import net.minecraft.server.DebugLoggingPrintStream;
-
 /**
  * Handle keys and alter the given <code>TextInfo</code> object
  * accordingly, so it mimics the behavior of the text edit control.
@@ -42,7 +36,7 @@ public abstract class KeyHandler {
 	 *  - Home*<br>
 	 *  - End*<br>
 	 *  <br>
-	 *  *Also handled on the numpad.<br>
+	 *  *Also handled on Numpad.<br>
 	 *  
 	 * @param keyinfo A <code>KeyInfo</code> object.
 	 * @param textinfo A <code>TextInfo</code> object.
@@ -52,9 +46,11 @@ public abstract class KeyHandler {
 		// Retrieving first and last part early for performance reasons.
 		String firstPart = textinfo.firstPart();
 		String lastPart = textinfo.lastPart();
-		int trackStartCursor = textinfo.cursorPosition;
+
 		boolean handled = true;
 		
+		if (KeyInfo.isShiftHeld()) textinfo.setSelectionStart();
+			
 		switch(keyinfo.getKeyCode()) {
 		case  27: break; // ESC key writes a char otherwise
 		
@@ -86,11 +82,19 @@ public abstract class KeyHandler {
 		
 		default: handled = false;
 			break;
-			
-			
-		}if (KeyInfo.isShiftHeld()) {
-			handleShiftToMark(textinfo, trackStartCursor);
 		}
+			
+		if (KeyInfo.isShiftHeld())
+			textinfo.setSelectionEnd();
+		else
+			textinfo.selected = false;
+
+		
+
+		System.out.println(".... SELECTION ..............................");
+		System.out.println(textinfo.selection());
+		System.out.println(".............................................");
+
 		
 		return handled;
 	}
@@ -264,23 +268,7 @@ public abstract class KeyHandler {
 			textinfo.cursorPosition += nlPos;					// Move to the end of line.
 		
 	}
-	private static void handleShiftToMark(TextInfo textinfo, int cursorPositionBeforeMoving) {
-		if (!textinfo.isMarked) {
-			textinfo.isMarked = true;
-			textinfo.markStart = cursorPositionBeforeMoving;
-			textinfo.markEnd = textinfo.cursorPosition;		
-			
-		}else textinfo.setMarkEnd();
-		
-		debugSelectionText(textinfo);
-	}
-	private static void debugSelectionText(TextInfo textinfo){
-		if (textinfo.markStart > textinfo.markEnd) {
-			System.out.println("I have marked "+ textinfo.text.substring(textinfo.markEnd, textinfo.markStart));
-		}else {
-			System.out.println("I have marked "+ textinfo.text.substring(textinfo.markStart, textinfo.markEnd));
-		}
-	}
+
 	private static void handleKey_Ins(TextInfo textinfo, String firstPart, String lastPart) {
 		textinfo.overwrite = !textinfo.overwrite;
 	}

@@ -14,20 +14,56 @@ public class TextInfo {
 	 */
 	public int cursorPosition;
 	
-	public int markStart;
-	public int markEnd;
-	
 	/**
 	 * Weather overwriting of characters is enabled.
 	 */
 	public boolean overwrite; 
 	
-	public boolean isMarked;
+	/**
+	 * The first position of the selection. (A and B positions might be reversed.)
+	 */
+	public int selectionPosA;
+
+	/**
+	 * The second position of the selection. (A and B positions might be reversed.)
+	 */
+	public int selectionPosB;
 	
-	public void setMarkEnd() {
-		markEnd = cursorPosition;
+	
+	public boolean selected;
+	
+	/**
+	 * The start position of the selection.
+	 */
+	public int selectionStart() {
+		return selectionPosA < selectionPosB ? selectionPosA : selectionPosB;
 	}
 	
+	/**
+	 * The end position of the selection.
+	 */
+	public int selectionEnd() {
+		return selectionPosB > selectionPosA ? selectionPosB : selectionPosA;
+	}
+	
+	public void setSelectionStart() {
+		if (selected) return;
+		this.selected = true;
+		
+		this.selectionPosA = cursorPosition;
+	}
+	
+	public void setSelectionEnd() {
+		this.selectionPosB = cursorPosition;
+	}
+	
+	public String selection() {
+		if (selected && text.length() > 0){
+			return text.substring(selectionStart(), selectionEnd());
+		}
+		return "";
+	}
+
 	/**
 	 * Returns the first part of the text, from the beginning to the current cursor position.
 	 * @return The first text part.
