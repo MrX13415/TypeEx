@@ -17,6 +17,8 @@ import javax.swing.JLabel;
 
 import org.apache.commons.lang3.StringUtils;
 
+import scala.languageFeature.reflectiveCalls;
+
 public class GUI implements KeyListener{
 	
 	public static final String textTemplateBeginn = "<html><body><nobr>";
@@ -29,7 +31,12 @@ public class GUI implements KeyListener{
 	private ArrayList<AKeyListener> listener = new ArrayList<>();
 	private TextInfo textinfo;
 
-	
+	Color colorCurLineBack = new Color(230, 239, 255);
+	Color colorCurLineText;
+	Color colorSelectionBack = new Color(90, 180, 255);
+	Color colorSelectionText;
+	Color colorCursor = new Color(255/2, 0, 255);
+		
 	public GUI() {	
 		initializeGui();
 		
@@ -47,7 +54,7 @@ public class GUI implements KeyListener{
 				"sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.\n" + 
 				"Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.";
 		textinfo.cursorPosition = textinfo.text.length();
-		setText(textinfo);		
+		setText(textinfo);
 	}
 	
 	// WORKING GUI ... YAAAAHHH! (and bugs I guess)
@@ -118,7 +125,10 @@ public class GUI implements KeyListener{
 		this.myLabel = myLabel;
 	}
 	
-	public void drawCursor(Graphics gx) {
+	private void drawCursor(Graphics gx) {	
+		colorCurLineText = myLabel.getForeground();
+		colorSelectionText = myLabel.getBackground();
+		
         Graphics2D g = (Graphics2D)gx;
         g.setRenderingHint(
                 RenderingHints.KEY_TEXT_ANTIALIASING,
@@ -136,9 +146,6 @@ public class GUI implements KeyListener{
 		//Rectangle2D cllBounds = fontMetric.getStringBounds(curLineLP, g);
 
 		int x, y, w, h;
-		Color back = new Color(230, 239, 255);
-		Color cursor = new Color(255/2, 0, 255);
-		Color cltext = myLabel.getForeground();
 		
 		// background ...
 		x = 0;
@@ -146,14 +153,19 @@ public class GUI implements KeyListener{
 		//w = (int) (clfBounds.getWidth() + cllBounds.getWidth());
 		w = myLabel.getWidth();
 		h = (int) clfBounds.getHeight();		
-		g.setColor(back);
+		g.setColor(colorCurLineBack);
 		g.fillRect(x, y, w, h);
 		
+		// selection ...
+		drawSelection(g, fontMetric);
+
 		// current line text ...
-		g.setFont(myLabel.getFont());
-		g.setColor(cltext);
-		g.drawString(curLineFP + curLineLP, x, y + fontMetric.getAscent());
-		
+		if (!textinfo.selected) {
+			g.setFont(myLabel.getFont());
+			g.setColor(colorCurLineText);		
+			g.drawString(curLineFP + curLineLP, x, y + fontMetric.getAscent());
+		}
+
 		// cursor ...
 		x = (int) clfBounds.getWidth();
 		w = 1;
@@ -166,8 +178,62 @@ public class GUI implements KeyListener{
 			if (w <= 0) w = 8;
 		}
 			
-		g.setColor(cursor);
-		g.fillRect(x, y, w, h);		
+		g.setColor(colorCursor);
+		g.fillRect(x, y, w, h);
+
+	}
+	
+	private void drawSelection(Graphics2D g, FontMetrics fontMetric) {
+		//selection
+		if (!textinfo.selected) return;
+			
+		String[] lines = textinfo.text.split("\n");
+		int linePosStart = 0;
+		int linePosEnd = 0;
+		for (int lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+			linePosStart = linePosEnd;
+			linePosEnd += lines[lineIndex].length() + 1;
+			
+			if (textinfo.selectionStart() > linePosEnd) continue;
+			if (textinfo.selectionEnd() < linePosStart) continue;
+			
+			Rectangle2D selclBounds = fontMetric.getStringBounds(lines[lineIndex], g);
+			
+			int x, y, w, h;			
+			x = 0;
+			y = fontMetric.getHeight() * lineIndex + fontMetric.getLeading();
+			w = (int) selclBounds.getWidth();
+			h = (int) selclBounds.getHeight();
+
+			
+			if (textinfo.selectionStart() > linePosStart && textinfo.selectionStart() < linePosEnd) {
+				System.out.println("A: " + textinfo.selectionStart() + " | " + linePosStart);
+				String selslFP = lines[lineIndex].substring(0, textinfo.selectionStart() - linePosStart);
+				Rectangle2D selslFPBounds = fontMetric.getStringBounds(selslFP, g);
+				
+				x = (int) selslFPBounds.getWidth();
+				w = w - x;
+			}
+			
+			if (textinfo.selectionEnd() > linePosStart && textinfo.selectionEnd() < linePosEnd) {
+				System.out.println("B: " + textinfo.selectionEnd() + " | " + linePosStart);
+				String selelFP = lines[lineIndex].substring(0, textinfo.selectionEnd() - linePosStart);
+				Rectangle2D selelFPBounds = fontMetric.getStringBounds(selelFP, g);
+				
+				w = (int) selelFPBounds.getWidth() - x;
+			}
+			
+			// draw selection for current line ...
+			g.setColor(colorSelectionBack);
+			g.fillRect(x, y, w, h);
+			
+			// redraw text ...
+			x = 0;
+			w = myLabel.getWidth();
+			g.setFont(myLabel.getFont());
+			g.setColor(colorCurLineText);	
+			g.drawString(lines[lineIndex], x, y + fontMetric.getAscent());
+		}
 	}
 	
 	/**

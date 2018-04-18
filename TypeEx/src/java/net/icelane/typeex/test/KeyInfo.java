@@ -62,5 +62,5 @@ public class KeyInfo {
 	public String toString() {
 		return String.format("[%s, %s = %s]", keyCode, keyChar, state);
 	}
-	
+
 }
