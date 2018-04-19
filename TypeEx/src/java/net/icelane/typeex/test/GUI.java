@@ -17,13 +17,13 @@ import javax.swing.JLabel;
 
 import org.apache.commons.lang3.StringUtils;
 
-import scala.languageFeature.reflectiveCalls;
-
 public class GUI implements KeyListener{
 	
 	public static final String textTemplateBeginn = "<html><body><nobr>";
 	public static final String textTemplateEnd = "</nobr></body></html>";
 	public static final String newLineTemplate = "<br>";
+	
+	public static boolean debug;
 	
 	private JFrame myWindow;
 	private JLabel myLabel;
@@ -156,15 +156,13 @@ public class GUI implements KeyListener{
 		g.setColor(colorCurLineBack);
 		g.fillRect(x, y, w, h);
 		
+		// current line text ...
+		g.setFont(myLabel.getFont());
+		g.setColor(colorCurLineText);		
+		g.drawString(curLineFP + curLineLP, x, y + fontMetric.getAscent());
+
 		// selection ...
 		drawSelection(g, fontMetric);
-
-		// current line text ...
-		if (!textinfo.selected) {
-			g.setFont(myLabel.getFont());
-			g.setColor(colorCurLineText);		
-			g.drawString(curLineFP + curLineLP, x, y + fontMetric.getAscent());
-		}
 
 		// cursor ...
 		x = (int) clfBounds.getWidth();
@@ -186,13 +184,20 @@ public class GUI implements KeyListener{
 	private void drawSelection(Graphics2D g, FontMetrics fontMetric) {
 		//selection
 		if (!textinfo.selected) return;
-		System.out.println("--------------------------------------------------");
+		
+		if (debug) System.out.println("--------------------------------------------------");
+		
 		String[] lines = textinfo.text.split("\n");
 		int linePosStart = 0;
 		int linePosEnd = 0;
+		
 		for (int lineIndex = 0; lineIndex < lines.length; lineIndex++) {
-			String line = lines[lineIndex] + " ";
 			
+			String line = lines[lineIndex] + " ";
+			String selslFP = "";  // selection start line first part
+			String selelFP = "";  // selection end line first part
+			String selText = line;  // the actually selected text in the current line. 
+				
 			linePosStart = linePosEnd;
 			linePosEnd += line.length();
 		
@@ -207,12 +212,14 @@ public class GUI implements KeyListener{
 			w = (int) selclBounds.getWidth();
 			h = (int) selclBounds.getHeight();
 
-			System.out.print("# " + lineIndex + " S: " + textinfo.selectionStart() + " - " + textinfo.selectionEnd() + " | L: " + linePosStart + " - " + linePosEnd + "     ");
+			if (debug) System.out.print("# " + lineIndex + " S: " + textinfo.selectionStart() + " - " + textinfo.selectionEnd() + " | L: " + linePosStart + " - " + linePosEnd + "     ");
 
 			// handle start pos ...
 			if (textinfo.selectionStart() > linePosStart && textinfo.selectionStart() <= linePosEnd) {
-				System.out.print("A");
-				String selslFP = line.substring(0, textinfo.selectionStart() - linePosStart);
+				if (debug) System.out.print("A");
+				
+				selslFP = line.substring(0, textinfo.selectionStart() - linePosStart);
+				selText = selText.substring(textinfo.selectionStart() - linePosStart);
 				Rectangle2D selslFPBounds = fontMetric.getStringBounds(selslFP, g);
 				
 				x = (int) selslFPBounds.getWidth();
@@ -221,24 +228,26 @@ public class GUI implements KeyListener{
 			
 			// handle end pos ...
 			if (textinfo.selectionEnd() >= linePosStart && textinfo.selectionEnd() < linePosEnd) {
-				System.out.print("B");
-				String selelFP = line.substring(0, textinfo.selectionEnd() - linePosStart);
+				if (debug) System.out.print("B");
+				
+				selelFP = line.substring(0, textinfo.selectionEnd() - linePosStart);
+				selText = selText.substring(0, textinfo.selectionEnd() - linePosStart - (line.length() - selText.length()));
 				Rectangle2D selelFPBounds = fontMetric.getStringBounds(selelFP, g);
 				
 				w = (int) selelFPBounds.getWidth() - x;
 			}
-			System.out.println("");
+			
+			if (debug) System.out.println("");
 			
 			// draw selection for current line ...
 			g.setColor(colorSelectionBack);
 			g.fillRect(x, y, w, h);
 			
 			// redraw text ...
-			x = 0;
 			w = myLabel.getWidth();
 			g.setFont(myLabel.getFont());
-			g.setColor(colorCurLineText);	
-			g.drawString(line, x, y + fontMetric.getAscent());
+			g.setColor(colorSelectionText);	
+			g.drawString(selText, x, y + fontMetric.getAscent());
 		}
 	}
 	

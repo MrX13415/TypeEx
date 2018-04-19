@@ -57,6 +57,13 @@ public class TextInfo {
 		this.selectionPosB = cursorPosition;
 	}
 	
+	public void selectAll() {
+		this.selected = true;
+		this.cursorPosition = 0;
+		this.selectionPosA = 0;
+		this.selectionPosB = text.length();
+	}
+	
 	public String selection() {
 		if (selected && text.length() > 0){
 			return text.substring(selectionStart(), selectionEnd());

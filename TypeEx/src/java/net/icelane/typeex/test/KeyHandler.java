@@ -48,8 +48,9 @@ public abstract class KeyHandler {
 		String lastPart = textinfo.lastPart();
 
 		boolean handled = true;
+		boolean selection = true;
 		
-		if (KeyInfo.isShiftHeld()) textinfo.setSelectionStart();
+		if (selection && KeyInfo.isShiftHeld()) textinfo.setSelectionStart();
 			
 		switch(keyinfo.getKeyCode()) {
 		case  27: break; // ESC key writes a char otherwise
@@ -79,14 +80,19 @@ public abstract class KeyHandler {
 			break;
 
 		case 155: handleKey_Ins(textinfo, firstPart, lastPart);
+			break;
+			
+		case 65: handleKey_A(textinfo, firstPart, lastPart);
+			selection = false; // bypass selection code
+			break;
 		
 		default: handled = false;
 			break;
 		}
 			
-		if (KeyInfo.isShiftHeld())
+		if (selection && KeyInfo.isShiftHeld())
 			textinfo.setSelectionEnd();
-		else
+		else if (selection)
 			textinfo.selected = false;
 
 		
@@ -271,6 +277,10 @@ public abstract class KeyHandler {
 
 	private static void handleKey_Ins(TextInfo textinfo, String firstPart, String lastPart) {
 		textinfo.overwrite = !textinfo.overwrite;
+	}
+	
+	private static void handleKey_A(TextInfo textinfo, String firstPart, String lastPart) {
+		if (KeyInfo.isControlHeld()) textinfo.selectAll();
 	}
 	
 }
