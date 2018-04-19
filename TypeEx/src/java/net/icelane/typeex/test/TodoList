@@ -1,3 +1,3 @@
 Control -> Cursormove by mouse
-Control -> Marking (Ctrl+A, Shift+left/right, shift+ctrl+left/right, shift+home/end, shift+ctrl+home/end, hold LMB, shift+LMB)
+Control -> Marking (hold LMB, shift+LMB, overwriting by normal typing)
 Control -> Copy/Cut/Paste
