@@ -37,9 +37,11 @@ public abstract class KeyHandler {
 	 *  - Del<br>
 	 *  - Arrow keys (Left, Right, Up, Down)<br>
 	 *  - Home*<br>
-	 *  - End*<br>
+	 *  - End
+	 *  - Ins
+	 *  - CTRL + A<br>
 	 *  <br>
-	 *  *Also handled on Numpad.<br>
+	 *  Keys are also handled on the Numpad.<br>
 	 *  
 	 * @param keyinfo A <code>KeyInfo</code> object.
 	 * @param textinfo A <code>TextInfo</code> object.
