@@ -24,7 +24,10 @@ public abstract class KeyHandler {
 	 * Group 2: Check at least one word character followed by any whitespaces.<br>
 	 */
 	private static final Pattern LastWordPattern = Pattern.compile("(\\W[^\\S\\n]*|\\n|\\w+[^\\S\\n]*)$", Pattern.UNICODE_CHARACTER_CLASS);
-		
+	
+	private static boolean handled;		// key was handled
+	private static boolean selection;	// do default selection handling	
+	
 	/**
 	 * Handle keys and alter the given <code>TextInfo</code> object
 	 * accordingly, so it mimics the behavior of the text edit control.<br>
@@ -47,9 +50,11 @@ public abstract class KeyHandler {
 		String firstPart = textinfo.firstPart();
 		String lastPart = textinfo.lastPart();
 
-		boolean handled = true;
-		boolean selection = true;
+		// assume key will be handled 
+		handled = true;
+		selection = true;
 		
+		// default selection (start pos.) handling
 		if (selection && KeyInfo.isShiftHeld()) textinfo.setSelectionStart();
 			
 		switch(keyinfo.getKeyCode()) {
@@ -90,17 +95,18 @@ public abstract class KeyHandler {
 			break;
 		}
 			
-		if (selection && KeyInfo.isShiftHeld())
-			textinfo.setSelectionEnd();
-		else if (selection)
-			textinfo.selected = false;
+		// default selection (end pos.) handling
+		if (selection) {
+			if (KeyInfo.isShiftHeld())
+				textinfo.setSelectionEnd();
+			else
+				textinfo.selected = false;
+		}
 
-		
-
+		//DEBUG
 		System.out.println(".... SELECTION ..............................");
 		System.out.println(textinfo.selection());
 		System.out.println(".............................................");
-
 		
 		return handled;
 	}
@@ -281,6 +287,7 @@ public abstract class KeyHandler {
 	
 	private static void handleKey_A(TextInfo textinfo, String firstPart, String lastPart) {
 		if (KeyInfo.isControlHeld()) textinfo.selectAll();
+		else handled = false; // type letter "A" 
 	}
 	
 }
