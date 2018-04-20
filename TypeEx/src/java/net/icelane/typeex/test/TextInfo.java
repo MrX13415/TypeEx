@@ -71,6 +71,18 @@ public class TextInfo {
 		return "";
 	}
 
+	public void removeSelection() {
+		cursorPosition = selectionStart();
+		text = text.substring(0, selectionStart()) + text.substring(selectionEnd());
+	
+		// make sure we don't have invalid positions here (just in case)
+		setSelectionStart();
+		setSelectionEnd();
+		
+		// remove selection ...
+		selected = false;
+	}
+		
 	/**
 	 * Returns the first part of the text, from the beginning to the current cursor position.
 	 * @return The first text part.

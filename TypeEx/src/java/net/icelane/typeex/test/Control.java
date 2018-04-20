@@ -16,7 +16,7 @@ public class Control implements AKeyListener{
 
 	@Override
 	public void keyTyped(KeyInfo keyinfo) {
-		//debug:
+		//DEBUG
 		System.out.println(String.format("%s c: %s a: %s s: %s m: %s o: %s",
 				keyinfo.toString(),
 				KeyInfo.isControlHeld(),
@@ -31,20 +31,23 @@ public class Control implements AKeyListener{
 		boolean keyHandled = KeyHandler.handleKey(keyinfo, textinfo);
 		
 		// handle normal char keys ...
-		if (!keyHandled && keyinfo.getKeyChar() != KeyEvent.CHAR_UNDEFINED) {					
-			textinfo.selected = false;
-			
+		if (!keyHandled && keyinfo.getKeyChar() != KeyEvent.CHAR_UNDEFINED) {						
+	
+			// Handle selection overwrite ...
+			if (textinfo.selected) textinfo.removeSelection();
+				
 			String lastPart = textinfo.lastPart();
 			
 			// Handle overwrite mode ...
 			if (textinfo.overwrite && lastPart.length() > 0)
 				lastPart = lastPart.substring(1);
 
+			// type next char ...
 			textinfo.text = textinfo.firstPart() + keyinfo.getKeyChar() + lastPart;
 			textinfo.cursorPosition++;
 		}
 
-		// update ui
+		// update UI
 		setText(textinfo);
 	}
 	

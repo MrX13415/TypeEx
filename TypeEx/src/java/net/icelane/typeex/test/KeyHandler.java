@@ -61,7 +61,7 @@ public abstract class KeyHandler {
 			
 		switch(keyinfo.getKeyCode()) {
 		case  27: break; // ESC key writes a char otherwise
-		
+
 		case   8: handleKey_BackSpace(textinfo, firstPart, lastPart);
 			break;
 			
@@ -92,6 +92,8 @@ public abstract class KeyHandler {
 		case 65: handleKey_A(textinfo, firstPart, lastPart);
 			selection = false; // bypass selection code
 			break;
+
+		case 16: selection = false; //SHIFT: Shouldn't trigger the selection code
 		
 		default: handled = false;
 			break;
@@ -101,7 +103,7 @@ public abstract class KeyHandler {
 		if (selection) {
 			if (KeyInfo.isShiftHeld())
 				textinfo.setSelectionEnd();
-			else
+			else if (handled)
 				textinfo.selected = false;
 		}
 
