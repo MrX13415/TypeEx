@@ -17,13 +17,13 @@ public class Control implements AKeyListener{
 	@Override
 	public void keyTyped(KeyInfo keyinfo) {
 		//DEBUG
-		System.out.println(String.format("%s c: %s a: %s s: %s m: %s o: %s",
+		System.out.println(String.format("%16s %s%s%s%s%s",
 				keyinfo.toString(),
-				KeyInfo.isControlHeld(),
-				KeyInfo.isAltHeld(),
-				KeyInfo.isShiftHeld(),
-				KeyInfo.isMetaHeld(),
-				textinfo.overwrite));
+				textinfo.overwrite ? "Ins" : "   ",
+				KeyInfo.isControlHeld() ? " CTRL" : "",
+				KeyInfo.isAltHeld() ? " Alt" : "",
+				KeyInfo.isShiftHeld() ? " Shift" : "",
+				KeyInfo.isMetaHeld() ? " Meta" : ""));
 		
 		if (!keyinfo.getKeyState()) return;
 		
