@@ -45,7 +45,10 @@ public class TextInfo {
 	public int selectionEnd() {
 		return selectionPosB > selectionPosA ? selectionPosB : selectionPosA;
 	}
-	
+
+	/**
+	 * Sets the selection start position to the current cursor position.
+	 */
 	public void setSelectionStart() {
 		if (selected) return;
 		this.selected = true;
@@ -53,10 +56,16 @@ public class TextInfo {
 		this.selectionPosA = cursorPosition;
 	}
 	
+	/**
+	 * Sets the selection end position to the current cursor position.
+	 */
 	public void setSelectionEnd() {
 		this.selectionPosB = cursorPosition;
 	}
 	
+	/**
+	 * Selects all text.
+	 */
 	public void selectAll() {
 		this.selected = true;
 		this.cursorPosition = 0;
@@ -64,6 +73,9 @@ public class TextInfo {
 		this.selectionPosB = text.length();
 	}
 	
+	/**
+	 * @return the selected text.
+	 */
 	public String selection() {
 		if (selected && text.length() > 0){
 			return text.substring(selectionStart(), selectionEnd());
@@ -71,6 +83,9 @@ public class TextInfo {
 		return "";
 	}
 
+	/**
+	 * removes the selected part form the text.
+	 */
 	public void removeSelection() {
 		cursorPosition = selectionStart();
 		text = text.substring(0, selectionStart()) + text.substring(selectionEnd());
@@ -98,7 +113,10 @@ public class TextInfo {
 	public String lastPart() {
 		return lastPart(text, cursorPosition);
 	}
-	
+
+	/**
+	 * @return the current Line.
+	 */
 	public LineInfo currentLine() {
 		return new LineInfo(this);
 	}
@@ -149,18 +167,30 @@ public class TextInfo {
 			this.line = text.substring(startPos, endPos);
 		}
 		
+		/**
+		 * @return the corresponding <code>TextInfo</code> object.
+		 */
 		public TextInfo getTextInfo() {
 			return textinfo;
 		}
 		
+		/**
+		 * @return the text of this line.
+		 */
 		public String text() {
 			return line;
 		}
 
+		/**
+		 * @return the start position of the line in the text.
+		 */
 		public int startPos() {
 			return startPos;
 		}
 
+		/**
+		 * @return the end position of the line in the text.
+		 */
 		public int endPos() {
 			return endPos;
 		}			
