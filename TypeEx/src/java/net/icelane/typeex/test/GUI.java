@@ -125,7 +125,9 @@ public class GUI implements KeyListener{
 		this.myLabel = myLabel;
 	}
 	
-	private void drawCursor(Graphics gx) {	
+	private void drawCursor(Graphics gx) {
+		if (textinfo == null) return;
+		
 		colorCurLineText = myLabel.getForeground();
 		colorSelectionText = myLabel.getBackground();
 		

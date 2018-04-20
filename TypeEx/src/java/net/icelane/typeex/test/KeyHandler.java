@@ -36,7 +36,7 @@ public abstract class KeyHandler {
 	 *  - Backspace<br>
 	 *  - Del<br>
 	 *  - Arrow keys (Left, Right, Up, Down)<br>
-	 *  - Home*<br>
+	 *  - Home<br>
 	 *  - End
 	 *  - Ins
 	 *  - CTRL + A<br>
@@ -279,7 +279,6 @@ public abstract class KeyHandler {
 			textinfo.cursorPosition = textinfo.text.length();	// Move to the end of the text.
 		else
 			textinfo.cursorPosition += nlPos;					// Move to the end of line.
-		
 	}
 
 	private static void handleKey_Ins(TextInfo textinfo, String firstPart, String lastPart) {
