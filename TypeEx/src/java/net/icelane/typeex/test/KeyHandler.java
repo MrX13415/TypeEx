@@ -153,7 +153,7 @@ public abstract class KeyHandler {
 	
 	private static void handleKey_BackSpace(TextInfo textinfo, String firstPart, String lastPart) {
 		if (firstPart.length() == 0) return;
-		
+		if (textinfo.selected) { textinfo.removeSelection(); return;}
 		int charCount = 1;
 		
 		if (KeyInfo.isControlHeld() && KeyInfo.isShiftHeld()) {
@@ -178,7 +178,7 @@ public abstract class KeyHandler {
 	
 	private static void handleKey_Del(TextInfo textinfo, String firstPart, String lastPart) {
 		if (lastPart.length() == 0) return;	
-		
+		if (textinfo.selected) { textinfo.removeSelection(); return;}
 		int charCount = 1;
 		
 		if (KeyInfo.isControlHeld() && KeyInfo.isShiftHeld()) {
