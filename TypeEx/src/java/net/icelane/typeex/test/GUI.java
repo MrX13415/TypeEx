@@ -210,7 +210,7 @@ public class GUI implements KeyListener{
 			x = 0;
 			y = fontMetric.getHeight() * lineIndex + fontMetric.getLeading();
 			w = (int) selclBounds.getWidth();
-			h = (int) selclBounds.getHeight();
+			h = (int) selclBounds.getHeight() + fontMetric.getLeading();
 
 			if (debug) System.out.print("# " + lineIndex + " S: " + textinfo.selectionStart() + " - " + textinfo.selectionEnd() + " | L: " + linePosStart + " - " + linePosEnd + "     ");
 
