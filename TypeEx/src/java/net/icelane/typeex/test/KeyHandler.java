@@ -104,14 +104,8 @@ public abstract class KeyHandler {
 				textinfo.selected = false;
 		}
 
-		//DEBUG
-		System.out.println(".... SELECTION ..............................");
-		System.out.println(textinfo.selection());
-		System.out.println(".............................................");
-		
 		return handled;
 	}
-
 
 	/**
 	 * Returns the length of the first word of the given text.<br>
@@ -154,7 +148,7 @@ public abstract class KeyHandler {
 	private static void handleKey_BackSpace(TextInfo textinfo, String firstPart, String lastPart) {
 		if (firstPart.length() == 0) return;
 		
-		//handling of deletion while selection is active
+		// handling of deletion while selection is active
 		if (textinfo.selected) { 
 			textinfo.removeSelection(); return;
 		}
@@ -184,7 +178,7 @@ public abstract class KeyHandler {
 	private static void handleKey_Del(TextInfo textinfo, String firstPart, String lastPart) {
 		if (lastPart.length() == 0) return;	
 		
-		//handling of deletion while selection is active
+		// handling of deletion while selection is active
 		if (textinfo.selected) { 
 			textinfo.removeSelection(); return;
 		}
@@ -200,7 +194,7 @@ public abstract class KeyHandler {
 			charCount = getFirstWordLength(lastPart);
 		}
 		
-		// Remove a number of chars from the beginning of the last text part.
+		// remove a number of chars from the beginning of the last text part.
 		lastPart = lastPart.substring(charCount, lastPart.length());
 		
 		textinfo.text = firstPart + lastPart;
@@ -211,7 +205,7 @@ public abstract class KeyHandler {
 		if (KeyInfo.isControlHeld()) 
 			charCount = getLastWordLength(firstPart);
 		
-		// Move the cursor position one to the left.
+		// move the cursor position one to the left.
 		textinfo.cursorPosition =
 				textinfo.cursorPosition <= 0 ?
 				0 : textinfo.cursorPosition - charCount;
@@ -222,7 +216,7 @@ public abstract class KeyHandler {
 		if (KeyInfo.isControlHeld())
 			charCount = getFirstWordLength(lastPart);
 		
-		// Move the cursor position one to the right.
+		// move the cursor position one to the right.
 		textinfo.cursorPosition =
 				textinfo.cursorPosition >= textinfo.text.length() ?
 				textinfo.text.length() : textinfo.cursorPosition + charCount;
