@@ -48,15 +48,14 @@ public abstract class KeyHandler {
 	 * @return weather the given key in the <code>KeyInfo</code> object, has been handled.
 	 */
 	public static boolean handleKey(KeyInfo keyinfo, TextInfo textinfo) {
-		// Retrieving first and last part early for performance reasons.
+		// retrieving first and last part early for performance reasons.
 		String firstPart = textinfo.firstPart();
 		String lastPart = textinfo.lastPart();
-
-		// assume key will be handled 
-		handled = true;
-		selection = true;
 		
-		// default selection (start pos.) handling
+		handled = true;								// assume key will be handled 
+		selection = keyinfo.getKeyCode() != 16;		//SHIFT: Don't trigger selection handling yet!
+		
+		// default selection (start position) handling
 		if (selection && KeyInfo.isShiftHeld()) textinfo.setSelectionStart();
 			
 		switch(keyinfo.getKeyCode()) {
@@ -89,21 +88,19 @@ public abstract class KeyHandler {
 		case 155: handleKey_Ins(textinfo, firstPart, lastPart);
 			break;
 			
-		case 65: handleKey_A(textinfo, firstPart, lastPart);
+		case  65: handleKey_A(textinfo);
 			selection = false; // bypass selection code
 			break;
 
-		case 16: selection = false; //SHIFT: Shouldn't trigger the selection code
-		
 		default: handled = false;
 			break;
 		}
 			
-		// default selection (end pos.) handling
-		if (selection) {
+		// default selection (end position) handling
+		if (selection && handled) {
 			if (KeyInfo.isShiftHeld())
 				textinfo.setSelectionEnd();
-			else if (handled)
+			else
 				textinfo.selected = false;
 		}
 
@@ -289,7 +286,7 @@ public abstract class KeyHandler {
 		textinfo.overwrite = !textinfo.overwrite;
 	}
 	
-	private static void handleKey_A(TextInfo textinfo, String firstPart, String lastPart) {
+	private static void handleKey_A(TextInfo textinfo) {
 		if (KeyInfo.isControlHeld()) textinfo.selectAll();
 		else handled = false; // type letter "A" 
 	}
