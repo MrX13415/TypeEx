@@ -11,6 +11,20 @@ public class KeyInfo {
 	private static boolean shift;   // 16
 	private static boolean meta;    // 525
 	
+	public static final int Shift      = 16;
+	public static final int A          = 65;
+	
+	public static final int Esc        = 27;
+	public static final int Backspace  = 8;
+	public static final int Del        = 127;
+	public static final int Home       = 36;
+	public static final int End        = 35;
+	public static final int Ins        = 155;
+	
+	public static final int ArrowLeft  = 37;
+	public static final int ArrowRight = 39;
+	public static final int ArrowUp    = 38;
+	public static final int ArrowDown  = 40;	
 	
 	public KeyInfo(int keyCode, char keyChar, boolean state) {
 		super();
