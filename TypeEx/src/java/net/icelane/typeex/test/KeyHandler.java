@@ -3,6 +3,8 @@ package net.icelane.typeex.test;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import scala.languageFeature.reflectiveCalls;
+
 /**
  * Handle keys and alter the given <code>TextInfo</code> object
  * accordingly, so it mimics the behavior of the text edit control.
@@ -57,32 +59,32 @@ public abstract class KeyHandler {
 		int cursorPosition = textinfo.cursorPosition;       // save the current cursor position for selection handling 
 		
 		switch(keyinfo.getKeyCode()) {
-		case  KeyInfo.Esc: break; // ESC key writes a char otherwise
+		case KeyInfo.Esc: break; // ESC key writes a char otherwise
 
-		case  KeyInfo.Backspace: handleKey_BackSpace(textinfo, firstPart, lastPart);
+		case KeyInfo.Backspace: handleKey_BackSpace(textinfo, firstPart, lastPart);
 			selection = false;
 			break;
-			
+			 
 		case KeyInfo.Del: handleKey_Del(textinfo, firstPart, lastPart);
 			selection = false;
 			break;
 			
-		case  KeyInfo.ArrowLeft: handleKey_ArrowLeft(textinfo, firstPart, lastPart);
+		case KeyInfo.ArrowLeft: handleKey_ArrowLeft(textinfo, firstPart, lastPart);
 			break;
 			
-		case  KeyInfo.ArrowRight: handleKey_ArrowRight(textinfo, firstPart, lastPart);
+		case KeyInfo.ArrowRight: handleKey_ArrowRight(textinfo, firstPart, lastPart);
 			break;
 			
-		case  KeyInfo.ArrowUp: handleKey_ArrowUp(textinfo, firstPart, lastPart);	
+		case KeyInfo.ArrowUp: handleKey_ArrowUp(textinfo, firstPart, lastPart);	
 			break;
 			
-		case  KeyInfo.ArrowDown: handleKey_ArrowDown(textinfo, firstPart, lastPart);
+		case KeyInfo.ArrowDown: handleKey_ArrowDown(textinfo, firstPart, lastPart);
 			break;
 			
-		case  KeyInfo.Home: handleKey_Home(textinfo, firstPart, lastPart);
+		case KeyInfo.Home: handleKey_Home(textinfo, firstPart, lastPart);
 			break;
 			
-		case  KeyInfo.End: handleKey_End(textinfo, firstPart, lastPart);
+		case KeyInfo.End: handleKey_End(textinfo, firstPart, lastPart);
 			break;
 
 		case KeyInfo.Ins: handleKey_Ins(textinfo, firstPart, lastPart);
@@ -188,6 +190,10 @@ public abstract class KeyHandler {
 	}
 	
 	private static void handleKey_Del(TextInfo textinfo, String firstPart, String lastPart) {
+		// do nothing if nothing is selected an shift is held ...
+		if (!textinfo.selected && KeyInfo.isShiftHeld()) return;
+		
+		// do nothing if there is nothing to remove :)
 		if (lastPart.length() == 0) return;	
 		
 		// handling of deletion while selection is active
