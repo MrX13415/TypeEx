@@ -16,6 +16,7 @@ public class TextInfo {
 	 * The Text.
 	 */
 	public String text;
+	
 	/**
 	 * The position of the cursor in the text.
 	 */
@@ -99,18 +100,28 @@ public class TextInfo {
 		this.cursorPosition += text.length();
 	}
 	
+	public boolean IsBackwardSelection() {
+		return selectionPosA > selectionPosB;
+	}
+	
+	public boolean IsForwardSelection() {
+		return selectionPosA < selectionPosB;
+	}
+	
 	/**
 	 * The start position of the selection.
 	 */
 	public int selectionStart() {
-		return selectionPosA < selectionPosB ? selectionPosA : selectionPosB;
+		int start = IsForwardSelection() ? selectionPosA : selectionPosB;
+		return start >= 0 ? start : 0;
 	}
 	
 	/**
 	 * The end position of the selection.
 	 */
 	public int selectionEnd() {
-		return selectionPosB > selectionPosA ? selectionPosB : selectionPosA;
+		int end = IsForwardSelection() ? selectionPosB : selectionPosA;
+		return end <= text.length() ? end : text.length();
 	}
 
 	/**
