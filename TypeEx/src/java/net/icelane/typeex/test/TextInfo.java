@@ -41,7 +41,9 @@ public class TextInfo {
 	 */
 	public boolean selected;
 	
-	
+	/**
+	 * Copies the selected text to the clipboard.
+	 */
 	public void copy() {
 		if (!selected) return;
 		StringSelection selection = new StringSelection(selection());
@@ -49,12 +51,19 @@ public class TextInfo {
 		clipboard.setContents(selection, selection);
 	}
 	
+	/**
+	 * Cuts the selected text and stores a copy in the clipboard.
+	 */
 	public void cut() {
 		if (!selected) return; 
 		copy();
 		removeSelection();
 	}
 	
+	/**
+	 * Pastes the text in the clipboard to the current cursor position.
+	 * If a selection is present, it get's removed first.
+	 */
 	public void past() {
 		try {
 			if (selected) removeSelection();
@@ -64,15 +73,21 @@ public class TextInfo {
 		} catch (UnsupportedFlavorException | IOException e) {}
 	}
 	
+	/**
+	 * Inserts a character at the current cursor position.
+	 * Increases the cursor position by one. 
+	 * @param character The character to be inserted.
+	 */
 	public void insert(char character) {
-		insert(Character.toString(character), cursorPosition);
+		insert(Character.toString(character));
 	}
 	
+	/**
+	 * Inserts a text at the current cursor position.
+	 * Increases the cursor position by the length of the text.
+	 * @param text The text to be inserted.
+	 */
 	public void insert(String text) {
-		insert(text, cursorPosition);
-	}
-	
-	public void insert(String text, int cursorPosition) {
 		String lastPart = lastPart();
 		
 		// handle overwrite mode ...
