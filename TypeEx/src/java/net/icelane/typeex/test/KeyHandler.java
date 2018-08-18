@@ -60,9 +60,11 @@ public abstract class KeyHandler {
 		case  KeyInfo.Esc: break; // ESC key writes a char otherwise
 
 		case  KeyInfo.Backspace: handleKey_BackSpace(textinfo, firstPart, lastPart);
+			selection = false;
 			break;
 			
 		case KeyInfo.Del: handleKey_Del(textinfo, firstPart, lastPart);
+			selection = false;
 			break;
 			
 		case  KeyInfo.ArrowLeft: handleKey_ArrowLeft(textinfo, firstPart, lastPart);
