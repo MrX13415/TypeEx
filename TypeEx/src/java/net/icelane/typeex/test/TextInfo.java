@@ -50,17 +50,31 @@ public class TextInfo {
 	 * Sets the selection start position to the current cursor position.
 	 */
 	public void setSelectionStart() {
+		setSelectionStart(cursorPosition);
+	}
+	
+	/**
+	 * Sets the selection start position to the given cursor position.
+	 */
+	public void setSelectionStart(int position) {
 		if (selected) return;
 		this.selected = true;
 		
-		this.selectionPosA = cursorPosition;
+		this.selectionPosA = position;
 	}
-	
+
 	/**
 	 * Sets the selection end position to the current cursor position.
 	 */
 	public void setSelectionEnd() {
-		this.selectionPosB = cursorPosition;
+		setSelectionEnd(cursorPosition);
+	}
+	
+	/**
+	 * Sets the selection end position to the given cursor position.
+	 */
+	public void setSelectionEnd(int position) {
+		this.selectionPosB = position;
 	}
 	
 	/**

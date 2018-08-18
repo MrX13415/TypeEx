@@ -11,17 +11,17 @@ public abstract class KeyHandler {
 	
 	/**
 	 * At text start:<br>
-	 * Group 0: Check for one non word character followed by any whitespaces but not new lines.<br> 
+	 * Group 0: Check for one non word character followed by any whitespace but not new lines.<br> 
 	 * Group 1: Check for new lines.<br>
-	 * Group 2: Check any word characters followed by any whitespaces.<br>
+	 * Group 2: Check any word characters followed by any whitespace.<br>
 	 */
 	private static final Pattern FirstWordPattern = Pattern.compile("^(\\W[^\\S\\n]*|\\n|\\w*\\s*)", Pattern.UNICODE_CHARACTER_CLASS);
 	
 	/**
 	 * At text end:<br>
-	 * Group 0: Check for one non word character followed by any whitespaces but not new lines.<br>
+	 * Group 0: Check for one non word character followed by any whitespace but not new lines.<br>
 	 * Group 1: Check for new lines.<br>
-	 * Group 2: Check at least one word character followed by any whitespaces.<br>
+	 * Group 2: Check at least one word character followed by any whitespace.<br>
 	 */
 	private static final Pattern LastWordPattern = Pattern.compile("(\\W[^\\S\\n]*|\\n|\\w+[^\\S\\n]*)$", Pattern.UNICODE_CHARACTER_CLASS);
 	
@@ -41,7 +41,7 @@ public abstract class KeyHandler {
 	 *  - Ins
 	 *  - CTRL + A<br>
 	 *  <br>
-	 *  Keys are also handled on the Numpad.<br>
+	 *  Numpad keys are also handled.<br>
 	 *  
 	 * @param keyinfo A <code>KeyInfo</code> object.
 	 * @param textinfo A <code>TextInfo</code> object.
@@ -52,43 +52,41 @@ public abstract class KeyHandler {
 		String firstPart = textinfo.firstPart();
 		String lastPart = textinfo.lastPart();
 		
-		handled = true;								// assume key will be handled 
-		selection = keyinfo.getKeyCode() != 16;		//SHIFT: Don't trigger selection handling yet!
+		handled = true;								        // assume key will be handled 
+		selection = keyinfo.getKeyCode() != KeyInfo.Shift;  //SHIFT: Don't trigger selection handling yet!
+		int cursorPosition = textinfo.cursorPosition;       // save the current cursor position for selection handling 
 		
-		// default selection (start position) handling
-		if (selection && KeyInfo.isShiftHeld()) textinfo.setSelectionStart();
-			
 		switch(keyinfo.getKeyCode()) {
-		case  27: break; // ESC key writes a char otherwise
+		case  KeyInfo.Esc: break; // ESC key writes a char otherwise
 
-		case   8: handleKey_BackSpace(textinfo, firstPart, lastPart);
+		case  KeyInfo.Backspace: handleKey_BackSpace(textinfo, firstPart, lastPart);
 			break;
 			
-		case 127: handleKey_Del(textinfo, firstPart, lastPart);
+		case KeyInfo.Del: handleKey_Del(textinfo, firstPart, lastPart);
 			break;
 			
-		case  37: handleKey_ArrowLeft(textinfo, firstPart, lastPart);
+		case  KeyInfo.ArrowLeft: handleKey_ArrowLeft(textinfo, firstPart, lastPart);
 			break;
 			
-		case  39: handleKey_ArrowRight(textinfo, firstPart, lastPart);
+		case  KeyInfo.ArrowRight: handleKey_ArrowRight(textinfo, firstPart, lastPart);
 			break;
 			
-		case  38: handleKey_ArrowUp(textinfo, firstPart, lastPart);	
+		case  KeyInfo.ArrowUp: handleKey_ArrowUp(textinfo, firstPart, lastPart);	
 			break;
 			
-		case  40: handleKey_ArrowDown(textinfo, firstPart, lastPart);
+		case  KeyInfo.ArrowDown: handleKey_ArrowDown(textinfo, firstPart, lastPart);
 			break;
 			
-		case  36: handleKey_Home(textinfo, firstPart, lastPart);
+		case  KeyInfo.Home: handleKey_Home(textinfo, firstPart, lastPart);
 			break;
 			
-		case  35: handleKey_End(textinfo, firstPart, lastPart);
+		case  KeyInfo.End: handleKey_End(textinfo, firstPart, lastPart);
 			break;
 
-		case 155: handleKey_Ins(textinfo, firstPart, lastPart);
+		case KeyInfo.Ins: handleKey_Ins(textinfo, firstPart, lastPart);
 			break;
 			
-		case  65: handleKey_A(textinfo);
+		case  KeyInfo.A: handleKey_A(textinfo);
 			selection = false; // bypass selection code
 			break;
 
@@ -96,12 +94,14 @@ public abstract class KeyHandler {
 			break;
 		}
 			
-		// default selection (end position) handling
+		// default selection handling
 		if (selection && handled) {
-			if (KeyInfo.isShiftHeld())
+			if (KeyInfo.isShiftHeld()) {
+				textinfo.setSelectionStart(cursorPosition);
 				textinfo.setSelectionEnd();
-			else
+			} else {
 				textinfo.selected = false;
+			}
 		}
 
 		return handled;
