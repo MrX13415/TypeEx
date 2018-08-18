@@ -3,8 +3,6 @@ package net.icelane.typeex.test;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import scala.languageFeature.reflectiveCalls;
-
 /**
  * Handle keys and alter the given <code>TextInfo</code> object
  * accordingly, so it mimics the behavior of the text edit control.
