@@ -13,6 +13,9 @@ public class KeyInfo {
 	
 	public static final int Shift      = 16;
 	public static final int A          = 65;
+	public static final int C          = 67;
+	public static final int V          = 86;
+	public static final int X          = 88;
 	
 	public static final int Esc        = 27;
 	public static final int Backspace  = 8;

@@ -35,16 +35,18 @@ public class Control implements AKeyListener{
 	
 			// handle selection overwrite ...
 			if (textinfo.selected) textinfo.removeSelection();
-				
-			String lastPart = textinfo.lastPart();
 			
-			// handle overwrite mode ...
-			if (textinfo.overwrite && lastPart.length() > 0)
-				lastPart = lastPart.substring(1);
-
-			// type next char ...
-			textinfo.text = textinfo.firstPart() + keyinfo.getKeyChar() + lastPart;
-			textinfo.cursorPosition++;
+			textinfo.insert(keyinfo.getKeyChar());
+			
+//			String lastPart = textinfo.lastPart();
+//			
+//			// handle overwrite mode ...
+//			if (textinfo.overwrite && lastPart.length() > 0)
+//				lastPart = lastPart.substring(1);
+//
+//			// type next char ...
+//			textinfo.text = textinfo.firstPart() + keyinfo.getKeyChar() + lastPart;
+//			textinfo.cursorPosition++;
 		}
 
 		// update UI

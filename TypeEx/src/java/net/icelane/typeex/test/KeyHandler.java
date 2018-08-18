@@ -86,10 +86,20 @@ public abstract class KeyHandler {
 		case KeyInfo.Ins: handleKey_Ins(textinfo, firstPart, lastPart);
 			break;
 			
-		case  KeyInfo.A: handleKey_A(textinfo);
+		case KeyInfo.A: handleKey_A(textinfo);
 			selection = false; // bypass selection code
 			break;
 
+		case KeyInfo.C: handleKey_C(textinfo);
+			selection = false; // bypass selection code
+			break;
+			
+		case KeyInfo.V: handleKey_V(textinfo);
+			break;
+			
+		case KeyInfo.X: handleKey_X(textinfo);
+			break;
+		
 		default: handled = false;
 			break;
 		}
@@ -293,5 +303,19 @@ public abstract class KeyHandler {
 		if (KeyInfo.isControlHeld()) textinfo.selectAll();
 		else handled = false; // type letter "A" 
 	}
+
+	private static void handleKey_C(TextInfo textinfo) {
+		if (KeyInfo.isControlHeld()) textinfo.copy();
+		else handled = false; // type letter "C" 
+	}
 	
+	private static void handleKey_V(TextInfo textinfo) {
+		if (KeyInfo.isControlHeld()) textinfo.past();
+		else handled = false; // type letter "V" 
+	}
+	
+	private static void handleKey_X(TextInfo textinfo) {
+		if (KeyInfo.isControlHeld()) textinfo.cut();
+		else handled = false; // type letter "X" 
+	}
 }

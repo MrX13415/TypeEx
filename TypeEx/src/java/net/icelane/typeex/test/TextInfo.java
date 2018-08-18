@@ -1,5 +1,12 @@
 package net.icelane.typeex.test;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
+
 /**
  * Holds text and additional information about cursor and editing. 
  */
@@ -29,8 +36,53 @@ public class TextInfo {
 	 */
 	public int selectionPosB;
 	
-	
+	/**
+	 * Weather text is selected.
+	 */
 	public boolean selected;
+	
+	
+	public void copy() {
+		if (!selected) return;
+		StringSelection selection = new StringSelection(selection());
+		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+		clipboard.setContents(selection, selection);
+	}
+	
+	public void cut() {
+		if (!selected) return; 
+		copy();
+		removeSelection();
+	}
+	
+	public void past() {
+		try {
+			if (selected) removeSelection();
+			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+			String text = (String)clipboard.getData(DataFlavor.stringFlavor);
+			insert(text);
+		} catch (UnsupportedFlavorException | IOException e) {}
+	}
+	
+	public void insert(char character) {
+		insert(Character.toString(character), cursorPosition);
+	}
+	
+	public void insert(String text) {
+		insert(text, cursorPosition);
+	}
+	
+	public void insert(String text, int cursorPosition) {
+		String lastPart = lastPart();
+		
+		// handle overwrite mode ...
+		if (overwrite && lastPart.length() > 0)
+			lastPart = lastPart.substring(1);
+
+		// type next char ...
+		this.text = firstPart() + text + lastPart;
+		this.cursorPosition += text.length();
+	}
 	
 	/**
 	 * The start position of the selection.
