@@ -7,9 +7,11 @@ import org.lwjgl.input.Keyboard;
 
 import net.icelane.typeex.book.io.KeyHandler;
 import net.icelane.typeex.book.io.KeyInfo;
+import net.icelane.typeex.book.io.TextInfo;
 
 public class BookInput {
 
+	TextInfo textinfo =new TextInfo();
 	
     public void handleKeyboardInput() throws IOException
     {
