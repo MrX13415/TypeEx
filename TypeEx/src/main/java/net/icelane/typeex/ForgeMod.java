@@ -37,6 +37,6 @@ public class ForgeMod
     public void init(FMLInitializationEvent event)
     {
         // some example code
-        System.out.println("DIRT BLOCK >> "+Blocks.DIRT.getUnlocalizedName());
+        System.out.println("DIRT BLOCK >> " + Blocks.DIRT.getUnlocalizedName());
     }
 }
