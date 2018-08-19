@@ -24,7 +24,7 @@ public class ItemEvents {
 	    
 	    //player.sendMessage(new TextComponentString("YEAH!"));
 	    
-    	BookUI bookui = new BookUI(player, book, true);
+    	BookUI bookui = new BookUI(player, book, false);
     	Minecraft.getMinecraft().displayGuiScreen(bookui);
     	
 	    event.setCanceled(true);
