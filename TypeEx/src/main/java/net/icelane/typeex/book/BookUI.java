@@ -23,52 +23,7 @@ public class BookUI extends BookInput {
 		super(player, item, signed);
 	}
 
-    private void sendBookToServer(boolean publish) throws IOException
-    {
-        if (!isSigned() && isModified())
-        {
-            if (getPages() != null)
-            {
-                while (getPages().tagCount() > 1)
-                {
-                    String s = getPages().getStringTagAt(getPages().tagCount() - 1);
-
-                    if (!s.isEmpty())
-                    {
-                        break;
-                    }
-
-                    getPages().removeTag(getPages().tagCount() - 1);
-                }
-
-                if (getItem().hasTagCompound())
-                {
-                    NBTTagCompound nbttagcompound = getItem().getTagCompound();
-                    nbttagcompound.setTag("pages", getPages());
-                }
-                else
-                {
-                    getItem().setTagInfo("pages", getPages());
-                }
-
-                String s1 = "MC|BEdit";
-
-                if (publish)
-                {
-                    s1 = "MC|BSign";
-                    getItem().setTagInfo("author", new NBTTagString(getPlayer().getName()));
-                    getItem().setTagInfo("title", new NBTTagString(getTitle().trim()));
-                }
-
-                PacketBuffer packetbuffer = new PacketBuffer(Unpooled.buffer());
-                packetbuffer.writeItemStack(getItem());
-                this.mc.getConnection().sendPacket(new CPacketCustomPayload(s1, packetbuffer));
-            }
-        }
-    }
-    
-    
-
+	
     /**
      * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
      */

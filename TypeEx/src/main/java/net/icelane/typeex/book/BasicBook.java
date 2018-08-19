@@ -1,11 +1,16 @@
 package net.icelane.typeex.book;
 
+import java.io.IOException;
+
+import io.netty.buffer.Unpooled;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.play.client.CPacketCustomPayload;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -46,7 +51,7 @@ abstract class BasicBook extends GuiScreen {
             }
         }
 
-        if (pages == null && !isSigned())
+        if (pages == null && isUnsigned())
         {
         	pages = new NBTTagList();
         	pages.appendTag(new NBTTagString(""));
@@ -80,7 +85,7 @@ abstract class BasicBook extends GuiScreen {
     
     public boolean newPage()
     {
-        if (pages == null && pages.tagCount() >= pageCountLimit) return false;
+        if (pages == null || pages.tagCount() >= pageCountLimit) return false;
         
         pages.appendTag(new NBTTagString(""));
         pageCount++;
@@ -89,6 +94,49 @@ abstract class BasicBook extends GuiScreen {
         return true;
     }
     
+    protected void sendBookToServer(boolean publish) throws IOException
+    {
+        if (!isSigned() && isModified())
+        {
+            if (getPages() != null)
+            {
+                while (getPages().tagCount() > 1)
+                {
+                    String s = getPages().getStringTagAt(getPages().tagCount() - 1);
+
+                    if (!s.isEmpty())
+                    {
+                        break;
+                    }
+
+                    getPages().removeTag(getPages().tagCount() - 1);
+                }
+
+                if (getItem().hasTagCompound())
+                {
+                    NBTTagCompound nbttagcompound = getItem().getTagCompound();
+                    nbttagcompound.setTag("pages", getPages());
+                }
+                else
+                {
+                    getItem().setTagInfo("pages", getPages());
+                }
+
+                String s1 = "MC|BEdit";
+
+                if (publish)
+                {
+                    s1 = "MC|BSign";
+                    getItem().setTagInfo("author", new NBTTagString(getPlayer().getName()));
+                    getItem().setTagInfo("title", new NBTTagString(title().trim()));
+                }
+
+                PacketBuffer packetbuffer = new PacketBuffer(Unpooled.buffer());
+                packetbuffer.writeItemStack(getItem());
+                this.mc.getConnection().sendPacket(new CPacketCustomPayload(s1, packetbuffer));
+            }
+        }
+    }
 	
     public EntityPlayer getPlayer() {
 		return player;
@@ -101,13 +149,25 @@ abstract class BasicBook extends GuiScreen {
 	public boolean isModified() {
 		return modified;
 	}
+	
+	public boolean setModified() {
+		return modified = true;
+	}
 
 	public boolean isSigned() {
 		return signed;
 	}
 	
-	public String getTitle() {
+	public boolean isUnsigned() {
+		return !signed;
+	}
+	
+	public String title() {
 		return title;
+	}
+
+	public void title(String title) {
+		this.title = title;
 	}
 
 	public int pageCount() {

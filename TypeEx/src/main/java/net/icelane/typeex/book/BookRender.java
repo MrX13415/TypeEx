@@ -28,33 +28,30 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public abstract class BookRender extends BasicBook {
 
     public static final ResourceLocation BOOK_GUI_TEXTURES = new ResourceLocation("textures/gui/book.png");
-	
-    
-    private NextPageButton buttonNextPage;
-    private NextPageButton buttonPreviousPage;
-    
-    private GuiButton buttonDone;
-    /** The GuiButton to sign this book. */
-    private GuiButton buttonSign;
-    private GuiButton buttonFinalize;
-    private GuiButton buttonCancel;
-	
-    private List<ITextComponent> cachedComponents;
-    private int cachedPage = -1;
-    
-    /** Update ticks since the gui was opened */
+
+    /** Update ticks since the GUI was opened */
     private int updateTicks;
     
     /** Determines if the signing screen is open */
     private boolean signing;
-
+    
+    private List<ITextComponent> cachedComponents;
+    private int cachedPage = -1;
+        
+    private GuiButton buttonDone;
+    private GuiButton buttonSign;
+    private GuiButton buttonFinalize;
+    private GuiButton buttonCancel;
 	
+    private NextPageButton buttonNextPage;
+    private NextPageButton buttonPreviousPage;
+
+    
 	public BookRender(EntityPlayer player, ItemStack item, boolean signed) {
 		super(player, item, signed);
 	}
 
 	
-    
     /**
      * Adds the buttons (and other controls) to the screen in question. Called when the GUI is displayed and when the
      * window resizes, the buttonList is cleared beforehand.
@@ -64,9 +61,9 @@ public abstract class BookRender extends BasicBook {
         this.buttonList.clear();
         Keyboard.enableRepeatEvents(true);
 
-        int i = (width - 192) / 2;
-        buttonNextPage     = (NextPageButton) addButton(new NextPageButton(1, i + 120, 156, true));
-        buttonPreviousPage = (NextPageButton) addButton(new NextPageButton(2, i + 38, 156, false));
+        int x = (width - 192) / 2;
+        buttonNextPage     = (NextPageButton) addButton(new NextPageButton(1, x + 120, 156, true));
+        buttonPreviousPage = (NextPageButton) addButton(new NextPageButton(2, x + 38, 156, false));
         
         if (isSigned()) {
         	buttonDone = addButton(new GuiButton(0, width / 2 - 100, 196, 200, 20, I18n.format("gui.done")));
@@ -83,7 +80,7 @@ public abstract class BookRender extends BasicBook {
 
     protected void updateButtons()
     {
-        buttonNextPage.visible     = !isSigning() && (!isLastPage() || !isSigned());
+        buttonNextPage.visible     = !isSigning() && (!isLastPage() || isUnsigned());
         buttonPreviousPage.visible = !isSigning() && !isFirstPage();
         buttonDone.visible         = !isSigning() || isSigned();
 
@@ -92,10 +89,8 @@ public abstract class BookRender extends BasicBook {
         buttonSign.visible     = !isSigning();
         buttonCancel.visible   = isSigning();
         buttonFinalize.visible = isSigning();
-        buttonFinalize.enabled = !getTitle().trim().isEmpty();  
+        buttonFinalize.enabled = !title().trim().isEmpty();  
     }
-
-
 
 	public int updateTicks() {
 		return updateTicks;
@@ -110,8 +105,6 @@ public abstract class BookRender extends BasicBook {
         updateTicks++;
     }
 
-
-
 	public boolean isSigning() {
 		return signing;
 	}
@@ -120,11 +113,10 @@ public abstract class BookRender extends BasicBook {
 		this.signing = signing;
 	}
     	
-	
-	public void drawSigningPage() {
-		String title = getTitle();
+	private void drawSigningPage() {
+		String title = title();
 
-		if (!isSigned()) title = addCursor(title);
+		if (isUnsigned()) title = addCursor(title);
 		
 //        if (!isSigned())
 //        {
@@ -207,9 +199,8 @@ public abstract class BookRender extends BasicBook {
         
         this.mc.getTextureManager().bindTexture(BOOK_GUI_TEXTURES);
         
-        int i = (this.width - 192) / 2;
-        int j = 2;
-        this.drawTexturedModalRect(i, 2, 0, 0, 192, 192);
+        int x = (this.width - 192) / 2;
+        this.drawTexturedModalRect(x, 2, 0, 0, 192, 192);
 
         if (isSigning())
         {
@@ -220,7 +211,7 @@ public abstract class BookRender extends BasicBook {
             String s4 = I18n.format("book.pageIndicator", page() + 1, pageCount());
             String pageContent = getPageText();
 
-            if (!isSigned())
+            if (isUnsigned())
             {
             	pageContent = addCursor(pageContent);
             }
@@ -230,11 +221,11 @@ public abstract class BookRender extends BasicBook {
             }
 
             int j1 = this.fontRenderer.getStringWidth(s4);
-            this.fontRenderer.drawString(s4, i - j1 + 192 - 44, 18, 0);
+            this.fontRenderer.drawString(s4, x - j1 + 192 - 44, 18, 0);
 
             if (this.cachedComponents == null)
             {
-                this.fontRenderer.drawSplitString(pageContent, i + 36, 34, 116, 0);
+                this.fontRenderer.drawSplitString(pageContent, x + 36, 34, 116, 0);
             }
             else
             {
@@ -243,7 +234,7 @@ public abstract class BookRender extends BasicBook {
                 for (int l1 = 0; l1 < k1; ++l1)
                 {
                     ITextComponent itextcomponent2 = this.cachedComponents.get(l1);
-                    this.fontRenderer.drawString(itextcomponent2.getUnformattedText(), i + 36, 34 + l1 * this.fontRenderer.FONT_HEIGHT, 0);
+                    this.fontRenderer.drawString(itextcomponent2.getUnformattedText(), x + 36, 34 + l1 * this.fontRenderer.FONT_HEIGHT, 0);
                 }
 
                 ITextComponent itextcomponent1 = this.getClickedComponentAt(mouseX, mouseY);

@@ -8,7 +8,6 @@ import org.lwjgl.input.Keyboard;
 import net.icelane.typeex.book.io.KeyHandler;
 import net.icelane.typeex.book.io.KeyInfo;
 import net.icelane.typeex.book.io.TextInfo;
-import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -21,8 +20,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 abstract class BookInput extends BookRender {
 
-	TextInfo textinfo = new TextInfo();
-
+	private TextInfo textinfo = new TextInfo();
 	
 	public BookInput(EntityPlayer player, ItemStack item, boolean signed) {
 		super(player, item, signed);
@@ -62,7 +60,12 @@ abstract class BookInput extends BookRender {
 			
 			if (!isSigned()) {
 		        if (isSigned()){
-		//		                this.keyTypedInTitle(typedChar, keyCode);
+		        	try {
+						keyTypedInTitle(keyinfo);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 		        } else {
 			    	if (ChatAllowedCharacters.isAllowedCharacter(keyinfo.getKeyChar())) {
 						textinfo.insert(Character.toString(keyinfo.getKeyChar()));
@@ -77,39 +80,39 @@ abstract class BookInput extends BookRender {
 
 	}
 	
-//    private void keyTypedInTitle(char typedChar, int keyCode) throws IOException
-//    {
-//        switch (keyCode)
-//        {
-//            case 14:
-//
-//                if (!this.bookTitle.isEmpty())
-//                {
-//                    this.bookTitle = this.bookTitle.substring(0, this.bookTitle.length() - 1);
-//                    this.updateButtons();
-//                }
-//
-//                return;
-//            case 28:
-//            case 156:
-//
-//                if (!this.bookTitle.isEmpty())
-//                {
-//                    this.sendBookToServer(true);
-//                    this.mc.displayGuiScreen((GuiScreen)null);
-//                }
-//
-//                return;
-//            default:
-//
-//                if (this.bookTitle.length() < 16 && ChatAllowedCharacters.isAllowedCharacter(typedChar))
-//                {
-//                    this.bookTitle = this.bookTitle + Character.toString(typedChar);
-//                    this.updateButtons();
-//                    this.bookIsModified = true;
-//                }
-//        }
-//    }
+	public void keyTypedInTitle(KeyInfo keyinfo) throws IOException
+    {
+        switch (keyinfo.getKeyCode())
+        {
+            case 14:
+
+                if (!title().isEmpty())
+                {
+                	title(title().substring(0, title().length() - 1));
+                    this.updateButtons();
+                }
+
+                return;
+            case 28:
+            case 156:
+
+                if (!title().isEmpty())
+                {
+                    this.sendBookToServer(true);
+                    this.mc.displayGuiScreen((GuiScreen)null);
+                }
+
+                return;
+            default:
+
+                if (title().length() < 16 && ChatAllowedCharacters.isAllowedCharacter(keyinfo.getKeyChar()))
+                {
+                	title(title() + Character.toString(keyinfo.getKeyChar()));
+                    this.updateButtons();
+                    setModified();
+                }
+        }
+    }
 
 	  
     /**
