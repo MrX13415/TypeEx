@@ -1,4 +1,4 @@
-package net.icelane.typeex.test;
+package net.icelane.typeex.io;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;

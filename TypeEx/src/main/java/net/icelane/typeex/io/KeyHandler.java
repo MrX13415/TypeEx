@@ -1,4 +1,4 @@
-package net.icelane.typeex.test;
+package net.icelane.typeex.io;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

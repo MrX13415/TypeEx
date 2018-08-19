@@ -36,6 +36,6 @@ public class ForgeMod
        
     @EventHandler
     public void init(FMLInitializationEvent event) {
-    	MinecraftForge.EVENT_BUS.register(new ItemEvents());
+    	MinecraftForge.EVENT_BUS.register(ItemEvents.getEventHandler());
     }
 }

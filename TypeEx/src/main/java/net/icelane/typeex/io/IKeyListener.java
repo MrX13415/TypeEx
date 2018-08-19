@@ -1,6 +1,6 @@
-package net.icelane.typeex.test;
+package net.icelane.typeex.io;
 
-public interface AKeyListener {
+public interface IKeyListener {
 
 	public void keyTyped(KeyInfo keyinfo);
 	

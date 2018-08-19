@@ -1,7 +1,12 @@
 package net.icelane.typeex.test;
 import java.awt.event.KeyEvent;
 
-public class Control implements AKeyListener{
+import net.icelane.typeex.io.IKeyListener;
+import net.icelane.typeex.io.KeyHandler;
+import net.icelane.typeex.io.KeyInfo;
+import net.icelane.typeex.io.TextInfo;
+
+public class Control implements IKeyListener{
 	
 	private GUI gui;
 	
@@ -37,16 +42,6 @@ public class Control implements AKeyListener{
 			if (textinfo.selected) textinfo.removeSelection();
 			
 			textinfo.insert(keyinfo.getKeyChar());
-			
-//			String lastPart = textinfo.lastPart();
-//			
-//			// handle overwrite mode ...
-//			if (textinfo.overwrite && lastPart.length() > 0)
-//				lastPart = lastPart.substring(1);
-//
-//			// type next char ...
-//			textinfo.text = textinfo.firstPart() + keyinfo.getKeyChar() + lastPart;
-//			textinfo.cursorPosition++;
 		}
 
 		// update UI

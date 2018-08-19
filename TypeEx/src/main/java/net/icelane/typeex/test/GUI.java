@@ -17,6 +17,10 @@ import javax.swing.JLabel;
 
 import org.apache.commons.lang3.StringUtils;
 
+import net.icelane.typeex.io.IKeyListener;
+import net.icelane.typeex.io.KeyInfo;
+import net.icelane.typeex.io.TextInfo;
+
 public class GUI implements KeyListener{
 	
 	public static final String textTemplateBeginn = "<html><body><nobr>";
@@ -28,7 +32,7 @@ public class GUI implements KeyListener{
 	private JFrame myWindow;
 	private JLabel myLabel;
 	
-	private ArrayList<AKeyListener> listener = new ArrayList<>();
+	private ArrayList<IKeyListener> listener = new ArrayList<>();
 	private TextInfo textinfo;
 
 	Color colorCurLineBack = new Color(230, 239, 255);
@@ -86,13 +90,13 @@ public class GUI implements KeyListener{
 		myWindow.setVisible(true);
 	}
 	
-	public void addListener(AKeyListener listener) {
+	public void addListener(IKeyListener listener) {
 		this.listener.add(listener);
 	}
 
 	@Override
 	public void keyPressed(KeyEvent e) {	
-		for (AKeyListener aKeyListener : listener) {		
+		for (IKeyListener aKeyListener : listener) {		
 			KeyInfo kinfo = new KeyInfo(e.getKeyCode(), e.getKeyChar(), true);
 			aKeyListener.keyTyped(kinfo);
 		}
@@ -100,7 +104,7 @@ public class GUI implements KeyListener{
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		for (AKeyListener aKeyListener : listener) {		
+		for (IKeyListener aKeyListener : listener) {		
 			KeyInfo kinfo = new KeyInfo(e.getKeyCode(), e.getKeyChar(), false);
 			aKeyListener.keyTyped(kinfo);
 		}
