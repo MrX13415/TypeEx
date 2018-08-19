@@ -7,9 +7,17 @@ import org.lwjgl.input.Keyboard;
 
 import net.icelane.typeex.book.io.KeyHandler;
 import net.icelane.typeex.book.io.KeyInfo;
+import net.icelane.typeex.book.io.TextInfo;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 
-public class BookInput {
+abstract class BookInput extends BookRender {
 
+	public BookInput(EntityPlayer player, ItemStack item, boolean signed) {
+		super(player, item, signed);
+	}
+
+	TextInfo textinfo = new TextInfo();
 	
     public void handleKeyboardInput() throws IOException
     {
@@ -19,7 +27,7 @@ public class BookInput {
     }
     
 	public void keyTyped(KeyInfo keyinfo) {
-		textinfo.text = pageGetCurrent();
+		textinfo.text = getPageText();
 		
 		//DEBUG
 		System.out.println(String.format("%16s %s%s%s%s%s",
@@ -45,8 +53,7 @@ public class BookInput {
 		}
 
 		// update UI
-		pageSetCurrent(textinfo.text);
-//		setText(textinfo);
+		setPageText(textinfo.text);
 	}
 	
 }
