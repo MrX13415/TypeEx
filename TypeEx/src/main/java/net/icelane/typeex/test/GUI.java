@@ -17,9 +17,9 @@ import javax.swing.JLabel;
 
 import org.apache.commons.lang3.StringUtils;
 
-import net.icelane.typeex.io.IKeyListener;
-import net.icelane.typeex.io.KeyInfo;
-import net.icelane.typeex.io.TextInfo;
+import net.icelane.typeex.book.io.IKeyListener;
+import net.icelane.typeex.book.io.KeyInfo;
+import net.icelane.typeex.book.io.TextInfo;
 
 public class GUI implements KeyListener{
 	

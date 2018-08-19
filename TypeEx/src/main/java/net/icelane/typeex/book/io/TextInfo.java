@@ -1,4 +1,4 @@
-package net.icelane.typeex.io;
+package net.icelane.typeex.book.io;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;

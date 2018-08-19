@@ -1,4 +1,4 @@
-package net.icelane.typeex.io;
+package net.icelane.typeex.book.io;
 
 public class KeyInfo {
 

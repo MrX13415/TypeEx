@@ -9,9 +9,9 @@ import java.io.IOException;
 import java.util.List;
 import javax.annotation.Nullable;
 
-import net.icelane.typeex.io.KeyHandler;
-import net.icelane.typeex.io.KeyInfo;
-import net.icelane.typeex.io.TextInfo;
+import net.icelane.typeex.book.io.KeyHandler;
+import net.icelane.typeex.book.io.KeyInfo;
+import net.icelane.typeex.book.io.TextInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -264,16 +264,7 @@ public class TXGuiScreenBook extends GuiScreen
         }
     }
 
-    /**
-     * Handles keyboard input.
-     */
-    public void handleKeyboardInput() throws IOException
-    {
-        keyTyped_new(new KeyInfo(Keyboard.getEventKey(), Keyboard.getEventCharacter(), Keyboard.getEventKeyState()));
-        
-        this.mc.dispatchKeypresses();
-    }
-    
+     
     /**
      * Fired when a key is typed (except F11 which toggles full screen). This is the equivalent of
      * KeyListener.keyTyped(KeyEvent e). Args : character (character on the key), keyCode (lwjgl Keyboard key code)

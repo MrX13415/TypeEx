@@ -1,26 +1,26 @@
-package net.icelane.typeex.test;
-import java.awt.event.KeyEvent;
+package net.icelane.typeex.book;
 
-import net.icelane.typeex.book.io.IKeyListener;
+import java.awt.event.KeyEvent;
+import java.io.IOException;
+
+import org.lwjgl.input.Keyboard;
+
 import net.icelane.typeex.book.io.KeyHandler;
 import net.icelane.typeex.book.io.KeyInfo;
-import net.icelane.typeex.book.io.TextInfo;
 
-public class Control implements IKeyListener{
-	
-	private GUI gui;
-	
-	private TextInfo textinfo = new TextInfo();
-	
+public class BookInput {
 
-	public Control(GUI gui) {
-		this.gui = gui;	 
-		gui.addListener(this); 
-		textinfo = this.gui.getText();	
-	}
-
-	@Override
+	
+    public void handleKeyboardInput() throws IOException
+    {
+        keyTyped(new KeyInfo(Keyboard.getEventKey(), Keyboard.getEventCharacter(), Keyboard.getEventKeyState()));
+        
+        this.mc.dispatchKeypresses();
+    }
+    
 	public void keyTyped(KeyInfo keyinfo) {
+		textinfo.text = pageGetCurrent();
+		
 		//DEBUG
 		System.out.println(String.format("%16s %s%s%s%s%s",
 				keyinfo.toString(),
@@ -45,15 +45,8 @@ public class Control implements IKeyListener{
 		}
 
 		// update UI
-		setText(textinfo);
+		pageSetCurrent(textinfo.text);
+//		setText(textinfo);
 	}
-	
-	private void setText(TextInfo textInfo) {
-		gui.setText(textInfo);
-	}
-	
-//	private String getText() {
-//		return gui.getText();
-//	}
 	
 }
