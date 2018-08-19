@@ -8,7 +8,6 @@ public class BookUI extends TXGuiScreenBook {
 
 	public BookUI(EntityPlayer player, ItemStack book, boolean isUnsigned) {
 		super(player, book, isUnsigned);
-		// TODO Auto-generated constructor stub
 	}
 	
 }

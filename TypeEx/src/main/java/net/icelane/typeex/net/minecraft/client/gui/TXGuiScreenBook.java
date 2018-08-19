@@ -3,9 +3,15 @@ package net.icelane.typeex.net.minecraft.client.gui;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonParseException;
 import io.netty.buffer.Unpooled;
+
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.List;
 import javax.annotation.Nullable;
+
+import net.icelane.typeex.io.KeyHandler;
+import net.icelane.typeex.io.KeyInfo;
+import net.icelane.typeex.io.TextInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -259,25 +265,68 @@ public class TXGuiScreenBook extends GuiScreen
     }
 
     /**
+     * Handles keyboard input.
+     */
+    public void handleKeyboardInput() throws IOException
+    {
+        keyTyped_new(new KeyInfo(Keyboard.getEventKey(), Keyboard.getEventCharacter(), Keyboard.getEventKeyState()));
+        
+        this.mc.dispatchKeypresses();
+    }
+    
+    /**
      * Fired when a key is typed (except F11 which toggles full screen). This is the equivalent of
      * KeyListener.keyTyped(KeyEvent e). Args : character (character on the key), keyCode (lwjgl Keyboard key code)
      */
-    protected void keyTyped(char typedChar, int keyCode) throws IOException
+    protected void keyTyped(KeyInfo keyinfo) throws IOException
     {
-        super.keyTyped(typedChar, keyCode);
+        super.keyTyped(keyinfo.getKeyChar(), keyinfo.getKeyCode());
 
         if (this.bookIsUnsigned)
         {
             if (this.bookGettingSigned)
             {
-                this.keyTypedInTitle(typedChar, keyCode);
+                //this.keyTypedInTitle(typedChar, keyCode);
             }
             else
             {
-                this.keyTypedInBook(typedChar, keyCode);
+                this.keyTyped_new(keyinfo);
             }
         }
     }
+    
+    private TextInfo textinfo = new TextInfo();
+    
+	public void keyTyped_new(KeyInfo keyinfo) {
+		textinfo.text = pageGetCurrent();
+		
+		//DEBUG
+		System.out.println(String.format("%16s %s%s%s%s%s",
+				keyinfo.toString(),
+				textinfo.overwrite ? "Ins" : "   ",
+				KeyInfo.isControlHeld() ? " CTRL" : "",
+				KeyInfo.isAltHeld() ? " Alt" : "",
+				KeyInfo.isShiftHeld() ? " Shift" : "",
+				KeyInfo.isMetaHeld() ? " Meta" : ""));
+		
+		if (!keyinfo.getKeyState()) return;
+		
+		// handle special keys ...
+		boolean keyHandled = KeyHandler.handleKey(keyinfo, textinfo);
+		
+		// handle normal char keys ...
+		if (!keyHandled && keyinfo.getKeyChar() != KeyEvent.CHAR_UNDEFINED) {						
+	
+			// handle selection overwrite ...
+			if (textinfo.selected) textinfo.removeSelection();
+			
+			textinfo.insert(keyinfo.getKeyChar());
+		}
+
+		// update UI
+		pageSetCurrent(textinfo.text);
+//		setText(textinfo);
+	}
 
     /**
      * Processes keystrokes when editing the text of a book
