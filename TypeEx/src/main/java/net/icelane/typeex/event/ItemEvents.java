@@ -22,7 +22,7 @@ public class ItemEvents {
 		EntityPlayer player = event.getEntityPlayer();
 	    ItemStack book = event.getItemStack();
 	    
-	    player.sendMessage(new TextComponentString("YEAH!"));
+	    //player.sendMessage(new TextComponentString("YEAH!"));
 	    
     	BookUI bookui = new BookUI(player, book, true);
     	Minecraft.getMinecraft().displayGuiScreen(bookui);
