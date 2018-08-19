@@ -1,4 +1,4 @@
-package net.icelane.typeex.net.minecraft.client.gui.original;
+package net.icelane.typeex.net.minecraft.client.gui;
 
 import com.google.common.collect.Lists;
 import com.google.gson.JsonParseException;
@@ -33,7 +33,7 @@ import org.apache.logging.log4j.Logger;
 import org.lwjgl.input.Keyboard;
 
 @SideOnly(Side.CLIENT)
-public class TXGuiScreenBook extends GuiScreen
+public class GuiScreenBook extends GuiScreen
 {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final ResourceLocation BOOK_GUI_TEXTURES = new ResourceLocation("textures/gui/book.png");
@@ -56,15 +56,15 @@ public class TXGuiScreenBook extends GuiScreen
     private String bookTitle = "";
     private List<ITextComponent> cachedComponents;
     private int cachedPage = -1;
-    private TXGuiScreenBook.NextPageButton buttonNextPage;
-    private TXGuiScreenBook.NextPageButton buttonPreviousPage;
+    private GuiScreenBook.NextPageButton buttonNextPage;
+    private GuiScreenBook.NextPageButton buttonPreviousPage;
     private GuiButton buttonDone;
     /** The GuiButton to sign this book. */
     private GuiButton buttonSign;
     private GuiButton buttonFinalize;
     private GuiButton buttonCancel;
 
-    public TXGuiScreenBook(EntityPlayer player, ItemStack book, boolean isUnsigned)
+    public GuiScreenBook(EntityPlayer player, ItemStack book, boolean isUnsigned)
     {
         this.editingPlayer = player;
         this.book = book;
@@ -111,10 +111,10 @@ public class TXGuiScreenBook extends GuiScreen
 
         if (this.bookIsUnsigned)
         {
-            this.buttonSign = this.addButton(    new GuiButton(3, this.width / 2 - 150, 196, 98, 20, I18n.format("book.signButton")));  // 150 was: 100
-            this.buttonDone = this.addButton(    new GuiButton(0, this.width / 2 + 2  , 196, 98, 20, I18n.format("gui.done")));
-            this.buttonFinalize = this.addButton(new GuiButton(5, this.width / 2 - 150, 196, 98, 20, I18n.format("book.finalizeButton")));  // 150 was: 100
-            this.buttonCancel = this.addButton(  new GuiButton(4, this.width / 2 + 2  , 196, 98, 20, I18n.format("gui.cancel")));
+            this.buttonSign = this.addButton(new GuiButton(3, this.width / 2 - 100, 196, 98, 20, I18n.format("book.signButton")));
+            this.buttonDone = this.addButton(new GuiButton(0, this.width / 2 + 2, 196, 98, 20, I18n.format("gui.done")));
+            this.buttonFinalize = this.addButton(new GuiButton(5, this.width / 2 - 100, 196, 98, 20, I18n.format("book.finalizeButton")));
+            this.buttonCancel = this.addButton(new GuiButton(4, this.width / 2 + 2, 196, 98, 20, I18n.format("gui.cancel")));
         }
         else
         {
@@ -123,8 +123,8 @@ public class TXGuiScreenBook extends GuiScreen
 
         int i = (this.width - 192) / 2;
         int j = 2;
-        this.buttonNextPage = (TXGuiScreenBook.NextPageButton)this.addButton(new TXGuiScreenBook.NextPageButton(1, i + 120, 156, true));
-        this.buttonPreviousPage = (TXGuiScreenBook.NextPageButton)this.addButton(new TXGuiScreenBook.NextPageButton(2, i + 38, 156, false));
+        this.buttonNextPage = (GuiScreenBook.NextPageButton)this.addButton(new GuiScreenBook.NextPageButton(1, i + 120, 156, true));
+        this.buttonPreviousPage = (GuiScreenBook.NextPageButton)this.addButton(new GuiScreenBook.NextPageButton(2, i + 38, 156, false));
         this.updateButtons();
     }
 
@@ -639,7 +639,7 @@ public class TXGuiScreenBook extends GuiScreen
                 {
                     boolean flag = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
                     GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-                    mc.getTextureManager().bindTexture(TXGuiScreenBook.BOOK_GUI_TEXTURES);
+                    mc.getTextureManager().bindTexture(GuiScreenBook.BOOK_GUI_TEXTURES);
                     int i = 0;
                     int j = 192;
 
