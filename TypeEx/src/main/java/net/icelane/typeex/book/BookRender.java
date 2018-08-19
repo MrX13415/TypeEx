@@ -68,7 +68,7 @@ public abstract class BookRender extends BasicBook {
         buttonNextPage     = (NextPageButton) addButton(new NextPageButton(1, i + 120, 156, true));
         buttonPreviousPage = (NextPageButton) addButton(new NextPageButton(2, i + 38, 156, false));
         
-        if (!isSigned()) {
+        if (isSigned()) {
         	buttonDone = addButton(new GuiButton(0, width / 2 - 100, 196, 200, 20, I18n.format("gui.done")));
         	
         } else {
