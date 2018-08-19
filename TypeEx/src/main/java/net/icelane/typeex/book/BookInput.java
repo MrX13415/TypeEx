@@ -13,12 +13,13 @@ import net.minecraft.item.ItemStack;
 
 abstract class BookInput extends BookRender {
 
+
 	public BookInput(EntityPlayer player, ItemStack item, boolean signed) {
 		super(player, item, signed);
 	}
 
 	TextInfo textinfo = new TextInfo();
-	
+
     public void handleKeyboardInput() throws IOException
     {
         keyTyped(new KeyInfo(Keyboard.getEventKey(), Keyboard.getEventCharacter(), Keyboard.getEventKeyState()));
