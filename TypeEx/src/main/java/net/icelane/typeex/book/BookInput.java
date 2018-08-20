@@ -11,7 +11,6 @@ import net.icelane.typeex.book.io.TextInfo;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatAllowedCharacters;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.event.ClickEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -20,12 +19,23 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 abstract class BookInput extends BookRender {
 
-	private TextInfo textinfo = new TextInfo();
+	private TextInfo textinfo;
 	
 	public BookInput(EntityPlayer player, ItemStack item, boolean signed) {
 		super(player, item, signed);
 	}
 
+	@Override
+	public void Initialize() {
+		textinfo = new TextInfo();
+	}
+	
+	@Override
+	public void onPageChange() {
+		textinfo.text = isSigning() ? title() : getPageText();
+		textinfo.cursorPosition = textinfo.text.length();
+	}
+	
     public void handleKeyboardInput() throws IOException
     {
         keyTyped(new KeyInfo(Keyboard.getEventKey(), Keyboard.getEventCharacter(), Keyboard.getEventKeyState()));
@@ -44,77 +54,56 @@ abstract class BookInput extends BookRender {
 				KeyInfo.isShiftHeld() ? " Shift" : "",
 				KeyInfo.isMetaHeld() ? " Meta" : ""));
 			
-		
-		textinfo.text = getPageText();
-
+		if (isSigned()) return;
 		if (!keyinfo.getKeyState()) return;
 		
+		// initialize ...
+		//textinfo.text = isSigning() ? title() : getPageText();
+		textinfo.multiline = isSigning();
+		textinfo.maxLength = isSigning() ? 16 : 256; //TODO
+
 		// handle special keys ...
 		boolean keyHandled = KeyHandler.handleKey(keyinfo, textinfo);
 		
-		// handle normal char keys ...
-		if (!keyHandled && keyinfo.getKeyChar() != KeyEvent.CHAR_UNDEFINED) {						
-	
+		if (isSigning()){
+	        switch (keyinfo.getKeyCode())
+	        {
+	            case KeyInfo.Backspace:
+	                this.updateButtons();
+	                break;
+	                
+	            case KeyInfo.Enter:
+	            case KeyInfo.Num_Enter:
+	                if (title().isEmpty()) return;
+					try {
+						this.sendBookToServer(true);
+		                this.mc.displayGuiScreen((GuiScreen)null);
+					} catch (IOException e) {
+						System.err.println("Unable to sing book!");
+						e.printStackTrace();
+					}
+	                break;
+	        }
+		}
+		
+		if (!keyHandled && keyinfo.IsAllowed()) {
 			// handle selection overwrite ...
 			if (textinfo.selected) textinfo.removeSelection();
 			
-			if (!isSigned()) {
-		        if (isSigned()){
-		        	try {
-						keyTypedInTitle(keyinfo);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-		        } else {
-			    	if (ChatAllowedCharacters.isAllowedCharacter(keyinfo.getKeyChar())) {
-						textinfo.insert(Character.toString(keyinfo.getKeyChar()));
-						
-						// update UI
-						setPageText(textinfo.text);	
-			    	}
-			    }
+			if (isSigning()){
+		        textinfo.insert(keyinfo.getString());
+	            this.updateButtons();
+	            setModified();
+			} else {
+				textinfo.insert(keyinfo.getString());
 			}
 		}
-
-
+		
+		// update UI
+		if (isSigning()) title(textinfo.text);
+		else setPageText(textinfo.text);	
 	}
-	
-	public void keyTypedInTitle(KeyInfo keyinfo) throws IOException
-    {
-        switch (keyinfo.getKeyCode())
-        {
-            case 14:
 
-                if (!title().isEmpty())
-                {
-                	title(title().substring(0, title().length() - 1));
-                    this.updateButtons();
-                }
-
-                return;
-            case 28:
-            case 156:
-
-                if (!title().isEmpty())
-                {
-                    this.sendBookToServer(true);
-                    this.mc.displayGuiScreen((GuiScreen)null);
-                }
-
-                return;
-            default:
-
-                if (title().length() < 16 && ChatAllowedCharacters.isAllowedCharacter(keyinfo.getKeyChar()))
-                {
-                	title(title() + Character.toString(keyinfo.getKeyChar()));
-                    this.updateButtons();
-                    setModified();
-                }
-        }
-    }
-
-	  
     /**
      * Called when the mouse is clicked. Args : mouseX, mouseY, clickedButton
      */
