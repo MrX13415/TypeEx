@@ -16,7 +16,7 @@ public class Control implements IKeyListener{
 	public Control(GUI gui) {
 		this.gui = gui;	 
 		gui.addListener(this); 
-		textinfo = this.gui.getText();	
+		textinfo = this.gui.getText();
 	}
 
 	@Override
@@ -36,12 +36,12 @@ public class Control implements IKeyListener{
 		boolean keyHandled = KeyHandler.handleKey(keyinfo, textinfo);
 		
 		// handle normal char keys ...
-		if (!keyHandled && keyinfo.getKeyChar() != KeyEvent.CHAR_UNDEFINED) {						
+		if (!keyHandled && keyinfo.getCharacter() != KeyEvent.CHAR_UNDEFINED) {						
 	
 			// handle selection overwrite ...
 			if (textinfo.selected) textinfo.removeSelection();
 			
-			textinfo.insert(keyinfo.getKeyChar());
+			textinfo.insert(keyinfo.getCharacter());
 		}
 
 		// update UI
