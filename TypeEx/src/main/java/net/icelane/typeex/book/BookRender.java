@@ -110,7 +110,9 @@ public abstract class BookRender extends BasicBook {
 	}
 	
 	public void setSigning(boolean signing) {
+		boolean old = this.signing;
 		this.signing = signing;
+		if (this.signing != old) onPageChange();
 	}
     	
 	private void drawSigningPage() {
