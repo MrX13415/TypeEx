@@ -15,7 +15,7 @@ public class TextInfo {
 	/**
 	 * The Text.
 	 */
-	public String text;
+	public String text = "";
 	
 	/**
 	 * The position of the cursor in the text.
@@ -23,9 +23,24 @@ public class TextInfo {
 	public int cursorPosition;
 	
 	/**
+	 * The maximum length of the text.
+	 */
+	public int maxLength;
+	
+	/**
 	 * Weather overwriting of characters is enabled.
 	 */
-	public boolean overwrite; 
+	public boolean overwrite = false; 
+
+	/**
+	 * Weather multiple lines are allowed.
+	 */
+	public boolean multiline = true; 
+	
+	/**
+	 * The characters to use for new line.
+	 */	
+	public String newLine = "\n";
 	
 	/**
 	 * The first position of the selection. (A and B positions might be reversed.)
@@ -41,6 +56,20 @@ public class TextInfo {
 	 * Weather text is selected.
 	 */
 	public boolean selected;
+	
+	public void validateCursorPosition() {
+		if (cursorPosition < 0 || cursorPosition > text.length()) cursorPosition = text.length();
+	}
+	
+	public void validateSelectionPosition() {
+		if (IsForwardSelection()) {
+			if (selectionPosA < 0) selectionPosA = 0;
+			if (selectionPosB > text.length()) selectionPosB = text.length();
+		}else {
+			if (selectionPosB < 0) selectionPosB = 0;
+			if (selectionPosA > text.length()) selectionPosA = text.length();
+		}
+	}
 	
 	/**
 	 * Copies the selected text to the clipboard.
@@ -89,6 +118,7 @@ public class TextInfo {
 	 * @param text The text to be inserted.
 	 */
 	public void insert(String text) {
+		text = enforceLimit(text);
 		String lastPart = lastPart();
 		
 		// handle overwrite mode ...
@@ -98,6 +128,12 @@ public class TextInfo {
 		// type next char ...
 		this.text = firstPart() + text + lastPart;
 		this.cursorPosition += text.length();
+	}
+	
+	private String enforceLimit(String text) {
+		int overflow = this.text.length() + text.length() - maxLength;
+		if (overflow <= 0) return text;
+		return text.substring(0, text.length() - overflow);
 	}
 	
 	public boolean IsBackwardSelection() {
@@ -195,6 +231,7 @@ public class TextInfo {
 	 * @return The first text part.
 	 */
 	public String firstPart() {
+		validateCursorPosition();
 		return firstPart(text, cursorPosition);
 	}
 	
@@ -203,6 +240,7 @@ public class TextInfo {
 	 * @return The last part.
 	 */
 	public String lastPart() {
+		validateCursorPosition();
 		return lastPart(text, cursorPosition);
 	}
 
@@ -220,6 +258,7 @@ public class TextInfo {
 	 * @return The first part of the text.
 	 */
 	public static String firstPart(String text, int cursorpos) {
+		if (cursorpos >= text.length()) return text;
 		if (text.length() > 0 ){
 			return text.substring(0, cursorpos);
 		}
@@ -233,6 +272,7 @@ public class TextInfo {
 	 * @return The last part of the text.
 	 */
 	public static String lastPart(String text, int cursorpos) {
+		if (cursorpos <= 0) return text;
 		if (cursorpos < text.length()) {
 			return text.substring(cursorpos, text.length());
 		}
@@ -252,7 +292,7 @@ public class TextInfo {
 		}
 
 		private void getLineInfo() {
-			this.startPos = firstPart(text, textinfo.cursorPosition).lastIndexOf("\n", textinfo.cursorPosition) + 1;			
+			this.startPos = firstPart().lastIndexOf("\n", textinfo.cursorPosition) + 1;			
 			this.endPos = text.indexOf("\n", textinfo.cursorPosition);
 			if (endPos <= 0) endPos = text.length();
 			
