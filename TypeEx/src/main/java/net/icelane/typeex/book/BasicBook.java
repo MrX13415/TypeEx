@@ -57,7 +57,14 @@ abstract class BasicBook extends GuiScreen {
         	pages.appendTag(new NBTTagString(""));
             pageCount = 1;
         }
+        
+        Initialize();
+        onPageChange();
 	}
+    
+    public abstract void Initialize();
+    
+    public abstract void onPageChange();
     
     public NBTTagList getPages() {
 		return pages;
@@ -96,46 +103,40 @@ abstract class BasicBook extends GuiScreen {
     
     protected void sendBookToServer(boolean publish) throws IOException
     {
-        if (!isSigned() && isModified())
+        if (isSigned() || !isModified()) return;
+        if (getPages() == null) return;
+        
+        // remove empty pages from the end ...
+        while (getPages().tagCount() > 1)
         {
-            if (getPages() != null)
-            {
-                while (getPages().tagCount() > 1)
-                {
-                    String s = getPages().getStringTagAt(getPages().tagCount() - 1);
-
-                    if (!s.isEmpty())
-                    {
-                        break;
-                    }
-
-                    getPages().removeTag(getPages().tagCount() - 1);
-                }
-
-                if (getItem().hasTagCompound())
-                {
-                    NBTTagCompound nbttagcompound = getItem().getTagCompound();
-                    nbttagcompound.setTag("pages", getPages());
-                }
-                else
-                {
-                    getItem().setTagInfo("pages", getPages());
-                }
-
-                String s1 = "MC|BEdit";
-
-                if (publish)
-                {
-                    s1 = "MC|BSign";
-                    getItem().setTagInfo("author", new NBTTagString(getPlayer().getName()));
-                    getItem().setTagInfo("title", new NBTTagString(title().trim()));
-                }
-
-                PacketBuffer packetbuffer = new PacketBuffer(Unpooled.buffer());
-                packetbuffer.writeItemStack(getItem());
-                this.mc.getConnection().sendPacket(new CPacketCustomPayload(s1, packetbuffer));
-            }
+            String s = getPages().getStringTagAt(getPages().tagCount() - 1);
+            if (!s.isEmpty()) break;
+            getPages().removeTag(getPages().tagCount() - 1);
         }
+
+        if (getItem().hasTagCompound())
+        {
+            NBTTagCompound nbttagcompound = getItem().getTagCompound();
+            nbttagcompound.setTag("pages", getPages());
+        }
+        else
+        {
+            getItem().setTagInfo("pages", getPages());
+        }
+
+        String s1 = "MC|BEdit";
+
+        if (publish)
+        {
+            s1 = "MC|BSign";
+            getItem().setTagInfo("author", new NBTTagString(getPlayer().getName()));
+            getItem().setTagInfo("title", new NBTTagString(title().trim()));
+        }
+
+        PacketBuffer packetbuffer = new PacketBuffer(Unpooled.buffer());
+        packetbuffer.writeItemStack(getItem());
+        this.mc.getConnection().sendPacket(new CPacketCustomPayload(s1, packetbuffer));
+
     }
 	
     public EntityPlayer getPlayer() {
@@ -178,8 +179,10 @@ abstract class BasicBook extends GuiScreen {
 		return page;
 	}
 	
-	public int page(int index) {
-		return page = index;
+	public void page(int index) {
+		int old = page;
+		page = index;
+		if (old != page) onPageChange();
 	}
 	
 	public void pageIncrement() {
