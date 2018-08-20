@@ -55,10 +55,16 @@ public abstract class KeyHandler {
 		handled = true;								        // assume key will be handled 
 		selection = keyinfo.getKeyCode() != KeyInfo.Shift;  //SHIFT: Don't trigger selection handling yet!
 		int cursorPosition = textinfo.cursorPosition;       // save the current cursor position for selection handling 
+
+		System.out.println(KeyInfo.Backspace);
 		
 		switch(keyinfo.getKeyCode()) {
 		case KeyInfo.Esc: break; // ESC key writes a char otherwise
 
+		case KeyInfo.Enter:
+		case KeyInfo.Num_Enter: handleKey_Enter(textinfo, firstPart, lastPart);
+			break;
+			
 		case KeyInfo.Backspace: handleKey_BackSpace(textinfo, firstPart, lastPart);
 			selection = false;
 			break;
@@ -109,6 +115,7 @@ public abstract class KeyHandler {
 		// default selection handling
 		if (selection && handled) {
 			if (KeyInfo.isShiftHeld()) {
+				System.out.println("SELECTION!"); //TODO
 				textinfo.setSelectionStart(cursorPosition);
 				textinfo.setSelectionEnd();
 			} else {
@@ -157,16 +164,19 @@ public abstract class KeyHandler {
 		return charCount;
 	}
 	
+	private static void handleKey_Enter(TextInfo textinfo, String firstPart, String lastPart) {
+		textinfo.insert(textinfo.newLine);
+	}
+	
 	private static void handleKey_BackSpace(TextInfo textinfo, String firstPart, String lastPart) {
 		if (firstPart.length() == 0) return;
-		
+
 		// handling of deletion while selection is active
 		if (textinfo.selected) { 
 			textinfo.removeSelection(); return;
 		}
 		
 		int charCount = 1;
-		
 		if (KeyInfo.isControlHeld() && KeyInfo.isShiftHeld()) {
 			// Number of chars from the beginning of the line to the cursor.
 			charCount = firstPart.lastIndexOf("\n");
