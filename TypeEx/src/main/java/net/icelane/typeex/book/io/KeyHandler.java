@@ -3,6 +3,8 @@ package net.icelane.typeex.book.io;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.icelane.typeex.book.io.TextInfo.LineInfo;
+
 /**
  * Handle keys and alter the given <code>TextInfo</code> object
  * accordingly, so it mimics the behavior of the text edit control.
@@ -115,7 +117,6 @@ public abstract class KeyHandler {
 		// default selection handling
 		if (selection && handled) {
 			if (KeyInfo.isShiftHeld()) {
-				System.out.println("SELECTION!"); //TODO
 				textinfo.setSelectionStart(cursorPosition);
 				textinfo.setSelectionEnd();
 			} else {
@@ -249,6 +250,10 @@ public abstract class KeyHandler {
 	}
 		
 	private static void handleKey_ArrowUp(TextInfo textinfo, String firstPart, String lastPart) {
+		//LineInfo line = textinfo.currentLine();
+		
+		//TODO: Handle chuncks of a line.
+		
 		if (!firstPart.contains("\n")) return;
 		// Pos A: Index of the new line char before the last new line char.
 		// Pos B: Index of the last new line char in the first text part.

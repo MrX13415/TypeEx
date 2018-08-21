@@ -16,6 +16,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.auth.NTCredentials;
 
 import net.icelane.typeex.book.io.IKeyListener;
 import net.icelane.typeex.book.io.KeyInfo;
@@ -44,7 +45,7 @@ public class GUI implements KeyListener{
 	public GUI() {	
 		initializeGui();
 		
-		textinfo = new TextInfo();
+		textinfo = new TextInfo(null);
 		textinfo.text = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr,\n" + 
 				"sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,\n" + 
 				"sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.\n" + 
@@ -129,6 +130,11 @@ public class GUI implements KeyListener{
 		this.myLabel = myLabel;
 	}
 	
+	private void drawLine(Graphics gx) {
+		Graphics2D g = (Graphics2D)gx;
+		
+	}
+	
 	private void drawCursor(Graphics gx) {
 		if (textinfo == null) return;
 		
@@ -144,6 +150,8 @@ public class GUI implements KeyListener{
 		
 		String firstPart = textinfo.firstPart();
 		String lastPart = textinfo.lastPart();
+		
+		
 		String curLineFP = firstPart.substring(firstPart.lastIndexOf("\n") + 1);
 		int nlPos = lastPart.indexOf("\n");
 		String curLineLP = lastPart.substring(0, nlPos >= 0 ? nlPos : lastPart.length());
@@ -193,7 +201,10 @@ public class GUI implements KeyListener{
 		
 		if (debug) System.out.println("--------------------------------------------------");
 		
-		String[] lines = textinfo.text.split("\n");
+		String text = textinfo.text;
+		text = wordWrap(text);
+		
+		String[] lines = text.split("\n");
 		int linePosStart = 0;
 		int linePosEnd = 0;
 		
@@ -269,16 +280,37 @@ public class GUI implements KeyListener{
 //		String ta = textinfo.cursorPosition > 0 ? text.substring(0, textinfo.cursorPosition) : "";
 //		String tb = textinfo.cursorPosition < text.length() ? text.substring(textinfo.cursorPosition, text.length()) : "";	
 //		text = ta + (textinfo.overwrite ? "\u00A6" : "\u007C") + tb;
-	
+		
+		text = wordWrap(text);
+		
 		text = text.replaceAll("&", "&amp;");
 		text = text.replaceAll(" ", "&nbsp;");
 		text = text.replaceAll("<", "&lt;");
 		text = text.replaceAll(">", "&gt;");
 		text = text.replaceAll("\r", "");
 		text = text.replaceAll("\n", newLineTemplate);
-		
+
 		myLabel.setText(String.format("%s%s%s", textTemplateBeginn, text, textTemplateEnd));
 		myLabel.repaint();
+	}
+	
+	public String wordWrap(String text) {
+		// hack-ish word wrap render ...
+//		if (textinfo.wordWrap > 0) {
+//			String nText = "";
+//			int wcounter = 0;
+//			for (int i = 0; i < text.length(); i++) {
+//				char cc = text.charAt(i);
+//				nText += cc;
+//				wcounter++;
+//				if (cc == '\n') wcounter = 0;
+//				if (wcounter <= textinfo.wordWrap) continue;
+//				nText += "\n";
+//				wcounter = 0;
+//			}
+//			text = nText;
+//		}
+		return text;
 	}
 	
 	/**

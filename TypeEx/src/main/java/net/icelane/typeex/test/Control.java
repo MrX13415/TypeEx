@@ -10,7 +10,7 @@ public class Control implements IKeyListener{
 	
 	private GUI gui;
 	
-	private TextInfo textinfo = new TextInfo();
+	private TextInfo textinfo = new TextInfo(null);
 	
 
 	public Control(GUI gui) {
