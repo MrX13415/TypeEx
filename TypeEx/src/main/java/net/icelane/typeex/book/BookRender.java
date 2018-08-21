@@ -4,12 +4,17 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import org.apache.commons.codec.language.ColognePhonetic;
 import org.lwjgl.input.Keyboard;
 
 import com.google.common.collect.Lists;
 import com.google.gson.JsonParseException;
 
+import net.icelane.typeex.book.io.TextInfo.ChunckInfo;
+import net.icelane.typeex.book.io.TextInfo.LineInfo;
+import net.icelane.typeex.book.io.TextInfo.SubTextInfo;
 import net.icelane.typeex.book.ui.NextPageButton;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiUtilRenderComponents;
 import net.minecraft.client.renderer.GlStateManager;
@@ -47,10 +52,16 @@ public abstract class BookRender extends BasicBook {
     private NextPageButton buttonPreviousPage;
 
     
+    
 	public BookRender(EntityPlayer player, ItemStack item, boolean signed) {
 		super(player, item, signed);
 	}
 
+	@Override
+	public void onPageChange() {
+		super.onPageChange();
+		if(isSigning()) textinfo().text(title());
+	}	
 	
     /**
      * Adds the buttons (and other controls) to the screen in question. Called when the GUI is displayed and when the
@@ -58,6 +69,7 @@ public abstract class BookRender extends BasicBook {
      */
     public void initGui()
     {
+    	super.initGui();
         this.buttonList.clear();
         Keyboard.enableRepeatEvents(true);
 
@@ -74,7 +86,7 @@ public abstract class BookRender extends BasicBook {
             buttonFinalize = addButton(new GuiButton(5, width / 2 - 100, 196, 98, 20, I18n.format("book.finalizeButton")));
             buttonCancel   = addButton(new GuiButton(4, width / 2 + 2, 196, 98, 20, I18n.format("gui.cancel")));
         }
-          
+
         updateButtons();
     }
 
@@ -115,23 +127,24 @@ public abstract class BookRender extends BasicBook {
 		if (this.signing != old) onPageChange();
 	}
     	
+	public int x() {
+		// screen-width - book-width / 2;
+		return (this.width - width()) / 2;
+	}
+	
+	public int width() {
+		return 192;
+	}
+	
+	public int height() {
+		return 192;
+	}
+	
 	private void drawSigningPage() {
 		String title = title();
 
-		if (isUnsigned()) title = addCursor(title);
-		
-//        if (!isSigned())
-//        {
-//            if (this.updateCount / 6 % 2 == 0)
-//            {
-//            	title = title + "" + TextFormatting.BLACK + "_";
-//            }
-//            else
-//            {
-//            	title = title + "" + TextFormatting.GRAY + "_";
-//            }
-//        }
-		
+		//if (isUnsigned()) title = addCursor(title);
+
 		String header = I18n.format("book.editTitle");
         String name = I18n.format("book.byAuthor", getPlayer().getName());
         String warning = I18n.format("book.finalizeWarning");
@@ -153,21 +166,49 @@ public abstract class BookRender extends BasicBook {
         fontRenderer.drawSplitString(warning, i + 36, 82, 116, 0);
 	}
 	
-	private String addCursor(String text) {
-        if (this.fontRenderer.getBidiFlag())
-        {
-        	text += "_";
-        }
-        else if (this.updateTicks / 6 % 2 == 0)
-        {
-        	text += "" + TextFormatting.BLACK + "_";
-        }
-        else
-        {
-        	text += "" + TextFormatting.GRAY + "_";
-        }
+	//TODO
+    private int enabledColor = 14737632;
+    private int disabledColor = 7368816;
+	
+	private void drawCursor(String text) {
+		
+//		 boolean cursorWithin = textinfo().IsCursorWithin();
+//		 
+//         int k1 = j1;
+//
+//         if (cursorWithin)
+//         {
+//             Gui.drawRect(k1, i1 - 1, k1 + 1, i1 + 1 + this.fontRenderer.FONT_HEIGHT, -3092272);
+//         }
+//         else
+//         {
+//             this.fontRenderer.drawStringWithShadow("_", (float)k1, (float)i1, i);
+//         }
+
+         
+         
+         
+         
+         
+         
+		
+		
+		
+		
+//        if (this.fontRenderer.getBidiFlag())
+//        {
+//        	text += "_";
+//        }
+//        else if (this.updateTicks / 6 % 2 == 0)
+//        {
+//        	text += "" + TextFormatting.BLACK + "_";
+//        }
+//        else
+//        {
+//        	text += "" + TextFormatting.GRAY + "_";
+//        }
         
-		return text;
+		//return text;
 	}
 	
 	private void cachePage(String pageContent) {
@@ -191,43 +232,136 @@ public abstract class BookRender extends BasicBook {
 
         this.cachedPage = page();
 	}
+
 	
 	/**
      * Draws the screen and all the components in it.
      */
-    public void drawScreen(int mouseX, int mouseY, float partialTicks)
-    {
+	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+		drawBackground();
+		
+		if (isSigning())
+		{
+			drawSigningPage();
+		}
+		else
+		{
+			drawBookPage();
+		}
+	
+		super.drawScreen(mouseX, mouseY, partialTicks);
+	}
+	
+	/**
+     * Draws the screen and all the components in it.
+     */
+	public void drawBackground() {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        
+
         this.mc.getTextureManager().bindTexture(BOOK_GUI_TEXTURES);
         
-        int x = (this.width - 192) / 2;
-        this.drawTexturedModalRect(x, 2, 0, 0, 192, 192);
+        int x = x();
+        int y = 2;
+        int w = width();
+        int h = height();
+        
+        this.drawTexturedModalRect(x, y, 0, 0, w, h);
+	}
+	
+	/**
+     * Draws the screen and all the components in it.
+     */
+	public void drawBookPage() {
+		drawPageHeader();
 
+		boolean cursor = false;
+		int lineCount = textinfo().lineCount();
+		
+		int x = x() + 36;
+		int y = 34;
+		
+		for (int index = 0; index < lineCount; index++) {
+			LineInfo line = textinfo().line(index);
+			ChunckInfo[] chuncks = line.wordWrap();
+			
+			for (ChunckInfo chunck : chuncks) {
+		        fontRenderer.drawString(chunck.text, x, y, 0); // TODO: drawStringalined?
+
+		        if (chunck.isCursorWithin() || index == (lineCount - 1) && !cursor) {
+		        	drawCursor(x, y, chunck);
+		        	cursor = true;
+		        }
+				
+				y += fontRenderer.FONT_HEIGHT;
+			} 
+		}
+	}
+	
+	private void drawCursor(int x, int y, SubTextInfo subInfo) {
+		x = x + subInfo.cursorWidth();
+		
+		int color = 0;
+		if (this.updateTicks / 6 % 2 == 0) color = -3092272;
+		
+        if (textinfo().isCursorWithin())
+        {
+            Gui.drawRect(x, y - 1, x + 1, y + 1 + this.fontRenderer.FONT_HEIGHT, color);
+        }
+        else
+        {
+        	
+        	this.fontRenderer.drawStringWithShadow("_", (float)x, (float)y, color);
+        }
+	}
+
+	
+	/**
+     * Draws the screen and all the components in it.
+     */
+	public void drawPageHeader() {
+	    String pageIndicator = I18n.format("book.pageIndicator", page() + 1, pageCount());
+	    
+	    int textwidth = this.fontRenderer.getStringWidth(pageIndicator);
+		int offset    = 44;
+		int x         = x() + width() - textwidth - offset;
+		int y         = 18;
+ 
+        this.fontRenderer.drawString(pageIndicator, x, y, 0);
+	}
+
+	
+	
+	
+	
+	/**
+     * Draws the screen and all the components in it.
+     */
+    public void drawScreen2(int mouseX, int mouseY, float partialTicks)
+    {
         if (isSigning())
         {
         	drawSigningPage();
         }
         else
         {
-            String s4 = I18n.format("book.pageIndicator", page() + 1, pageCount());
-            String pageContent = getPageText();
+//            String s4 = I18n.format("book.pageIndicator", page() + 1, pageCount());
+//            String pageContent = getPageText();
 
             if (isUnsigned())
             {
-            	pageContent = addCursor(pageContent);
+            	//pageContent = addCursor(pageContent);
             }
             else if (this.cachedPage != page())
             {
-            	cachePage(pageContent);
+            	//cachePage(pageContent);
             }
 
-            int j1 = this.fontRenderer.getStringWidth(s4);
-            this.fontRenderer.drawString(s4, x - j1 + 192 - 44, 18, 0);
+//            int j1 = this.fontRenderer.getStringWidth(s4);
+//            this.fontRenderer.drawString(s4, x - j1 + 192 - 44, 18, 0);
 
             if (this.cachedComponents == null)
             {
-                this.fontRenderer.drawSplitString(pageContent, x + 36, 34, 116, 0);
+               // this.fontRenderer.drawSplitString(pageContent, x + 36, 34, textinfo().wordWrap, 0);
             }
             else
             {
@@ -236,7 +370,7 @@ public abstract class BookRender extends BasicBook {
                 for (int l1 = 0; l1 < k1; ++l1)
                 {
                     ITextComponent itextcomponent2 = this.cachedComponents.get(l1);
-                    this.fontRenderer.drawString(itextcomponent2.getUnformattedText(), x + 36, 34 + l1 * this.fontRenderer.FONT_HEIGHT, 0);
+                    //this.fontRenderer.drawString(itextcomponent2.getUnformattedText(), x + 36, 34 + l1 * this.fontRenderer.FONT_HEIGHT, 0);
                 }
 
                 ITextComponent itextcomponent1 = this.getClickedComponentAt(mouseX, mouseY);

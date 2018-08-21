@@ -7,7 +7,6 @@ import org.lwjgl.input.Keyboard;
 
 import net.icelane.typeex.book.io.KeyHandler;
 import net.icelane.typeex.book.io.KeyInfo;
-import net.icelane.typeex.book.io.TextInfo;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -19,23 +18,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 abstract class BookInput extends BookRender {
 
-	private TextInfo textinfo;
-	
 	public BookInput(EntityPlayer player, ItemStack item, boolean signed) {
 		super(player, item, signed);
 	}
 
-	@Override
-	public void Initialize() {
-		textinfo = new TextInfo();
-	}
-	
-	@Override
-	public void onPageChange() {
-		textinfo.text = isSigning() ? title() : getPageText();
-		textinfo.cursorPosition = textinfo.text.length();
-	}
-	
     public void handleKeyboardInput() throws IOException
     {
         keyTyped(new KeyInfo(Keyboard.getEventKey(), Keyboard.getEventCharacter(), Keyboard.getEventKeyState()));
@@ -48,7 +34,7 @@ abstract class BookInput extends BookRender {
 		//DEBUG
 		System.out.println(String.format("%16s %s%s%s%s%s",
 				keyinfo.toString(),
-				textinfo.overwrite ? "Ins" : "   ",
+				textinfo().overwrite ? "Ins" : "   ",
 				KeyInfo.isControlHeld() ? " CTRL" : "",
 				KeyInfo.isAltHeld() ? " Alt" : "",
 				KeyInfo.isShiftHeld() ? " Shift" : "",
@@ -59,11 +45,11 @@ abstract class BookInput extends BookRender {
 		
 		// initialize ...
 		//textinfo.text = isSigning() ? title() : getPageText();
-		textinfo.multiline = isSigning();
-		textinfo.maxLength = isSigning() ? 16 : 256; //TODO
+		textinfo().multiline = isSigning();
+		textinfo().maxLength = isSigning() ? 16 : 256; //TODO
 
 		// handle special keys ...
-		boolean keyHandled = KeyHandler.handleKey(keyinfo, textinfo);
+		boolean keyHandled = KeyHandler.handleKey(keyinfo, textinfo());
 		
 		if (isSigning()){
 	        switch (keyinfo.getKeyCode())
@@ -88,20 +74,20 @@ abstract class BookInput extends BookRender {
 		
 		if (!keyHandled && keyinfo.IsAllowed()) {
 			// handle selection overwrite ...
-			if (textinfo.selected) textinfo.removeSelection();
+			if (textinfo().selected) textinfo().removeSelection();
 			
 			if (isSigning()){
-		        textinfo.insert(keyinfo.getString());
+		        textinfo().insert(keyinfo.getString());
 	            this.updateButtons();
 	            setModified();
 			} else {
-				textinfo.insert(keyinfo.getString());
+				textinfo().insert(keyinfo.getString());
 			}
 		}
 		
 		// update UI
-		if (isSigning()) title(textinfo.text);
-		else setPageText(textinfo.text);	
+		if (isSigning()) title(textinfo().text);
+		else setPageText(textinfo().text);	
 	}
 
     /**

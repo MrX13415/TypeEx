@@ -3,6 +3,7 @@ package net.icelane.typeex.book;
 import java.io.IOException;
 
 import io.netty.buffer.Unpooled;
+import net.icelane.typeex.book.io.TextInfo;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -22,6 +23,8 @@ abstract class BasicBook extends GuiScreen {
 	private final EntityPlayer player;
     private final ItemStack item;
     
+	private TextInfo textinfo;
+	
     private String title = "";
     private NBTTagList pages;
     
@@ -57,16 +60,31 @@ abstract class BasicBook extends GuiScreen {
         	pages.appendTag(new NBTTagString(""));
             pageCount = 1;
         }
-        
-        Initialize();
-        onPageChange();
 	}
     
-    public abstract void Initialize();
+    public void initGui()
+    {
+        Initialize();
+        onPageChange();
+    }
     
-    public abstract void onPageChange();
+	public void Initialize() {
+		textinfo = new TextInfo(fontRenderer);
+		textinfo.multiline = true;
+		textinfo.overwrite = false;
+		textinfo.wordWrap = 116;
+		//TODO
+	}
+	
+	public void onPageChange() {
+		textinfo.text(getPageText());
+	}	
     
-    public NBTTagList getPages() {
+    public TextInfo textinfo() {
+		return textinfo;
+	}
+
+	public NBTTagList getPages() {
 		return pages;
 	}
 
