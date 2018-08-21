@@ -8,8 +8,6 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.sound.sampled.Line;
-
 import net.icelane.typeex.util.StringUtils;
 import net.minecraft.client.gui.FontRenderer;
 
@@ -338,7 +336,7 @@ public class TextInfo {
 	public static abstract class SubTextInfo{
 		public final TextInfo textinfo;
 
-		public SubTextInfo(TextInfo textinfo) {
+		protected SubTextInfo(TextInfo textinfo) {
 			this.textinfo = textinfo;
 		}
 
@@ -347,8 +345,8 @@ public class TextInfo {
 		public abstract int cursorWidth();
 		public abstract boolean isCursorWithin();
 
-		
 		public int cursorWidth(String text) {
+			if (!isCursorWithin()) return 0;
 			String s = text.substring(0, cursorPosition());
 			return width(s);
 		}
@@ -358,8 +356,7 @@ public class TextInfo {
 		}
 		
 		public int cursorPosition(int start, int end) {
-			if (textinfo.cursorPosition < start) return start;
-			if (textinfo.cursorPosition > end) return end;
+			if (!isCursorWithin()) return -1;
 			return textinfo.cursorPosition - start;
 		}
 		
@@ -373,7 +370,7 @@ public class TextInfo {
 		public final int start;
 		public final int end;
 		
-		public LineInfo(TextInfo textinfo, int index) {
+		protected LineInfo(TextInfo textinfo, int index) {
 			super(textinfo);
 			
 			if (index > textinfo.lineCount() - 1) index = textinfo.lineCount() - 1;
@@ -414,24 +411,32 @@ public class TextInfo {
 			ChunckInfo[] out = new ChunckInfo[0];
 			
 			if (text.length() == 0) {
-				chuncks.add(new ChunckInfo(this, "", 0 + start, 0 + start));
+				chuncks.add(new ChunckInfo(this, 0, 0));
 				return chuncks.toArray(out);
 			}
 			
-			int chunckWidth = 0;
-			int cstart = 0;
+			int width = 0;
+			int start = 0;
 
 			for (int index = 0; index < text.length(); index++) {
-				char c = text.charAt(index);
-				int w = textinfo.fontRenderer.getCharWidth(c);
-				chunckWidth += w;
-				
-				if (chunckWidth >= textinfo.wordWrap || index == (text.length() - 1)) { 
-					chuncks.add(new ChunckInfo(this, text.substring(cstart , index + 1), cstart + start, index + start + 1));
-					cstart = index;
-					chunckWidth = 0;
+				int charwidth = textinfo.fontRenderer.getCharWidth(text.charAt(index));
+				width += charwidth;
+
+				if (width >= textinfo.wordWrap) {
+					chuncks.add(new ChunckInfo(this, start, index));
+					start = index;
+					width = charwidth;
+				}
+			
+				if (index == text.length() - 1) {
+					chuncks.add(new ChunckInfo(this, start, index + 1));
 				}
 			}
+			
+			if (chuncks.size() == 0) {
+				chuncks.add(new ChunckInfo(this));
+			}
+			
 
 			return chuncks.toArray(out); //textinfo.fontRenderer. listFormattedStringToWidth(line, textinfo.wordWrap).toArray(out);
 		}
@@ -443,13 +448,22 @@ public class TextInfo {
 		public final int start;
 		public final int end;
 		
-		public ChunckInfo(LineInfo lineinfo, String chunck, int start, int end) {
+		protected ChunckInfo(LineInfo lineinfo, int start, int end) {
 			super(lineinfo.textinfo);
-			
+
 			this.lineinfo = lineinfo;
-			this.text = chunck;
-			this.start = start;
-			this.end = end;
+			this.text     = lineinfo.text.substring(start, end);
+			this.start    = lineinfo.start + start;
+			this.end      = lineinfo.start + end; 
+		}
+		
+		protected ChunckInfo(LineInfo lineinfo) {
+			super(lineinfo.textinfo);
+
+			this.lineinfo = lineinfo;
+			this.text     = lineinfo.text.substring(0);
+			this.start    = lineinfo.start + 0;
+			this.end      = lineinfo.start + text.length();
 		}
 		
 		@Override

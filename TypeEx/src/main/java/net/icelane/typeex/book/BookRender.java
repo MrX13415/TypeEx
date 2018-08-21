@@ -284,10 +284,12 @@ public abstract class BookRender extends BasicBook {
 			LineInfo line = textinfo().line(index);
 			ChunckInfo[] chuncks = line.wordWrap();
 			
-			for (ChunckInfo chunck : chuncks) {
+			for (int cindex = 0; cindex < chuncks.length; cindex++) {
+				ChunckInfo chunck = chuncks[cindex];
+				
 		        fontRenderer.drawString(chunck.text, x, y, 0); // TODO: drawStringalined?
 
-		        if (chunck.isCursorWithin() || index == (lineCount - 1) && !cursor) {
+		        if (chunck.isCursorWithin() || cindex == (chuncks.length - 1) && !cursor) {
 		        	drawCursor(x, y, chunck);
 		        	cursor = true;
 		        }
@@ -300,8 +302,8 @@ public abstract class BookRender extends BasicBook {
 	private void drawCursor(int x, int y, SubTextInfo subInfo) {
 		x = x + subInfo.cursorWidth();
 		
-		int color = 0;
-		if (this.updateTicks / 6 % 2 == 0) color = -3092272;
+		int color = 0xFF000000;
+		if (this.updateTicks / 6 % 2 == 0) color = 0xFFC0C0C0;
 		
         if (textinfo().isCursorWithin())
         {
