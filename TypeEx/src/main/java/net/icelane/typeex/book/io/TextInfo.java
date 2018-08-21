@@ -6,11 +6,19 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
+import java.util.ArrayList;
+
+import javax.sound.sampled.Line;
+
+import net.icelane.typeex.util.StringUtils;
+import net.minecraft.client.gui.FontRenderer;
 
 /**
  * Holds text and additional information about cursor and editing. 
  */
 public class TextInfo {
+	
+	public final FontRenderer fontRenderer;
 	
 	/**
 	 * The Text.
@@ -26,6 +34,11 @@ public class TextInfo {
 	 * The maximum length of the text.
 	 */
 	public int maxLength;
+
+	/**
+	 * The maximum length a line must have in pixels.
+	 */
+	public int wordWrap;
 	
 	/**
 	 * Weather overwriting of characters is enabled.
@@ -40,7 +53,7 @@ public class TextInfo {
 	/**
 	 * The characters to use for new line.
 	 */	
-	public String newLine = "\n";
+	public final String newLine = "\n";
 	
 	/**
 	 * The first position of the selection. (A and B positions might be reversed.)
@@ -57,6 +70,58 @@ public class TextInfo {
 	 */
 	public boolean selected;
 	
+	public TextInfo(FontRenderer fontRenderer) {
+		this.fontRenderer = fontRenderer;
+	}
+	
+	/** 
+	 * Sets a new text and also moves the cursor position to the end of the text.
+	 * @param text
+	 * @return
+	 */
+	public void text(String text) {		
+		this.text = text;
+		cursorPosition = text.length();
+	}
+	
+	/**
+	 * Inserts a character at the current cursor position.
+	 * Increases the cursor position by one. 
+	 * @param character The character to be inserted.
+	 */
+	public void insert(char character) {
+		insert(Character.toString(character));
+	}
+	
+	/**
+	 * Inserts a text at the current cursor position.
+	 * Increases the cursor position by the length of the text.
+	 * @param text The text to be inserted.
+	 */
+	public void insert(String text) {
+		text = enforceLimit(text);
+		String lastPart = lastPart();
+		
+		// handle overwrite mode ...
+		if (overwrite && lastPart.length() > 0)
+			lastPart = lastPart.substring(1);
+
+		// type next char ...
+		this.text = firstPart() + text + lastPart;
+		this.cursorPosition += text.length();
+	}
+	
+	private String enforceLimit(String text) {
+		if (maxLength <= 0) return text;
+		int overflow = this.text.length() + text.length() - maxLength;
+		if (overflow <= 0) return text;
+		return text.substring(0, text.length() - overflow);
+	}
+	
+	public boolean isCursorWithin() {
+		return cursorPosition < text.length();
+	}
+
 	public void validateCursorPosition() {
 		if (cursorPosition < 0 || cursorPosition > text.length()) cursorPosition = text.length();
 	}
@@ -101,39 +166,6 @@ public class TextInfo {
 			String text = (String)clipboard.getData(DataFlavor.stringFlavor);
 			insert(text);
 		} catch (UnsupportedFlavorException | IOException e) {}
-	}
-	
-	/**
-	 * Inserts a character at the current cursor position.
-	 * Increases the cursor position by one. 
-	 * @param character The character to be inserted.
-	 */
-	public void insert(char character) {
-		insert(Character.toString(character));
-	}
-	
-	/**
-	 * Inserts a text at the current cursor position.
-	 * Increases the cursor position by the length of the text.
-	 * @param text The text to be inserted.
-	 */
-	public void insert(String text) {
-		text = enforceLimit(text);
-		String lastPart = lastPart();
-		
-		// handle overwrite mode ...
-		if (overwrite && lastPart.length() > 0)
-			lastPart = lastPart.substring(1);
-
-		// type next char ...
-		this.text = firstPart() + text + lastPart;
-		this.cursorPosition += text.length();
-	}
-	
-	private String enforceLimit(String text) {
-		int overflow = this.text.length() + text.length() - maxLength;
-		if (overflow <= 0) return text;
-		return text.substring(0, text.length() - overflow);
 	}
 	
 	public boolean IsBackwardSelection() {
@@ -243,13 +275,29 @@ public class TextInfo {
 		validateCursorPosition();
 		return lastPart(text, cursorPosition);
 	}
-
+	
 	/**
-	 * @return the current Line.
+	 * @return an array containing all lines.
 	 */
-	public LineInfo currentLine() {
-		return new LineInfo(this);
+	public String[] lines() {
+		return lines(text, newLine); // "\" => "\\" e.g. "\n" => "\\n" (because of regex) 
 	}
+
+	public LineInfo line(int index) {
+		return new LineInfo(this, index);
+	}
+	
+	public int lineCount() {
+		if (text.length() <= 0) return 0;
+		return StringUtils.countMatches(text, newLine.charAt(0)) + 1;
+	}
+	
+//	/**
+//	 * @return the current Line.
+//	 */
+//	public LineInfo currentLine() {
+//		return new LineInfo(this);
+//	}
 	
 	/**
 	 * Returns the first part of the given text, from the beginning to the given cursor position.
@@ -278,54 +326,151 @@ public class TextInfo {
 		}
 		return "";
 	}
-		
-	public class LineInfo {	
-		private TextInfo textinfo;
-		private String line;
-		private int startPos;
-		private int endPos;
-		
-		public LineInfo(TextInfo textinfo) {
-			super();
+	
+	/**
+	 * @return an array containing all lines of the given text.
+	 */
+	public static String[] lines(String text, String newLine) {
+		return text.split(newLine.replace("\\", "\\\\")); // "\" => "\\" e.g. "\n" => "\\n" (because of regex) 
+	}
+	
+	
+	public static abstract class SubTextInfo{
+		public final TextInfo textinfo;
+
+		public SubTextInfo(TextInfo textinfo) {
 			this.textinfo = textinfo;
-			getLineInfo();
 		}
 
-		private void getLineInfo() {
-			this.startPos = firstPart().lastIndexOf("\n", textinfo.cursorPosition) + 1;			
-			this.endPos = text.indexOf("\n", textinfo.cursorPosition);
-			if (endPos <= 0) endPos = text.length();
+		public abstract int width();		
+		public abstract int cursorPosition();
+		public abstract int cursorWidth();
+		public abstract boolean isCursorWithin();
+
+		
+		public int cursorWidth(String text) {
+			String s = text.substring(0, cursorPosition());
+			return width(s);
+		}
+		
+		public int width(String text) {
+			return textinfo.fontRenderer.getStringWidth(text);
+		}
+		
+		public int cursorPosition(int start, int end) {
+			if (textinfo.cursorPosition < start) return start;
+			if (textinfo.cursorPosition > end) return end;
+			return textinfo.cursorPosition - start;
+		}
+		
+		public boolean isCursorWithin(int start, int end) {
+			return textinfo.cursorPosition >= start && textinfo.cursorPosition <= end;
+		}
+	}
+	
+	public static class LineInfo extends SubTextInfo {	
+		public final String text;
+		public final int start;
+		public final int end;
+		
+		public LineInfo(TextInfo textinfo, int index) {
+			super(textinfo);
 			
-			this.line = text.substring(startPos, endPos);
+			if (index > textinfo.lineCount() - 1) index = textinfo.lineCount() - 1;
+			
+			int _start = 0;
+			if (index > 0) _start = StringUtils.ordinalIndexOf(textinfo.text, textinfo.newLine, index) + 1;
+			
+			int _end = textinfo.text.indexOf(textinfo.newLine, _start);
+			if (_end <= 0) _end = textinfo.text.length();
+
+			start = _start;
+			end = _end;
+			text = textinfo.text.substring(_start, _end);
 		}
 		
-		/**
-		 * @return the corresponding <code>TextInfo</code> object.
-		 */
-		public TextInfo getTextInfo() {
-			return textinfo;
+		@Override
+		public int width() {
+			return width(text);
 		}
 		
-		/**
-		 * @return the text of this line.
-		 */
-		public String text() {
-			return line;
+		@Override
+		public int cursorPosition() {
+			return cursorPosition(start, end);
 		}
-
-		/**
-		 * @return the start position of the line in the text.
-		 */
-		public int startPos() {
-			return startPos;
+		
+		@Override
+		public int cursorWidth() {
+			return cursorWidth(text);
 		}
+		
+		@Override
+		public boolean isCursorWithin() {
+			return isCursorWithin(start, end);
+		}
+		
+		public ChunckInfo[] wordWrap() {
+			ArrayList<ChunckInfo> chuncks = new ArrayList<>();
+			ChunckInfo[] out = new ChunckInfo[0];
+			
+			if (text.length() == 0) {
+				chuncks.add(new ChunckInfo(this, "", 0 + start, 0 + start));
+				return chuncks.toArray(out);
+			}
+			
+			int chunckWidth = 0;
+			int cstart = 0;
 
-		/**
-		 * @return the end position of the line in the text.
-		 */
-		public int endPos() {
-			return endPos;
-		}			
+			for (int index = 0; index < text.length(); index++) {
+				char c = text.charAt(index);
+				int w = textinfo.fontRenderer.getCharWidth(c);
+				chunckWidth += w;
+				
+				if (chunckWidth >= textinfo.wordWrap || index == (text.length() - 1)) { 
+					chuncks.add(new ChunckInfo(this, text.substring(cstart , index + 1), cstart + start, index + start + 1));
+					cstart = index;
+					chunckWidth = 0;
+				}
+			}
+
+			return chuncks.toArray(out); //textinfo.fontRenderer. listFormattedStringToWidth(line, textinfo.wordWrap).toArray(out);
+		}
 	}
 
+	public static class ChunckInfo extends SubTextInfo {	
+		public final LineInfo lineinfo;
+		public final String text;
+		public final int start;
+		public final int end;
+		
+		public ChunckInfo(LineInfo lineinfo, String chunck, int start, int end) {
+			super(lineinfo.textinfo);
+			
+			this.lineinfo = lineinfo;
+			this.text = chunck;
+			this.start = start;
+			this.end = end;
+		}
+		
+		@Override
+		public int width() {
+			return width(text);
+		}
+		
+		@Override
+		public int cursorPosition() {
+			return cursorPosition(start, end);
+		}
+		
+		@Override
+		public int cursorWidth() {
+			return cursorWidth(text);
+		}
+		
+		@Override
+		public boolean isCursorWithin() {
+			return isCursorWithin(start, end);
+		}
+
+	}
 }
