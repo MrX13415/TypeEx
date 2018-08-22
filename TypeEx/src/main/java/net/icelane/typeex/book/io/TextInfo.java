@@ -321,6 +321,16 @@ public class TextInfo {
 		validateCursorPosition();
 		return lastPart(text, cursorPosition);
 	}
+	
+	public String wrappedFirstPart() {
+		validateCursorPosition();
+		return firstPart(textWrapped, cursorPosition);
+	}
+	
+	public String wrappedLastPart() {
+		validateCursorPosition();
+		return lastPart(textWrapped, cursorPosition);
+	}
 
 	/**
 	 * @return an array containing all lines.
