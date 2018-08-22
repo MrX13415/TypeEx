@@ -485,10 +485,10 @@ public class TextInfo {
 			return textinfo.cursorPosition >= start && textinfo.cursorPosition <= end;
 		}
 		
-		public int selectionStartWidth(String text) {
+		public int selectionStartWidth(String text, int start) {
 			if (!isSelectionStartWithin())
 				return -1;
-			String s = text.substring(0, textinfo.selectionStart());
+			String s = text.substring(0, textinfo.selectionStart() - start);
 			return textinfo.width(s);
 		}
 		
@@ -496,10 +496,10 @@ public class TextInfo {
 			return textinfo.selectionStart() >= start && textinfo.selectionStart() <= end;
 		}
 		
-		public int selectionEndWidth(String text) {
+		public int selectionEndWidth(String text, int start) {
 			if (!isSelectionEndWithin())
 				return -1;
-			String s = text.substring(0, textinfo.selectionEnd());
+			String s = text.substring(0, textinfo.selectionEnd() - start);
 			return textinfo.width(s);
 		}
 		
@@ -668,7 +668,7 @@ public class TextInfo {
 		
 		@Override
 		public int selectionStartWidth() {
-			return selectionStartWidth(text);
+			return selectionStartWidth(text, start);
 		}
 
 		@Override
@@ -678,7 +678,7 @@ public class TextInfo {
 
 		@Override
 		public int selectionEndWidth() {
-			return selectionEndWidth(text);
+			return selectionEndWidth(text, start);
 		}
 
 		@Override
