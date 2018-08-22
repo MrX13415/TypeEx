@@ -239,6 +239,7 @@ public abstract class BookRender extends BasicBook {
 	}
 	
 	public void drawPageContent() {
+		boolean selection = false;
 		boolean cursor = false;
 		int lineCount = textinfo().lineCount();
 		
@@ -277,6 +278,11 @@ public abstract class BookRender extends BasicBook {
         	this.fontRenderer.drawString("_", x, y, color);
 	}
 
+	
+	private void drawSelection(int x, int y, int width) {
+		drawSelectionBox(x, y, x + width, y);
+	}
+	
     /**
      * Draws the blue selection box.
      */
