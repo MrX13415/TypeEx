@@ -270,9 +270,9 @@ public class TextInfo {
 	 */
 	public void selectAll() {
 		this.selected = true;
-		this.cursorPosition = 0;
 		this.selectionPosA = 0;
 		this.selectionPosB = text.length();
+		moveCursorToEnd();
 	}
 
 	/**

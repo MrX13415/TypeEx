@@ -166,12 +166,12 @@ public abstract class KeyHandler {
 	}
 	
 	private static void handleKey_BackSpace(TextInfo textinfo, String firstPart, String lastPart) {
-		if (firstPart.length() == 0) return;
-
 		// handling of deletion while selection is active
 		if (textinfo.selected) { 
 			textinfo.removeSelection(); return;
 		}
+		
+		if (firstPart.length() == 0) return;
 		
 		int charCount = 1;
 		if (KeyInfo.isControlHeld() && KeyInfo.isShiftHeld()) {
@@ -197,14 +197,14 @@ public abstract class KeyHandler {
 	private static void handleKey_Del(TextInfo textinfo, String firstPart, String lastPart) {
 		// do nothing if nothing is selected an shift is held ...
 		if (!textinfo.selected && KeyInfo.isShiftHeld()) return;
-		
-		// do nothing if there is nothing to remove :)
-		if (lastPart.length() == 0) return;	
-		
+
 		// handling of deletion while selection is active
 		if (textinfo.selected) { 
 			textinfo.removeSelection(); return;
 		}
+		
+		// do nothing if there is nothing to remove :)
+		if (lastPart.length() == 0) return;	
 		
 		int charCount = 1;
 		
