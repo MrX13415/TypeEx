@@ -29,6 +29,9 @@ abstract class BookInput extends BookRender {
     }
     
 	public void keyTyped(KeyInfo keyinfo) {
+		try {
+			super.keyTyped(keyinfo.getCharacter(), keyinfo.getKeyCode());
+		} catch (IOException ex) { }
 		
 		//DEBUG
 		System.out.println(String.format("%16s %s%s%s%s%s",
@@ -61,7 +64,7 @@ abstract class BookInput extends BookRender {
 	                if (title().isEmpty()) return;
 					try {
 						this.sendBookToServer(true);
-		                this.mc.displayGuiScreen((GuiScreen)null);
+		                closeUI();
 					} catch (IOException e) {
 						System.err.println("Unable to sing book!");
 						e.printStackTrace();
