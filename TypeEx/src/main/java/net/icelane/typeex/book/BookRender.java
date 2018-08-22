@@ -259,7 +259,23 @@ public abstract class BookRender extends BasicBook {
 		        	drawCursor(x + chunck.cursorWidth(), y);
 		        	cursor = true;
 		        }
-				//TODO: SelectionStuff
+		        
+		        int selWidth = 0;
+		        int selx = 0;
+		        int sely = y;
+		        
+		        boolean selStart = chunck.isSelectionStartWithin();
+		        boolean selEnd = chunck.isSelectionEndWithin();
+		        
+				if(selStart) {
+					selx = chunck.selectionStartWidth();
+					selWidth = (selEnd ? chunck.selectionEndWidth() : chunck.width()) - selx;
+				} else if(selEnd) {
+					selWidth = chunck.selectionEndWidth();
+				}
+				
+				drawSelection(selx, sely, selWidth);
+				
 				y += fontRenderer.FONT_HEIGHT;
 			} 
 		}
