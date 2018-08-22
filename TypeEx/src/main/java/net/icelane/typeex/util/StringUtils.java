@@ -20,4 +20,8 @@ public final class StringUtils {
             pos = str.indexOf(substr, pos + 1);
         return pos;
     }
+    
+    public static String stripChars(String str, char character) {
+    	return str.replaceAll(Character.toString(character), "");
+    }
 }
