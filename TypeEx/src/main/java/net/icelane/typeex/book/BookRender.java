@@ -307,10 +307,10 @@ public abstract class BookRender extends BasicBook {
         */
     	
     	//Unravel colorfuckery
-    	int red = Color_Cursor >> 16 & 0xFF;
-    	int green = Color_Cursor >> 8 & 0xFF; 
-    	int blue = Color_Cursor >> 0 & 0xFF;
-    	int alpha = Color_Cursor >> 24 & 0xFF;
+    	int red = ColorUtil.get(Color_Selection).getRed();
+    	int green = ColorUtil.get(Color_Selection).getGreen(); 
+    	int blue = ColorUtil.get(Color_Selection).getBlue();
+    	int alpha = ColorUtil.get(Color_Selection).getAlpha();
     	
     	
     	

@@ -476,6 +476,26 @@ public class TextInfo {
 		public boolean isCursorWithin(int start, int end) {
 			return textinfo.cursorPosition >= start && textinfo.cursorPosition <= end;
 		}
+		
+		public int selectionStartWidth() {
+			String s = "";
+			return textinfo.width(s);
+		}
+		public boolean selectionStartWithin(int start, int end) {
+			return textinfo.selectionStart() >= start && textinfo.selectionStart() <= end;
+		}
+		public int selectionEndWidth() {
+			String s = "";
+			return textinfo.width(s);
+		}
+		public boolean selectionEndWithin(int start, int end) {
+			return textinfo.selectionEnd() >= start && textinfo.selectionEnd() <= end;
+		}
+		
+		
+		
+		
+		
 	}
 
 	public static class LineInfo extends SubTextInfo {
