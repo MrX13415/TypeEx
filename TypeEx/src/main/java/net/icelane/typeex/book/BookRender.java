@@ -12,6 +12,7 @@ import com.google.gson.JsonParseException;
 import net.icelane.typeex.book.io.TextInfo.ChunckInfo;
 import net.icelane.typeex.book.io.TextInfo.LineInfo;
 import net.icelane.typeex.book.ui.NextPageButton;
+import net.icelane.typeex.util.ColorUtil;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -36,9 +37,13 @@ public abstract class BookRender extends BasicBook {
 
     public static final ResourceLocation BOOK_GUI_TEXTURES = new ResourceLocation("textures/gui/book.png");
 
+    // Colors: ARGB
     private int Color_Cursor = 0xFF000000;
-    private int Color_CursorBlink = 0xFFFFFFFF;
+
+	private int Color_CursorBlink = 0x00FFFFFF;
     private int Color_Selection = 0xFF0000FF;
+
+    
     /** Update ticks since the GUI was opened */
     private int updateTicks;
     
@@ -265,15 +270,10 @@ public abstract class BookRender extends BasicBook {
 		int color = Color_Cursor;
 		if (this.updateTicks / 6 % 2 == 0) color = Color_CursorBlink; 
 		
-        if (textinfo().isCursorWithin())
-        {
-            Gui.drawRect(x, y - 1, x + 1, y + 1 + this.fontRenderer.FONT_HEIGHT, color);
-        }
-        else
-        {
-        	
+        if (textinfo().isCursorWithin()) 
+        	Gui.drawRect(x, y - 1, x + 1, y + 1 + this.fontRenderer.FONT_HEIGHT, color);
+        else if (ColorUtil.get(color).getAlpha() > 0)
         	this.fontRenderer.drawString("_", x, y, color);
-        }
 	}
 
     /**
