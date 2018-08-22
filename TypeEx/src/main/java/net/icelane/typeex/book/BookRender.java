@@ -239,6 +239,7 @@ public abstract class BookRender extends BasicBook {
 	}
 	
 	public void drawPageContent() {
+		boolean selection = false;
 		boolean cursor = false;
 		int lineCount = textinfo().lineCount();
 		
@@ -259,8 +260,13 @@ public abstract class BookRender extends BasicBook {
 		        	cursor = true;
 		        }
 		        
-		        if(textinfo().selected) drawSelection(x, y, chunck);
-		        
+		        if(textinfo().selected) {
+			        if(chunck.isSelectionStartWithin() || chunck.isSelectionEndWithin())
+			        	selection = drawSelection(x, y, chunck);
+			        else if (selection)
+			        	drawSelection(x, y, chunck);
+				}
+			
 				y += fontRenderer.FONT_HEIGHT;
 			} 
 		}
@@ -280,11 +286,12 @@ public abstract class BookRender extends BasicBook {
 	}
 
 	
-	private void drawSelection(int x, int y, ChunckInfo chunck) {
+	private boolean drawSelection(int x, int y, ChunckInfo chunck) {
 		boolean selStart = chunck.isSelectionStartWithin();
 		boolean selEnd = chunck.isSelectionEndWithin();
-        
-		int width = 0;
+		boolean selection = selStart && !selEnd;
+		
+		int width = chunck.width();
         int selx = 0;
         int sely = 0;
 
@@ -297,7 +304,9 @@ public abstract class BookRender extends BasicBook {
 		
 		x += selx;
 		y += sely;
+	
 		drawSelectionBox(x, y, x + width, y + fontRenderer.FONT_HEIGHT);
+		return selection;
 	}
 	
     /**
