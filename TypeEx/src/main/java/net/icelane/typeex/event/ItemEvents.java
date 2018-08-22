@@ -4,6 +4,7 @@ import net.icelane.typeex.book.BookUI;
 import net.icelane.typeex.net.minecraft.client.gui.GuiScreenBook;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -22,6 +23,9 @@ public class ItemEvents {
 	{
 		EntityPlayer player = event.getEntityPlayer();
 	    ItemStack book = event.getItemStack();
+	    
+	    //quick and dirty first try
+	    if (book.getItem() != Items.WRITABLE_BOOK) return;
 	    
 	    //player.sendMessage(new TextComponentString("YEAH!"));
 	    
