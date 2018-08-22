@@ -27,5 +27,10 @@ public class Color {
 				(argb >> 0) & 0xFF,
 				(argb >> 24) & 0xFF);
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("[a: %s, r: %s, g: %s, b: %s]", alpha, red, green, blue);
+	}
 
 }

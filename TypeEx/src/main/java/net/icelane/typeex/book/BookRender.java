@@ -314,10 +314,8 @@ public abstract class BookRender extends BasicBook {
 	
     private void drawInvertRect(int startX, int startY, int endX, int endY, int argb){
     	
-    	//color = u;
-    
-    	if (System.currentTimeMillis() - last > 500) {
-    		u++;
+    	if (System.currentTimeMillis() - last > 10) {
+    		u+=1;
     		last = System.currentTimeMillis();
     	}
     	
@@ -325,10 +323,11 @@ public abstract class BookRender extends BasicBook {
     		u = 0xFF000000;
     	}
     	
-    	System.out.println(u);
-    	
     	//Unravel colorfuckery
-    	Color color = new Color(argb); 
+    	Color color = new Color(u); 
+    	
+    	System.out.println(color);
+    	
     	
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
