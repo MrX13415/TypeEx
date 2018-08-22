@@ -458,11 +458,11 @@ public class TextInfo {
 
 		public abstract int selectionStartWidth();
 		
-		public abstract boolean selectionStartWithin();
+		public abstract boolean isSelectionStartWithin();
 		
 		public abstract int selectionEndWidth();
 		
-		public abstract boolean selectionEndWithin();
+		public abstract boolean isSelectionEndWithin();
 		
 		public int cursorWidth(String text) {
 			if (!isCursorWithin())
@@ -486,22 +486,24 @@ public class TextInfo {
 		}
 		
 		public int selectionStartWidth(String text) {
-			String s = "";
+			if (isSelectionStartWithin())
+				return -1;
+			String s = text.substring(0,textinfo.selectionStart());
 			return textinfo.width(s);
 		}
 		
-		public boolean selectionStartWithin(int start, int end) {
+		public boolean isSelectionStartWithin(int start, int end) {
 			return textinfo.selectionStart() >= start && textinfo.selectionStart() <= end;
 		}
 		
 		public int selectionEndWidth(String text) {
-			if (selectionEndWithin())
+			if (isSelectionEndWithin())
 				return -1;
 			String s = text.substring(0, textinfo.selectionEnd());
 			return textinfo.width(s);
 		}
 		
-		public boolean selectionEndWithin(int start, int end) {
+		public boolean isSelectionEndWithin(int start, int end) {
 			return textinfo.selectionEnd() >= start && textinfo.selectionEnd() <= end;
 		}
 
@@ -561,7 +563,7 @@ public class TextInfo {
 		}
 
 		@Override
-		public boolean selectionStartWithin() {
+		public boolean isSelectionStartWithin() {
 			throw new UnsupportedOperationException("Use the method in class 'ChunckInfo'!");
 			//return selectionStartWithin(start, end);
 		}
@@ -573,7 +575,7 @@ public class TextInfo {
 		}
 
 		@Override
-		public boolean selectionEndWithin() {
+		public boolean isSelectionEndWithin() {
 			throw new UnsupportedOperationException("Use the method in class 'ChunckInfo'!");
 			//return selectionEndWithin(start, end);
 		}
@@ -670,8 +672,8 @@ public class TextInfo {
 		}
 
 		@Override
-		public boolean selectionStartWithin() {
-			return selectionStartWithin(start, end);
+		public boolean isSelectionStartWithin() {
+			return isSelectionStartWithin(start, end);
 		}
 
 		@Override
@@ -680,8 +682,8 @@ public class TextInfo {
 		}
 
 		@Override
-		public boolean selectionEndWithin() {
-			return selectionEndWithin(start, end);
+		public boolean isSelectionEndWithin() {
+			return isSelectionEndWithin(start, end);
 		}
 
 	}
