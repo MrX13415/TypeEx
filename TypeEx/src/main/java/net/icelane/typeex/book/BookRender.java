@@ -309,34 +309,37 @@ public abstract class BookRender extends BasicBook {
 	}
 	
 
-	float u = 0;
-	long last = System.currentTimeMillis();
+//	float u = 0;
+//	long last = System.currentTimeMillis();
 	
     private void drawInvertRect(int startX, int startY, int endX, int endY, int argb){
     	
-    	float saturation = 1f; // 0.0 - 1.0
-    	float brightness = 1f; // 0.0 - 1.0
-    	
-    	java.awt.Color awtc = java.awt.Color.getHSBColor(u, saturation, brightness);
-    	
-    	if (System.currentTimeMillis() - last > 5) {
-    		u+=0.001;
-    		last = System.currentTimeMillis();
-    	}
-    	    	
-    	if (u >= 1) u = 0;
-	
-		int hex = 0; 
-		hex += awtc.getAlpha() << 24;
-		hex += awtc.getRed() << 16;
-		hex += awtc.getGreen() << 8;
-		hex += awtc.getBlue();
+//    	float saturation = 0.3f; // 0.0 - 1.0
+//    	float brightness = 0.75f; // 0.0 - 1.0
+//    	int alpha = 255;
+//    	
+//    	u = 0.075f;
+//    	
+//    	java.awt.Color awtc = java.awt.Color.getHSBColor(u, saturation, brightness);
+//
+//    	if (System.currentTimeMillis() - last > 5) {
+//    		u+=0.001;
+//    		last = System.currentTimeMillis();
+//    	}
+//    	    	
+//    	if (u >= 1) u = 0;
+//
+//		int hex = 0; 
+//		hex += alpha << 24;
+//		hex += awtc.getRed() << 16;
+//		hex += awtc.getGreen() << 8;
+//		hex += awtc.getBlue();
 	        
     	//Unravel colorfuckery
-    	Color color = new Color(hex); 
+    	Color color = new Color(argb); 
     	
-    	System.out.println(u + " | " + color);
-    	
+    //	System.out.println(u + " | " + color);
+    
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
         GlStateManager.color(color.red, color.green, color.blue, color.alpha);
