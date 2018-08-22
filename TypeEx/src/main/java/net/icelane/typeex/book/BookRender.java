@@ -282,21 +282,23 @@ public abstract class BookRender extends BasicBook {
 
 	
 	private void drawSelection(int x, int y, ChunckInfo chunck) {
-        boolean selEnd = chunck.isSelectionEndWithin();
+		boolean selStart = chunck.isSelectionStartWithin();
+		boolean selEnd = chunck.isSelectionEndWithin();
         
 		int width = 0;
         int selx = 0;
         int sely = 0;
 
-		if(chunck.isSelectionStartWithin()) {
+		if(selStart) {
 			selx = chunck.selectionStartWidth();
 			width = (selEnd ? chunck.selectionEndWidth() : chunck.width()) - selx;
-			
 		} else if(selEnd) {
 			width = chunck.selectionEndWidth();
 		}
-
-		drawSelectionBox(x + selx, y + sely, x + width, y + fontRenderer.FONT_HEIGHT);
+		
+		x += selx;
+		y += sely;
+		drawSelectionBox(x, y, x + width, y + fontRenderer.FONT_HEIGHT);
 	}
 	
     /**
