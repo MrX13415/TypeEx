@@ -2,9 +2,9 @@ package net.icelane.typeex.util;
 
 import org.lwjgl.util.Color;
 
-public class ColorUtil {
+public final class ColorUtil {
 
-	public Color get(int argb) {
+	public static Color get(int argb) {
 		return new Color(
 				(argb >> 16) & 0xFF,
 				(argb >> 8) & 0xFF,
