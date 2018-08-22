@@ -289,18 +289,20 @@ public abstract class BookRender extends BasicBook {
 				
 		        fontRenderer.drawString(chunck.text, x, y, 0); // TODO: drawStringalined?
 
-		        if (chunck.isCursorWithin() || cindex == (chuncks.length - 1) && !cursor) {
-		        	drawCursor(x, y, chunck);
+		        if (chunck.isCursorWithin() && !cursor) {
+		        	drawCursor(x, y, chunck.cursorWidth());
 		        	cursor = true;
 		        }
 				
 				y += fontRenderer.FONT_HEIGHT;
 			} 
 		}
+		
+		if (!cursor) drawCursor(x, y, 0);
 	}
 	
-	private void drawCursor(int x, int y, SubTextInfo subInfo) {
-		x = x + subInfo.cursorWidth();
+	private void drawCursor(int x, int y, int width) {
+		x = x + width;
 		
 		int color = 0xFF000000;
 		if (this.updateTicks / 6 % 2 == 0) color = 0xFFC0C0C0;

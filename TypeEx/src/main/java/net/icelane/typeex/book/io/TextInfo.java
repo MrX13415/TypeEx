@@ -21,7 +21,9 @@ public class TextInfo {
 	/**
 	 * The Text.
 	 */
-	public String text = "";
+	private String text = "";
+	
+	private String textWrapped = "";
 	
 	/**
 	 * The position of the cursor in the text.
@@ -44,14 +46,9 @@ public class TextInfo {
 	public boolean overwrite = false; 
 
 	/**
-	 * Weather multiple lines are allowed.
-	 */
-	public boolean multiline = true; 
-	
-	/**
 	 * The characters to use for new line.
 	 */	
-	public final String newLine = "\n";
+	public final char newLine = '\n';
 	
 	/**
 	 * The first position of the selection. (A and B positions might be reversed.)
@@ -73,14 +70,23 @@ public class TextInfo {
 	}
 	
 	/** 
-	 * Sets a new text and also moves the cursor position to the end of the text.
+	 * Sets the text.
 	 * @param text
-	 * @return
 	 */
 	public void text(String text) {		
 		this.text = text;
-		cursorPosition = text.length();
+		//this.textWrapped = wrapText(); Unused, therefore disabled
+		validateCursorPosition();
 	}
+	
+	public String text() {		
+		return text;
+	}
+	
+	public String textWrapped() {		
+		return textWrapped;
+	}
+	
 	
 	/**
 	 * Inserts a character at the current cursor position.
@@ -114,6 +120,10 @@ public class TextInfo {
 		int overflow = this.text.length() + text.length() - maxLength;
 		if (overflow <= 0) return text;
 		return text.substring(0, text.length() - overflow);
+	}
+	
+	public void moveCursorToEnd() {		
+		cursorPosition = text.length();
 	}
 	
 	public boolean isCursorWithin() {
@@ -278,7 +288,7 @@ public class TextInfo {
 	 * @return an array containing all lines.
 	 */
 	public String[] lines() {
-		return lines(text, newLine); // "\" => "\\" e.g. "\n" => "\\n" (because of regex) 
+		return lines(text, Character.toString(newLine)); // "\" => "\\" e.g. "\n" => "\\n" (because of regex) 
 	}
 
 	public LineInfo line(int index) {
@@ -287,7 +297,7 @@ public class TextInfo {
 	
 	public int lineCount() {
 		if (text.length() <= 0) return 0;
-		return StringUtils.countMatches(text, newLine.charAt(0)) + 1;
+		return StringUtils.countMatches(text, newLine) + 1;
 	}
 	
 //	/**
@@ -333,6 +343,30 @@ public class TextInfo {
 	}
 	
 	
+	public String wrapText() {
+		if (text.length() == 0) return "";
+		
+		int width = 0;
+		String nText = "";
+		
+		for (int index = 0; index < text.length(); index++) {
+			char character = text.charAt(index);
+			int charwidth = fontRenderer.getCharWidth(character);
+			width += charwidth;
+			
+			if (character == newLine) {
+				width = 0;
+			}else if (width >= wordWrap) {
+				width = charwidth;
+				nText += newLine;
+			}
+
+			nText += character;
+		}
+
+		return nText; //textinfo.fontRenderer. listFormattedStringToWidth(line, textinfo.wordWrap).toArray(out);
+	}
+	
 	public static abstract class SubTextInfo{
 		public final TextInfo textinfo;
 
@@ -376,7 +410,7 @@ public class TextInfo {
 			if (index > textinfo.lineCount() - 1) index = textinfo.lineCount() - 1;
 			
 			int _start = 0;
-			if (index > 0) _start = StringUtils.ordinalIndexOf(textinfo.text, textinfo.newLine, index) + 1;
+			if (index > 0) _start = StringUtils.ordinalIndexOf(textinfo.text, Character.toString(textinfo.newLine), index) + 1;
 			
 			int _end = textinfo.text.indexOf(textinfo.newLine, _start);
 			if (_end <= 0) _end = textinfo.text.length();
@@ -405,6 +439,7 @@ public class TextInfo {
 		public boolean isCursorWithin() {
 			return isCursorWithin(start, end);
 		}
+		
 		
 		public ChunckInfo[] wordWrap() {
 			ArrayList<ChunckInfo> chuncks = new ArrayList<>();
@@ -447,19 +482,24 @@ public class TextInfo {
 		public final String text;
 		public final int start;
 		public final int end;
+		public final boolean wrapped; 
 		
 		protected ChunckInfo(LineInfo lineinfo, int start, int end) {
 			super(lineinfo.textinfo);
 
 			this.lineinfo = lineinfo;
+
 			this.text     = lineinfo.text.substring(start, end);
 			this.start    = lineinfo.start + start;
-			this.end      = lineinfo.start + end; 
+			this.end      = lineinfo.start + end;
+					
+			this.wrapped  = this.end != lineinfo.end;
 		}
 		
 		protected ChunckInfo(LineInfo lineinfo) {
 			super(lineinfo.textinfo);
 
+			this.wrapped  = false;
 			this.lineinfo = lineinfo;
 			this.text     = lineinfo.text.substring(0);
 			this.start    = lineinfo.start + 0;
@@ -483,7 +523,7 @@ public class TextInfo {
 		
 		@Override
 		public boolean isCursorWithin() {
-			return isCursorWithin(start, end);
+			return isCursorWithin(start, wrapped ? end - 1 : end);
 		}
 
 	}
