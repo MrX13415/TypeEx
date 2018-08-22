@@ -75,7 +75,7 @@ public class TextInfo {
 	 */
 	public void text(String text) {		
 		this.text = text;
-		//this.textWrapped = wrapText(); Unused, therefore disabled
+		this.textWrapped = wrapText();
 		validateCursorPosition();
 	}
 	
@@ -106,6 +106,9 @@ public class TextInfo {
 		text = enforceLimit(text);
 		String lastPart = lastPart();
 		
+
+		//TODO max line handling!!
+		
 		// handle overwrite mode ...
 		if (overwrite && lastPart.length() > 0)
 			lastPart = lastPart.substring(1);
@@ -117,9 +120,26 @@ public class TextInfo {
 	
 	private String enforceLimit(String text) {
 		if (maxLength <= 0) return text;
-		int overflow = this.text.length() + text.length() - maxLength;
-		if (overflow <= 0) return text;
-		return text.substring(0, text.length() - overflow);
+		int overflow = text().length() + text.length() - maxLength;
+		if (overflow > 0) {
+			text = text.substring(0, text.length() - overflow);
+		}
+		
+		int wrappedLines = wrappedLineCount();
+		if (wrappedLines >= 14) {
+			text = StringUtils.stripChars(text, newLine);
+			
+			LineInfo last = lastLine();
+			int lastWidth = last.width();
+			int lineWidth = lastWidth + width(text);
+			
+			while (lineWidth >= wordWrap) {
+				text = text.substring(0, text.length() - 1);				
+				lineWidth = lastWidth + width(text);
+			}
+		}
+		
+		return text;
 	}
 	
 	public void moveCursorToEnd() {		
@@ -295,7 +315,19 @@ public class TextInfo {
 		return new LineInfo(this, index);
 	}
 	
+	public LineInfo lastLine() {
+		return line(lineCount() - 1);
+	}
+	
 	public int lineCount() {
+		return lineCount(text);
+	}
+	
+	public int wrappedLineCount() {
+		return lineCount(textWrapped);
+	}
+	
+	private int lineCount(String text) {
 		if (text.length() <= 0) return 0;
 		return StringUtils.countMatches(text, newLine) + 1;
 	}
@@ -367,6 +399,10 @@ public class TextInfo {
 		return nText; //textinfo.fontRenderer. listFormattedStringToWidth(line, textinfo.wordWrap).toArray(out);
 	}
 	
+	public int width(String text) {
+		return fontRenderer.getStringWidth(text);
+	}
+	
 	public static abstract class SubTextInfo{
 		public final TextInfo textinfo;
 
@@ -386,7 +422,7 @@ public class TextInfo {
 		}
 		
 		public int width(String text) {
-			return textinfo.fontRenderer.getStringWidth(text);
+			return textinfo.width(text);
 		}
 		
 		public int cursorPosition(int start, int end) {
