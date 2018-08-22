@@ -239,7 +239,6 @@ public abstract class BookRender extends BasicBook {
 	}
 	
 	public void drawPageContent() {
-		boolean selection = false;
 		boolean cursor = false;
 		int lineCount = textinfo().lineCount();
 		
@@ -259,8 +258,8 @@ public abstract class BookRender extends BasicBook {
 		        	drawCursor(x + chunck.cursorWidth(), y);
 		        	cursor = true;
 		        }
-
-		        drawSelection(x, y, chunck);
+		        
+		        if(textinfo().selected) drawSelection(x, y, chunck);
 		        
 				y += fontRenderer.FONT_HEIGHT;
 			} 
