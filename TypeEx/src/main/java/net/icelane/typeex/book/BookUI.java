@@ -2,8 +2,6 @@ package net.icelane.typeex.book;
 
 import java.io.IOException;
 
-import org.lwjgl.input.Keyboard;
-
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
@@ -62,13 +60,5 @@ public class BookUI extends BookInput {
     	
     	this.updateButtons();
     }
-	
 
-    /**
-     * Called when the screen is unloaded. Used to disable keyboard repeat events
-     */
-    public void onGuiClosed()
-    {
-        Keyboard.enableRepeatEvents(false);
-    }
 }
