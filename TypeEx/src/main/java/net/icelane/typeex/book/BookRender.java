@@ -258,10 +258,11 @@ public abstract class BookRender extends BasicBook {
 		        	drawCursor(x + chunck.cursorWidth(), y);
 		        	cursor = true;
 		        }
-				
+				//TODO: SelectionStuff
 				y += fontRenderer.FONT_HEIGHT;
 			} 
 		}
+		
 		
 		if (!cursor) drawCursor(x, y);
 	}
