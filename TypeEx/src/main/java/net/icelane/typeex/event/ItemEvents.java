@@ -1,12 +1,10 @@
 package net.icelane.typeex.event;
 
 import net.icelane.typeex.book.BookUI;
-import net.icelane.typeex.net.minecraft.client.gui.GuiScreenBook;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
