@@ -1,6 +1,5 @@
 package net.icelane.typeex.book;
 
-import java.awt.event.KeyEvent;
 import java.io.IOException;
 
 import org.lwjgl.input.Keyboard;
@@ -45,7 +44,6 @@ abstract class BookInput extends BookRender {
 		
 		// initialize ...
 		//textinfo.text = isSigning() ? title() : getPageText();
-		textinfo().multiline = isSigning();
 		textinfo().maxLength = isSigning() ? 16 : 256; //TODO
 
 		// handle special keys ...
@@ -86,8 +84,8 @@ abstract class BookInput extends BookRender {
 		}
 		
 		// update UI
-		if (isSigning()) title(textinfo().text);
-		else setPageText(textinfo().text);	
+		if (isSigning()) title(textinfo().text());
+		else setPageText(textinfo().text());	
 	}
 
     /**

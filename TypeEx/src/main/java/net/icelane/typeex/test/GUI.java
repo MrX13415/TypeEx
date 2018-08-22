@@ -46,7 +46,7 @@ public class GUI implements KeyListener{
 		initializeGui();
 		
 		textinfo = new TextInfo(null);
-		textinfo.text = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr,\n" + 
+		textinfo.text("Lorem ipsum dolor sit amet, consetetur sadipscing elitr,\n" + 
 				"sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,\n" + 
 				"sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.\n" + 
 				"Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.\n" + 
@@ -57,8 +57,8 @@ public class GUI implements KeyListener{
 				"Lorem ipsum dolor sit amet, consetetur sadipscing elitr,\n" + 
 				"sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,\n" + 
 				"sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.\n" + 
-				"Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.";
-		textinfo.cursorPosition = textinfo.text.length();
+				"Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.");
+		textinfo.cursorPosition = textinfo.text().length();
 		setText(textinfo);
 	}
 	
@@ -201,7 +201,7 @@ public class GUI implements KeyListener{
 		
 		if (debug) System.out.println("--------------------------------------------------");
 		
-		String text = textinfo.text;
+		String text = textinfo.text();
 		text = wordWrap(text);
 		
 		String[] lines = text.split("\n");
@@ -274,7 +274,7 @@ public class GUI implements KeyListener{
 	 */
 	public void setText(TextInfo textinfo) {
 		this.textinfo = textinfo;
-		String text = textinfo.text;
+		String text = textinfo.text();
 		
 		// adding a hack-ish cursor ...
 //		String ta = textinfo.cursorPosition > 0 ? text.substring(0, textinfo.cursorPosition) : "";

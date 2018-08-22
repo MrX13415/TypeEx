@@ -70,7 +70,6 @@ abstract class BasicBook extends GuiScreen {
     
 	public void Initialize() {
 		textinfo = new TextInfo(fontRenderer);
-		textinfo.multiline = true;
 		textinfo.overwrite = false;
 		textinfo.wordWrap = 116;
 		//TODO
@@ -78,6 +77,7 @@ abstract class BasicBook extends GuiScreen {
 	
 	public void onPageChange() {
 		textinfo.text(getPageText());
+		textinfo.moveCursorToEnd();
 	}	
     
     public TextInfo textinfo() {
