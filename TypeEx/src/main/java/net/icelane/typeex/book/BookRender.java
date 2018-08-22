@@ -309,25 +309,33 @@ public abstract class BookRender extends BasicBook {
 	}
 	
 
-	int u = 0xFF000000;
+	float u = 0;
 	long last = System.currentTimeMillis();
 	
     private void drawInvertRect(int startX, int startY, int endX, int endY, int argb){
     	
-    	if (System.currentTimeMillis() - last > 10) {
-    		u+=1;
+    	float saturation = 1f; // 0.0 - 1.0
+    	float brightness = 1f; // 0.0 - 1.0
+    	
+    	java.awt.Color awtc = java.awt.Color.getHSBColor(u, saturation, brightness);
+    	
+    	if (System.currentTimeMillis() - last > 5) {
+    		u+=0.001;
     		last = System.currentTimeMillis();
     	}
-    	
-    	if (u >= 0xFFFFFFFF) {
-    		u = 0xFF000000;
-    	}
-    	
+    	    	
+    	if (u >= 1) u = 0;
+	
+		int hex = 0; 
+		hex += awtc.getAlpha() << 24;
+		hex += awtc.getRed() << 16;
+		hex += awtc.getGreen() << 8;
+		hex += awtc.getBlue();
+	        
     	//Unravel colorfuckery
-    	Color color = new Color(u); 
+    	Color color = new Color(hex); 
     	
-    	System.out.println(color);
-    	
+    	System.out.println(u + " | " + color);
     	
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
