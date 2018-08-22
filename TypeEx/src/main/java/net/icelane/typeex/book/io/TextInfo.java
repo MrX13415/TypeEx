@@ -456,6 +456,14 @@ public class TextInfo {
 
 		public abstract boolean isCursorWithin();
 
+		public abstract int selectionStartWidth();
+		
+		public abstract boolean selectionStartWithin();
+		
+		public abstract int selectionEndWidth();
+		
+		public abstract boolean selectionEndWithin();
+		
 		public int cursorWidth(String text) {
 			if (!isCursorWithin())
 				return 0;
@@ -477,25 +485,26 @@ public class TextInfo {
 			return textinfo.cursorPosition >= start && textinfo.cursorPosition <= end;
 		}
 		
-		public int selectionStartWidth() {
+		public int selectionStartWidth(String text) {
 			String s = "";
 			return textinfo.width(s);
 		}
+		
 		public boolean selectionStartWithin(int start, int end) {
 			return textinfo.selectionStart() >= start && textinfo.selectionStart() <= end;
 		}
-		public int selectionEndWidth() {
-			String s = "";
+		
+		public int selectionEndWidth(String text) {
+			if (selectionEndWithin())
+				return -1;
+			String s = text.substring(0, textinfo.selectionEnd());
 			return textinfo.width(s);
 		}
+		
 		public boolean selectionEndWithin(int start, int end) {
 			return textinfo.selectionEnd() >= start && textinfo.selectionEnd() <= end;
 		}
-		
-		
-		
-		
-		
+
 	}
 
 	public static class LineInfo extends SubTextInfo {
@@ -545,6 +554,30 @@ public class TextInfo {
 			return isCursorWithin(start, end);
 		}
 
+		@Override
+		public int selectionStartWidth() {
+			throw new UnsupportedOperationException("Use the method in class 'ChunckInfo'!");
+			//return selectionStartWidth(text);
+		}
+
+		@Override
+		public boolean selectionStartWithin() {
+			throw new UnsupportedOperationException("Use the method in class 'ChunckInfo'!");
+			//return selectionStartWithin(start, end);
+		}
+
+		@Override
+		public int selectionEndWidth() {
+			throw new UnsupportedOperationException("Use the method in class 'ChunckInfo'!");
+			//return selectionEndWidth(text);
+		}
+
+		@Override
+		public boolean selectionEndWithin() {
+			throw new UnsupportedOperationException("Use the method in class 'ChunckInfo'!");
+			//return selectionEndWithin(start, end);
+		}
+		
 		public ChunckInfo[] wordWrap() {
 			ArrayList<ChunckInfo> chuncks = new ArrayList<>();
 			ChunckInfo[] out = new ChunckInfo[0];
@@ -579,6 +612,7 @@ public class TextInfo {
 			return chuncks.toArray(out); // textinfo.fontRenderer. listFormattedStringToWidth(line,
 											// textinfo.wordWrap).toArray(out);
 		}
+
 	}
 
 	public static class ChunckInfo extends SubTextInfo {
@@ -628,6 +662,26 @@ public class TextInfo {
 		@Override
 		public boolean isCursorWithin() {
 			return isCursorWithin(start, wrapped ? end - 1 : end);
+		}
+		
+		@Override
+		public int selectionStartWidth() {
+			return selectionStartWidth(text);
+		}
+
+		@Override
+		public boolean selectionStartWithin() {
+			return selectionStartWithin(start, end);
+		}
+
+		@Override
+		public int selectionEndWidth() {
+			return selectionEndWidth(text);
+		}
+
+		@Override
+		public boolean selectionEndWithin() {
+			return selectionEndWithin(start, end);
 		}
 
 	}
