@@ -3,8 +3,6 @@ package net.icelane.typeex.book.io;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.icelane.typeex.book.io.TextInfo.LineInfo;
-
 /**
  * Handle keys and alter the given <code>TextInfo</code> object
  * accordingly, so it mimics the behavior of the text edit control.
@@ -195,7 +193,7 @@ public abstract class KeyHandler {
 				textinfo.cursorPosition <= 0 ?
 				0 : textinfo.cursorPosition - charCount;
 		
-		textinfo.text = firstPart + lastPart;
+		textinfo.text(firstPart + lastPart);
 	}
 	
 	private static void handleKey_Del(TextInfo textinfo, String firstPart, String lastPart) {
@@ -224,7 +222,7 @@ public abstract class KeyHandler {
 		// remove a number of chars from the beginning of the last text part.
 		lastPart = lastPart.substring(charCount, lastPart.length());
 		
-		textinfo.text = firstPart + lastPart;
+		textinfo.text(firstPart + lastPart);
 	}
 	
 	private static void handleKey_ArrowLeft(TextInfo textinfo, String firstPart, String lastPart) {
@@ -245,8 +243,8 @@ public abstract class KeyHandler {
 		
 		// move the cursor position one to the right.
 		textinfo.cursorPosition =
-				textinfo.cursorPosition >= textinfo.text.length() ?
-				textinfo.text.length() : textinfo.cursorPosition + charCount;
+				textinfo.cursorPosition >= textinfo.text().length() ?
+				textinfo.text().length() : textinfo.cursorPosition + charCount;
 	}
 		
 	private static void handleKey_ArrowUp(TextInfo textinfo, String firstPart, String lastPart) {
@@ -311,7 +309,7 @@ public abstract class KeyHandler {
 		// Find end of the current line.
 		int nlPos = lastPart.indexOf("\n");
 		if (KeyInfo.isControlHeld() || nlPos < 0)
-			textinfo.cursorPosition = textinfo.text.length();	// Move to the end of the text.
+			textinfo.cursorPosition = textinfo.text().length();	// Move to the end of the text.
 		else
 			textinfo.cursorPosition += nlPos;					// Move to the end of line.
 	}
