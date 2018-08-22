@@ -411,8 +411,10 @@ public class TextInfo {
 			
 			int _start = 0;
 			if (index > 0) _start = StringUtils.ordinalIndexOf(textinfo.text, Character.toString(textinfo.newLine), index) + 1;
+			
 			int _end = textinfo.text.indexOf(textinfo.newLine, _start);
-
+			if (_end < 0) _end = textinfo.text.length();
+			
 			start = _start;
 			end = _end;
 			text = StringUtils.stripChars(textinfo.text.substring(_start, _end), textinfo.newLine);
