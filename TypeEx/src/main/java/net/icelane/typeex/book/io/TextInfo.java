@@ -486,7 +486,7 @@ public class TextInfo {
 		}
 		
 		public int selectionStartWidth(String text) {
-			if (isSelectionStartWithin())
+			if (!isSelectionStartWithin())
 				return -1;
 			String s = text.substring(0, textinfo.selectionStart());
 			return textinfo.width(s);
@@ -497,7 +497,7 @@ public class TextInfo {
 		}
 		
 		public int selectionEndWidth(String text) {
-			if (isSelectionEndWithin())
+			if (!isSelectionEndWithin())
 				return -1;
 			String s = text.substring(0, textinfo.selectionEnd());
 			return textinfo.width(s);

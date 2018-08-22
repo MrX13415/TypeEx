@@ -261,7 +261,7 @@ public abstract class BookRender extends BasicBook {
 		        }
 		        
 		        int selWidth = 0;
-		        int selx = 0;
+		        int selx = x;
 		        int sely = y;
 		        
 		        boolean selStart = chunck.isSelectionStartWithin();
@@ -296,7 +296,7 @@ public abstract class BookRender extends BasicBook {
 
 	
 	private void drawSelection(int x, int y, int width) {
-		drawSelectionBox(x, y, x + width, y);
+		drawSelectionBox(x, y, x + width, y + fontRenderer.FONT_HEIGHT);
 	}
 	
     /**
@@ -334,9 +334,6 @@ public abstract class BookRender extends BasicBook {
     	int green = ColorUtil.get(Color_Selection).getGreen(); 
     	int blue = ColorUtil.get(Color_Selection).getBlue();
     	int alpha = ColorUtil.get(Color_Selection).getAlpha();
-    	
-    	
-    	
     	
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
