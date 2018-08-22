@@ -1,4 +1,4 @@
-package net.icelane.typeex.test;
+package net.icelane.typeex.util;
 
 import org.lwjgl.util.Color;
 
