@@ -280,7 +280,7 @@ public abstract class BookRender extends BasicBook {
 		if (this.updateTicks / 6 % 2 == 0) color = Color_CursorBlink; 
 		
         if (textinfo().isCursorWithin()) 
-        	Gui.drawRect(x, y - 1, x + 1, y + 1 + this.fontRenderer.FONT_HEIGHT, color);
+        	drawInvertRect(x, y - 1, x + 1, y + 1 + this.fontRenderer.FONT_HEIGHT, color);
         else if (ColorUtil.get(color).getAlpha() > 0)
         	this.fontRenderer.drawString("_", x, y, color);
 	}
@@ -305,45 +305,17 @@ public abstract class BookRender extends BasicBook {
 		x += selx;
 		y += sely;
 	
-		drawSelectionBox(x, y, x + width, y + fontRenderer.FONT_HEIGHT);
+		drawInvertRect(x, y, x + width, y + fontRenderer.FONT_HEIGHT, Color_Selection);
 		return selection;
 	}
 	
-    /**
-     * Draws the blue selection box.
-     */
-    private void drawSelectionBox(int startX, int startY, int endX, int endY)
-    {	/*
-        if (startX < endX)
-        {
-            int i = startX;
-            startX = endX;
-            endX = i;
-        }
 
-        if (startY < endY)
-        {
-            int j = startY;
-            startY = endY;
-            endY = j;
-        }
-
-        if (endX > this.x + this.width)
-        {
-            endX = this.x + this.width;
-        }
-
-        if (startX > this.x + this.width)
-        {
-            startX = this.x + this.width;
-        }
-        */
-    	
+    private void drawInvertRect(int startX, int startY, int endX, int endY, int color){
     	//Unravel colorfuckery
-    	int red = ColorUtil.get(Color_Selection).getRed();
-    	int green = ColorUtil.get(Color_Selection).getGreen(); 
-    	int blue = ColorUtil.get(Color_Selection).getBlue();
-    	int alpha = ColorUtil.get(Color_Selection).getAlpha();
+    	int red   = ColorUtil.get(color).getRed();
+    	int green = ColorUtil.get(color).getGreen(); 
+    	int blue  = ColorUtil.get(color).getBlue();
+    	int alpha = ColorUtil.get(color).getAlpha();
     	
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
