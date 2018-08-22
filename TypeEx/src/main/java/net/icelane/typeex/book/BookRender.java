@@ -33,6 +33,9 @@ public abstract class BookRender extends BasicBook {
 
     public static final ResourceLocation BOOK_GUI_TEXTURES = new ResourceLocation("textures/gui/book.png");
 
+    private int Color_Cursor = 0xFF000000;
+    private int Color_CursorBlink = 0xFFFFFFFF;
+    
     /** Update ticks since the GUI was opened */
     private int updateTicks;
     
@@ -41,7 +44,7 @@ public abstract class BookRender extends BasicBook {
     
     private List<ITextComponent> cachedComponents;
     private int cachedPage = -1;
-        
+    
     private GuiButton buttonDone;
     private GuiButton buttonSign;
     private GuiButton buttonFinalize;
@@ -50,7 +53,6 @@ public abstract class BookRender extends BasicBook {
     private NextPageButton buttonNextPage;
     private NextPageButton buttonPreviousPage;
 
-    
     
 	public BookRender(EntityPlayer player, ItemStack item, boolean unsigned) {
 		super(player, item, unsigned);
@@ -168,14 +170,7 @@ public abstract class BookRender extends BasicBook {
         
         fontRenderer.drawSplitString(warning, i + 36, 82, 116, 0);
 	}
-	
-	//TODO
-    private int enabledColor = 14737632;
-    private int disabledColor = 7368816;
-			
-	/**
-     * Draws the screen and all the components in it.
-     */
+		
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		drawBackground();
 		
@@ -222,9 +217,6 @@ public abstract class BookRender extends BasicBook {
 		super.drawScreen(mouseX, mouseY, partialTicks);
 	}
 	
-	/**
-     * Draws the screen and all the components in it.
-     */
 	public void drawBackground() {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
@@ -238,9 +230,6 @@ public abstract class BookRender extends BasicBook {
         this.drawTexturedModalRect(x, y, 0, 0, w, h);
 	}
 	
-	/**
-     * Draws the screen and all the components in it.
-     */
 	public void drawPageContent() {
 		boolean cursor = false;
 		int lineCount = textinfo().lineCount();
@@ -258,7 +247,7 @@ public abstract class BookRender extends BasicBook {
 		        fontRenderer.drawString(chunck.text, x, y, 0); // TODO: drawStringalined?
 
 		        if (chunck.isCursorWithin() && !cursor) {
-		        	drawCursor(x, y, chunck.cursorWidth());
+		        	drawCursor(x + chunck.cursorWidth(), y);
 		        	cursor = true;
 		        }
 				
@@ -266,14 +255,12 @@ public abstract class BookRender extends BasicBook {
 			} 
 		}
 		
-		if (!cursor) drawCursor(x, y, 0);
+		if (!cursor) drawCursor(x, y);
 	}
 	
-	private void drawCursor(int x, int y, int width) {
-		x = x + width;
-		
-		int color = 0xFF000000;
-		if (this.updateTicks / 6 % 2 == 0) color = 0xFFC0C0C0;
+	private void drawCursor(int x, int y) {
+		int color = Color_Cursor;
+		if (this.updateTicks / 6 % 2 == 0) color = Color_CursorBlink; 
 		
         if (textinfo().isCursorWithin())
         {
@@ -282,14 +269,10 @@ public abstract class BookRender extends BasicBook {
         else
         {
         	
-        	this.fontRenderer.drawStringWithShadow("_", (float)x, (float)y, color);
+        	this.fontRenderer.drawString("_", x, y, color);
         }
 	}
 
-	
-	/**
-     * Draws the screen and all the components in it.
-     */
 	public void drawPageHeader() {
 	    String pageIndicator = I18n.format("book.pageIndicator", page() + 1, pageCount());
 	    
@@ -323,40 +306,6 @@ public abstract class BookRender extends BasicBook {
         this.cachedPage = page();
 	}
 	
-	
-	
-	
-	/**
-     * Draws the screen and all the components in it.
-     */
-    public void drawScreen2(int mouseX, int mouseY, float partialTicks)
-    {
-        if (isSigning())
-        {
-        	drawSigningPage();
-        }
-        else
-        {
-            if (isUnsigned())
-            {
-            	//pageContent = addCursor(pageContent);
-            }
-            else if (this.cachedPage != page())
-            {
-            	//cachePage(pageContent);
-            }
-
-//          String s4 = I18n.format("book.pageIndicator", page() + 1, pageCount());
-//          String pageContent = getPageText();
-//            int j1 = this.fontRenderer.getStringWidth(s4);
-//            this.fontRenderer.drawString(s4, x - j1 + 192 - 44, 18, 0);
-
-
-        }
-
-        super.drawScreen(mouseX, mouseY, partialTicks);
-    }
-
     @Nullable
     public ITextComponent getClickedComponentAt(int p_175385_1_, int p_175385_2_)
     {
