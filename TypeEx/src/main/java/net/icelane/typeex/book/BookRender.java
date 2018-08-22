@@ -259,23 +259,9 @@ public abstract class BookRender extends BasicBook {
 		        	drawCursor(x + chunck.cursorWidth(), y);
 		        	cursor = true;
 		        }
+
+		        drawSelection(x, y, chunck);
 		        
-		        int selWidth = 0;
-		        int selx = x;
-		        int sely = y;
-		        
-		        boolean selStart = chunck.isSelectionStartWithin();
-		        boolean selEnd = chunck.isSelectionEndWithin();
-		        
-				if(selStart) {
-					selx = chunck.selectionStartWidth();
-					selWidth = (selEnd ? chunck.selectionEndWidth() : chunck.width()) - selx;
-				} else if(selEnd) {
-					selWidth = chunck.selectionEndWidth();
-				}
-				
-				drawSelection(selx, sely, selWidth);
-				
 				y += fontRenderer.FONT_HEIGHT;
 			} 
 		}
@@ -295,8 +281,22 @@ public abstract class BookRender extends BasicBook {
 	}
 
 	
-	private void drawSelection(int x, int y, int width) {
-		drawSelectionBox(x, y, x + width, y + fontRenderer.FONT_HEIGHT);
+	private void drawSelection(int x, int y, ChunckInfo chunck) {
+        boolean selEnd = chunck.isSelectionEndWithin();
+        
+		int width = 0;
+        int selx = 0;
+        int sely = 0;
+
+		if(chunck.isSelectionStartWithin()) {
+			selx = chunck.selectionStartWidth();
+			width = (selEnd ? chunck.selectionEndWidth() : chunck.width()) - selx;
+			
+		} else if(selEnd) {
+			width = chunck.selectionEndWidth();
+		}
+
+		drawSelectionBox(x + selx, y + sely, x + width, y + fontRenderer.FONT_HEIGHT);
 	}
 	
     /**
