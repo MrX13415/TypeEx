@@ -35,11 +35,11 @@ abstract class BasicBook extends GuiScreen {
     private int page;
     
     
-    public BasicBook(EntityPlayer player, ItemStack item, boolean signed) {
+    public BasicBook(EntityPlayer player, ItemStack item, boolean unsigned) {
 		super();
 		this.player = player;
 		this.item = item;
-		this.signed = signed;
+		this.signed = !unsigned;
 		
 		if (item.hasTagCompound())
         {
@@ -204,11 +204,12 @@ abstract class BasicBook extends GuiScreen {
 	}
 	
 	public void pageIncrement() {
-		page++;
+		page(page+1);
 	}
 	
 	public void pageDecrement() {
-		--page;
+		if (page <= 0) return;
+		page(page-1);
 	}
 	
 	public boolean isLastPage() {

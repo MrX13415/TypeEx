@@ -53,8 +53,8 @@ public abstract class BookRender extends BasicBook {
 
     
     
-	public BookRender(EntityPlayer player, ItemStack item, boolean signed) {
-		super(player, item, signed);
+	public BookRender(EntityPlayer player, ItemStack item, boolean unsigned) {
+		super(player, item, unsigned);
 	}
 
 	@Override
@@ -169,71 +169,7 @@ public abstract class BookRender extends BasicBook {
 	//TODO
     private int enabledColor = 14737632;
     private int disabledColor = 7368816;
-	
-	private void drawCursor(String text) {
-		
-//		 boolean cursorWithin = textinfo().IsCursorWithin();
-//		 
-//         int k1 = j1;
-//
-//         if (cursorWithin)
-//         {
-//             Gui.drawRect(k1, i1 - 1, k1 + 1, i1 + 1 + this.fontRenderer.FONT_HEIGHT, -3092272);
-//         }
-//         else
-//         {
-//             this.fontRenderer.drawStringWithShadow("_", (float)k1, (float)i1, i);
-//         }
-
-         
-         
-         
-         
-         
-         
-		
-		
-		
-		
-//        if (this.fontRenderer.getBidiFlag())
-//        {
-//        	text += "_";
-//        }
-//        else if (this.updateTicks / 6 % 2 == 0)
-//        {
-//        	text += "" + TextFormatting.BLACK + "_";
-//        }
-//        else
-//        {
-//        	text += "" + TextFormatting.GRAY + "_";
-//        }
-        
-		//return text;
-	}
-	
-	private void cachePage(String pageContent) {
-        if (ItemWrittenBook.validBookTagContents(getItem().getTagCompound()))
-        {
-            try
-            {
-                ITextComponent itextcomponent = ITextComponent.Serializer.jsonToComponent(pageContent);
-                this.cachedComponents = itextcomponent != null ? GuiUtilRenderComponents.splitText(itextcomponent, 116, this.fontRenderer, true, true) : null;
-            }
-            catch (JsonParseException ex)
-            {
-                this.cachedComponents = null;
-            }
-        }
-        else
-        {
-            TextComponentString textcomponentstring = new TextComponentString(TextFormatting.DARK_RED + "* Invalid book tag *");
-            this.cachedComponents = Lists.newArrayList(textcomponentstring);
-        }
-
-        this.cachedPage = page();
-	}
-
-	
+			
 	/**
      * Draws the screen and all the components in it.
      */
@@ -246,7 +182,38 @@ public abstract class BookRender extends BasicBook {
 		}
 		else
 		{
-			drawBookPage();
+			if (isUnsigned()) {
+				
+			}
+            else if (this.cachedPage != page())
+            {
+            	cachePage(getPageText());
+            }
+			
+			drawPageHeader();
+
+			//TODO:
+            if (this.cachedComponents == null)
+            {
+    			drawPageContent();			
+            }
+            else
+            {
+                int k1 = Math.min(128 / this.fontRenderer.FONT_HEIGHT, this.cachedComponents.size());
+
+                for (int l1 = 0; l1 < k1; ++l1)
+                {
+                    ITextComponent itextcomponent2 = this.cachedComponents.get(l1);
+                    //this.fontRenderer.drawString(itextcomponent2.getUnformattedText(), x + 36, 34 + l1 * this.fontRenderer.FONT_HEIGHT, 0);
+                }
+
+                ITextComponent itextcomponent1 = this.getClickedComponentAt(mouseX, mouseY);
+
+                if (itextcomponent1 != null)
+                {
+                    this.handleComponentHover(itextcomponent1, mouseX, mouseY);
+                }
+            }
 		}
 	
 		super.drawScreen(mouseX, mouseY, partialTicks);
@@ -271,9 +238,7 @@ public abstract class BookRender extends BasicBook {
 	/**
      * Draws the screen and all the components in it.
      */
-	public void drawBookPage() {
-		drawPageHeader();
-
+	public void drawPageContent() {
 		boolean cursor = false;
 		int lineCount = textinfo().lineCount();
 		
@@ -333,6 +298,27 @@ public abstract class BookRender extends BasicBook {
         this.fontRenderer.drawString(pageIndicator, x, y, 0);
 	}
 
+	private void cachePage(String pageContent) {
+        if (ItemWrittenBook.validBookTagContents(getItem().getTagCompound()))
+        {
+            try
+            {
+                ITextComponent itextcomponent = ITextComponent.Serializer.jsonToComponent(pageContent);
+                this.cachedComponents = itextcomponent != null ? GuiUtilRenderComponents.splitText(itextcomponent, 116, this.fontRenderer, true, true) : null;
+            }
+            catch (JsonParseException ex)
+            {
+                this.cachedComponents = null;
+            }
+        }
+        else
+        {
+            TextComponentString textcomponentstring = new TextComponentString(TextFormatting.DARK_RED + "* Invalid book tag *");
+            this.cachedComponents = Lists.newArrayList(textcomponentstring);
+        }
+
+        this.cachedPage = page();
+	}
 	
 	
 	
@@ -348,9 +334,6 @@ public abstract class BookRender extends BasicBook {
         }
         else
         {
-//            String s4 = I18n.format("book.pageIndicator", page() + 1, pageCount());
-//            String pageContent = getPageText();
-
             if (isUnsigned())
             {
             	//pageContent = addCursor(pageContent);
@@ -360,30 +343,12 @@ public abstract class BookRender extends BasicBook {
             	//cachePage(pageContent);
             }
 
+//          String s4 = I18n.format("book.pageIndicator", page() + 1, pageCount());
+//          String pageContent = getPageText();
 //            int j1 = this.fontRenderer.getStringWidth(s4);
 //            this.fontRenderer.drawString(s4, x - j1 + 192 - 44, 18, 0);
 
-            if (this.cachedComponents == null)
-            {
-               // this.fontRenderer.drawSplitString(pageContent, x + 36, 34, textinfo().wordWrap, 0);
-            }
-            else
-            {
-                int k1 = Math.min(128 / this.fontRenderer.FONT_HEIGHT, this.cachedComponents.size());
 
-                for (int l1 = 0; l1 < k1; ++l1)
-                {
-                    ITextComponent itextcomponent2 = this.cachedComponents.get(l1);
-                    //this.fontRenderer.drawString(itextcomponent2.getUnformattedText(), x + 36, 34 + l1 * this.fontRenderer.FONT_HEIGHT, 0);
-                }
-
-                ITextComponent itextcomponent1 = this.getClickedComponentAt(mouseX, mouseY);
-
-                if (itextcomponent1 != null)
-                {
-                    this.handleComponentHover(itextcomponent1, mouseX, mouseY);
-                }
-            }
         }
 
         super.drawScreen(mouseX, mouseY, partialTicks);

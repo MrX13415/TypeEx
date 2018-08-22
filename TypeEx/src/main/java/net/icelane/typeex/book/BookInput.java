@@ -17,8 +17,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 abstract class BookInput extends BookRender {
 
-	public BookInput(EntityPlayer player, ItemStack item, boolean signed) {
-		super(player, item, signed);
+	public BookInput(EntityPlayer player, ItemStack item, boolean unsigned) {
+		super(player, item, unsigned);
 	}
 
     public void handleKeyboardInput() throws IOException

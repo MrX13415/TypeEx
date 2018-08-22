@@ -14,8 +14,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class BookUI extends BookInput {
 
-	public BookUI(EntityPlayer player, ItemStack item, boolean signed) {
-		super(player, item, signed);
+	public BookUI(EntityPlayer player, ItemStack item, boolean unsigned) {
+		super(player, item, unsigned);
 	}
 
 	

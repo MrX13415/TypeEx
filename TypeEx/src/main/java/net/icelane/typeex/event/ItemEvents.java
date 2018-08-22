@@ -1,6 +1,7 @@
 package net.icelane.typeex.event;
 
 import net.icelane.typeex.book.BookUI;
+import net.icelane.typeex.net.minecraft.client.gui.GuiScreenBook;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -24,7 +25,8 @@ public class ItemEvents {
 	    
 	    //player.sendMessage(new TextComponentString("YEAH!"));
 	    
-    	BookUI bookui = new BookUI(player, book, false);
+	    //GuiScreenBook bookui = new GuiScreenBook(player, book, true);
+    	BookUI bookui = new BookUI(player, book, true);
     	Minecraft.getMinecraft().displayGuiScreen(bookui);
     	
 	    event.setCanceled(true);
