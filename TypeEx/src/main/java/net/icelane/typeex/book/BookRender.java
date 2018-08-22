@@ -16,7 +16,10 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiUtilRenderComponents;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -35,7 +38,7 @@ public abstract class BookRender extends BasicBook {
 
     private int Color_Cursor = 0xFF000000;
     private int Color_CursorBlink = 0xFFFFFFFF;
-    
+    private int Color_Selection = 0xFF0000FF;
     /** Update ticks since the GUI was opened */
     private int updateTicks;
     
@@ -273,6 +276,61 @@ public abstract class BookRender extends BasicBook {
         }
 	}
 
+    /**
+     * Draws the blue selection box.
+     */
+    private void drawSelectionBox(int startX, int startY, int endX, int endY)
+    {	/*
+        if (startX < endX)
+        {
+            int i = startX;
+            startX = endX;
+            endX = i;
+        }
+
+        if (startY < endY)
+        {
+            int j = startY;
+            startY = endY;
+            endY = j;
+        }
+
+        if (endX > this.x + this.width)
+        {
+            endX = this.x + this.width;
+        }
+
+        if (startX > this.x + this.width)
+        {
+            startX = this.x + this.width;
+        }
+        */
+    	
+    	//Unravel colorfuckery
+    	int red = Color_Cursor >> 16 & 0xFF;
+    	int green = Color_Cursor >> 8 & 0xFF; 
+    	int blue = Color_Cursor >> 0 & 0xFF;
+    	int alpha = Color_Cursor >> 24 & 0xFF;
+    	
+    	
+    	
+    	
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferbuilder = tessellator.getBuffer();
+        GlStateManager.color(red, green, blue, alpha);
+        GlStateManager.disableTexture2D();
+        GlStateManager.enableColorLogic();
+        GlStateManager.colorLogicOp(GlStateManager.LogicOp.OR_REVERSE);
+        bufferbuilder.begin(7, DefaultVertexFormats.POSITION);
+        bufferbuilder.pos((double)startX, (double)endY, 0.0D).endVertex();
+        bufferbuilder.pos((double)endX, (double)endY, 0.0D).endVertex();
+        bufferbuilder.pos((double)endX, (double)startY, 0.0D).endVertex();
+        bufferbuilder.pos((double)startX, (double)startY, 0.0D).endVertex();
+        tessellator.draw();
+        GlStateManager.disableColorLogic();
+        GlStateManager.enableTexture2D();
+    }
+	
 	public void drawPageHeader() {
 	    String pageIndicator = I18n.format("book.pageIndicator", page() + 1, pageCount());
 	    
