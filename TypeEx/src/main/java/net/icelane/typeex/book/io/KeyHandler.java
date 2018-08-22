@@ -55,8 +55,6 @@ public abstract class KeyHandler {
 		handled = true;								        // assume key will be handled 
 		selection = keyinfo.getKeyCode() != KeyInfo.Shift;  //SHIFT: Don't trigger selection handling yet!
 		int cursorPosition = textinfo.cursorPosition;       // save the current cursor position for selection handling 
-
-		System.out.println(KeyInfo.Backspace);
 		
 		switch(keyinfo.getKeyCode()) {
 		case KeyInfo.Esc: break; // ESC key writes a char otherwise
