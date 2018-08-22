@@ -12,8 +12,7 @@ import com.google.gson.JsonParseException;
 import net.icelane.typeex.book.io.TextInfo.ChunckInfo;
 import net.icelane.typeex.book.io.TextInfo.LineInfo;
 import net.icelane.typeex.book.ui.NextPageButton;
-import net.icelane.typeex.util.ColorUtil;
-import net.minecraft.client.gui.Gui;
+import net.icelane.typeex.util.Color;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiUtilRenderComponents;
@@ -281,7 +280,7 @@ public abstract class BookRender extends BasicBook {
 		
         if (textinfo().isCursorWithin()) 
         	drawInvertRect(x, y - 1, x + 1, y + 1 + this.fontRenderer.FONT_HEIGHT, color);
-        else if (ColorUtil.get(color).getAlpha() > 0)
+        else if (Color.get(color).getAlpha() > 0)
         	this.fontRenderer.drawString("_", x, y, color);
 	}
 
@@ -310,16 +309,30 @@ public abstract class BookRender extends BasicBook {
 	}
 	
 
-    private void drawInvertRect(int startX, int startY, int endX, int endY, int color){
+	int u = 0xFF000000;
+	long last = System.currentTimeMillis();
+	
+    private void drawInvertRect(int startX, int startY, int endX, int endY, int argb){
+    	
+    	//color = u;
+    
+    	if (System.currentTimeMillis() - last > 500) {
+    		u++;
+    		last = System.currentTimeMillis();
+    	}
+    	
+    	if (u >= 0xFFFFFFFF) {
+    		u = 0xFF000000;
+    	}
+    	
+    	System.out.println(u);
+    	
     	//Unravel colorfuckery
-    	int red   = ColorUtil.get(color).getRed();
-    	int green = ColorUtil.get(color).getGreen(); 
-    	int blue  = ColorUtil.get(color).getBlue();
-    	int alpha = ColorUtil.get(color).getAlpha();
+    	Color color = new Color(argb); 
     	
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
-        GlStateManager.color(red, green, blue, alpha);
+        GlStateManager.color(color.red, color.green, color.blue, color.alpha);
         GlStateManager.disableTexture2D();
         GlStateManager.enableColorLogic();
         GlStateManager.colorLogicOp(GlStateManager.LogicOp.OR_REVERSE);
