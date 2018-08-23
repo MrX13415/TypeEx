@@ -254,8 +254,8 @@ public abstract class KeyHandler {
 		int nlPosB = firstPart.lastIndexOf("\n");
 		int nlPosA = firstPart.substring(0, nlPosB).lastIndexOf("\n");
 
-		int curLinePos = textinfo.cursorPosition - nlPosB + 1;	// Cursor position in the current line.
-		int preLineLength = nlPosB - nlPosA;				    // Line length of the previous line.
+		int curLinePos = textinfo.cursorPosition - nlPosB;	// Cursor position in the current line.
+		int preLineLength = nlPosB - nlPosA;				// Line length of the previous line.
 		
 		// If the length of the current line is greater then
 		// the length of the previous line, then just go to the end of the previous line.    
@@ -263,7 +263,6 @@ public abstract class KeyHandler {
 		textinfo.cursorPosition = 
 				curLinePos >= preLineLength ?
 				nlPosB : nlPosA + curLinePos;
-				
 	}
 	
 	private static void handleKey_ArrowDown(TextInfo textinfo, String firstPart, String lastPart) {
@@ -280,7 +279,7 @@ public abstract class KeyHandler {
 		
 		if (nlPosC < 0) nlPosC = lastPart.length();			// No second line, so us the end of the text as pos. C.
 		
-		int curLinePos = textinfo.cursorPosition - nlPosA - 1; 	// Cursor position in the current line.
+		int curLinePos = textinfo.cursorPosition - nlPosA; 	// Cursor position in the current line.
 		int postLineLength = nlPosC - nlPosB;				    // Line length of next line.
 		
 		// If the length of the next line is smaller then

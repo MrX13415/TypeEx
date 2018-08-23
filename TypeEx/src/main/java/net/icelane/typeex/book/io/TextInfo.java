@@ -363,7 +363,7 @@ public class TextInfo {
 		return lineCount(textWrapped);
 	}
 
-	private int lineCount(String text) {
+	public int lineCount(String text) {
 		if (text.length() <= 0)
 			return 0;
 		return StringUtils.countMatches(text, newLine) + 1;
