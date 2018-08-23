@@ -3,6 +3,9 @@ package net.icelane.typeex.book.io;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.icelane.typeex.book.io.TextInfo.ChunckInfo;
+import net.icelane.typeex.book.io.TextInfo.LineInfo;
+
 /**
  * Handle keys and alter the given <code>TextInfo</code> object
  * accordingly, so it mimics the behavior of the text edit control.
@@ -246,16 +249,44 @@ public abstract class KeyHandler {
 	}
 		
 	private static void handleKey_ArrowUp(TextInfo textinfo, String firstPart, String lastPart) {
-		firstPart = textinfo.wrappedFirstPart();
 		
-		if (!firstPart.contains("\n")) return;
-		// Pos A: Index of the new line char before the last new line char.
-		// Pos B: Index of the last new line char in the first text part.
-		int nlPosB = firstPart.lastIndexOf("\n");
-		int nlPosA = firstPart.substring(0, nlPosB).lastIndexOf("\n");
-
-		int curLinePos = textinfo.cursorPosition - nlPosB;	// Cursor position in the current line.
+		int lc = textinfo.lineCount(firstPart);
+		if (lc < 1) return;
+		
+		LineInfo li = textinfo.line(lc - 1);  // current line
+		ChunckInfo[] cis = li.wordWrap();  // current line
+		int offset = 0;
+		
+		ChunckInfo cip = null; // previous line
+		if (cis.length >= 2 && !cis[0].isCursorWithin()) {
+			//wrapped lines
+			cip = cis[cis.length - 2];
+		} else if (lc >= 2) {
+			//normal lines
+			li = textinfo.line(lc - 2);
+			cis = li.wordWrap();
+			cip = cis[cis.length - 1];
+			offset = 1;
+		}
+		
+		if (cip == null) return;
+		
+		int nlPosA = cip.start;
+		int nlPosB = cip.end;
+		
+		int curLinePos = textinfo.cursorPosition - nlPosB - offset;	// Cursor position in the current line.
 		int preLineLength = nlPosB - nlPosA;				// Line length of the previous line.
+		
+		//firstPart = textinfo.wrappedFirstPart();
+		
+//		if (!firstPart.contains("\n")) return;
+//		// Pos A: Index of the new line char before the last new line char.
+//		// Pos B: Index of the last new line char in the first text part.
+//		int nlPosB = firstPart.lastIndexOf("\n");
+//		int nlPosA = firstPart.substring(0, nlPosB).lastIndexOf("\n");
+//
+//		int curLinePos = textinfo.cursorPosition - nlPosB;	// Cursor position in the current line.
+//		int preLineLength = nlPosB - nlPosA;				// Line length of the previous line.
 		
 		// If the length of the current line is greater then
 		// the length of the previous line, then just go to the end of the previous line.    
@@ -266,28 +297,67 @@ public abstract class KeyHandler {
 	}
 	
 	private static void handleKey_ArrowDown(TextInfo textinfo, String firstPart, String lastPart) {
-		firstPart = textinfo.wrappedFirstPart();
-		lastPart = textinfo.wrappedLastPart();
 		
-		if (!lastPart.contains("\n")) return;
-		// Pos A: Index of the last new line char in the first text part. 
-		// Pos B: Index of the first new line char in the last text part.
-		// Pos C: Index of the second new line char in the last text part.	
-		int nlPosA = firstPart.lastIndexOf("\n");
-		int nlPosB = lastPart.indexOf("\n");			
-		int nlPosC = lastPart.indexOf("\n", nlPosB + 1);		
+		int lcf = textinfo.lineCount(firstPart);
+		int lce = textinfo.lineCount(lastPart);
+		if (lce < 1) return;
 		
-		if (nlPosC < 0) nlPosC = lastPart.length();			// No second line, so us the end of the text as pos. C.
+		LineInfo lic = textinfo.line(lcf - 1); // current line
+		LineInfo lin = textinfo.line(lcf); // next line		
+		ChunckInfo[] cisc = lic.wordWrap(); // current line
+		ChunckInfo[] cisn = lin.wordWrap(); // next line
 		
-		int curLinePos = textinfo.cursorPosition - nlPosA; 	// Cursor position in the current line.
-		int postLineLength = nlPosC - nlPosB;				    // Line length of next line.
+		ChunckInfo cic = null; // current linee
+		ChunckInfo cin = null; // next line
+		
+		if (cisc.length >= 2 && !cisc[cisc.length - 1].isCursorWithin()) {
+			//wrapped lines
+			for (int i = 0; i < cisc.length - 1; i++) {
+				if (cisc[i].isCursorWithin()) {
+					cic = cisc[i];
+					cin = cisc[i + 1];
+				}
+			}
+		} else if (lce >= 2) {
+			//normal lines
+			cic = cisc[cisc.length - 1];
+			cin = cisn[0];
+		}
+		
+		if (cic == null) return;
+		if (cin == null) return;
+		
+		int nlPosA = cic.start;
+		int nlPosB = cin.start;
+		int nlPosC = cin.end;
+		
+		int curLinePos = textinfo.cursorPosition - nlPosA;	// Cursor position in the current line.
+		int postLineLength = nlPosC - nlPosB;				// Line length of next line.
+		
+		
+//		firstPart = textinfo.wrappedFirstPart();
+//		lastPart = textinfo.wrappedLastPart();
+		
+//		if (!lastPart.contains("\n")) return;
+//		// Pos A: Index of the last new line char in the first text part. 
+//		// Pos B: Index of the first new line char in the last text part.
+//		// Pos C: Index of the second new line char in the last text part.	
+//		int nlPosA = firstPart.lastIndexOf("\n");
+//		int nlPosB = lastPart.indexOf("\n");			
+//		int nlPosC = lastPart.indexOf("\n", nlPosB + 1);		
+//		
+//		if (nlPosC < 0) nlPosC = lastPart.length();			// No second line, so us the end of the text as pos. C.
+//		
+//		int curLinePos = textinfo.cursorPosition - nlPosA; 	// Cursor position in the current line.
+//		int postLineLength = nlPosC - nlPosB;				    // Line length of next line.
 		
 		// If the length of the next line is smaller then
 		// the length of the current line, then just go to the end of the next line.    
 		// Otherwise go to the same position in the next line.
-		textinfo.cursorPosition +=
-				postLineLength < curLinePos ?
-				nlPosC : nlPosB + curLinePos;
+		textinfo.cursorPosition = 
+				postLineLength < curLinePos ? 
+						nlPosC
+						: nlPosB + curLinePos;
 	}
 	
 	private static void handleKey_Home(TextInfo textinfo, String firstPart, String lastPart) {

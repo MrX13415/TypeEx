@@ -531,7 +531,7 @@ public class TextInfo {
 		protected LineInfo(TextInfo textinfo, boolean wrapped, int index) {
 			super(textinfo);
 
-			String _text = wrapped ? textinfo.wrapText() : textinfo.text();
+			String _text = wrapped ? textinfo.textWrapped() : textinfo.text();
 
 			int _start = 0;
 			if (index > 0)
