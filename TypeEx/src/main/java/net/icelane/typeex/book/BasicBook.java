@@ -78,6 +78,7 @@ abstract class BasicBook extends GuiScreen {
 	public void onPageChange() {
 		textinfo.text(getPageText());
 		textinfo.moveCursorToEnd();
+		textinfo.selected = false;
 	}	
     
     public TextInfo textinfo() {
