@@ -86,6 +86,11 @@ public class TextInfo {
 		if (undoindex > 0) --undoindex;
 	}
 
+	public void resetUndo() {
+		undolist.clear();
+		undoindex = -1;
+	}
+	
 	public void redo() {
 		if (undoindex >= (undolist.size() - 2)) return;
 		undoindex++;

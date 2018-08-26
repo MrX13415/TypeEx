@@ -79,6 +79,7 @@ abstract class BasicBook extends GuiScreen {
 		textinfo.text(getPageText());
 		textinfo.moveCursorToEnd();
 		textinfo.selected = false;
+		textinfo.resetUndo();
 	}	
     
     public TextInfo textinfo() {
