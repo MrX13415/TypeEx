@@ -34,13 +34,13 @@ abstract class BookInput extends BookRender {
 		} catch (IOException ex) { }
 		
 		//DEBUG
-//		System.out.println(String.format("%16s %s%s%s%s%s",
-//				keyinfo.toString(),
-//				textinfo().overwrite ? "Ins" : "   ",
-//				KeyInfo.isControlHeld() ? " CTRL" : "",
-//				KeyInfo.isAltHeld() ? " Alt" : "",
-//				KeyInfo.isShiftHeld() ? " Shift" : "",
-//				KeyInfo.isMetaHeld() ? " Meta" : ""));
+		System.out.println(String.format("%16s %s%s%s%s%s",
+				keyinfo.toString(),
+				textinfo().overwrite ? "Ins" : "   ",
+				KeyInfo.isControlHeld() ? " CTRL" : "",
+				KeyInfo.isAltHeld() ? " Alt" : "",
+				KeyInfo.isShiftHeld() ? " Shift" : "",
+				KeyInfo.isMetaHeld() ? " Meta" : ""));
 			
 		if (isSigned()) return;
 		if (!keyinfo.getKeyState()) return;

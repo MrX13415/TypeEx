@@ -14,7 +14,9 @@ public class KeyInfo {
 	public static final int X          =   45; //  88;
 	public static final int C          =   46; //  67;
 	public static final int V          =   47; //  86;
-
+	public static final int Z          =   44; //    ;
+	public static final int Y          =   21; //    ;
+	
 	public static final int Enter      =   28; //   0;
 	public static final int Num_Enter  =  156; //   0;
 

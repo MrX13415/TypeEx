@@ -15,9 +15,12 @@ import net.minecraft.client.gui.FontRenderer;
  * Holds text and additional information about cursor and editing.
  */
 public class TextInfo {
-
+	
 	public final FontRenderer fontRenderer;
 
+	private ArrayList<UndoInfo> undolist = new ArrayList<TextInfo.UndoInfo>();
+	private int undoindex = -1;
+	
 	/**
 	 * The Text.
 	 */
@@ -69,12 +72,44 @@ public class TextInfo {
 		this.fontRenderer = fontRenderer;
 	}
 
+	private void apply(UndoInfo undoinfo) {
+		text           = undoinfo.text;
+		cursorPosition = undoinfo.cursorPosition;
+		selected       = undoinfo.selected;
+		selectionPosA  = undoinfo.selectionPosA;
+		selectionPosB  = undoinfo.selectionPosB;
+	}
+	
+	public void undo() {
+		UndoInfo undoinfo = undolist.get(undoindex);
+		apply(undoinfo);
+		if (undoindex > 0) --undoindex;
+	}
+
+	public void redo() {
+		if (undoindex >= (undolist.size() - 2)) return;
+		undoindex++;
+		UndoInfo undoinfo = undolist.get(undoindex);
+		apply(undoinfo);
+	}
+	
 	/**
 	 * Sets the text.
 	 * 
 	 * @param text
 	 */
 	public void text(String text) {
+		if (text != this.text) {
+			if (undoindex == (undolist.size() - 1)) {
+				undolist.add(new UndoInfo(this));
+				undoindex++;
+			} else {
+				for (int index = undoindex + 1; index < undolist.size(); index++) {
+					undolist.remove(index);
+				}
+			}
+		}
+		
 		this.text = text;
 		this.textWrapped = wrapText();
 		validateCursorPosition();
@@ -451,10 +486,35 @@ public class TextInfo {
 		return fontRenderer.getStringWidth(text);
 	}
 
+	public static class UndoInfo{
+		
+		public final String text;
+		public final int cursorPosition;
+		public final boolean selected;
+		public final int selectionPosA;
+		public final int selectionPosB;
+		
+		public UndoInfo(String text, int cursorPosition, boolean selected, int selectionPosA, int selectionPosB) {
+			this.text = text;
+			this.cursorPosition = cursorPosition;
+			this.selected = selected;
+			this.selectionPosA = selectionPosA;
+			this.selectionPosB = selectionPosB;
+		}
+		
+		public UndoInfo(TextInfo textinfo) {
+			this(textinfo.text,
+					textinfo.cursorPosition,
+					textinfo.selected,
+					textinfo.selectionPosA,
+					textinfo.selectionPosB);
+		}
+	}
+	
 	public static abstract class SubTextInfo {
 		public final TextInfo textinfo;
 
-		protected SubTextInfo(TextInfo textinfo) {
+		protected SubTextInfo(TextInfo textinfo) { 
 			this.textinfo = textinfo;
 		}
 

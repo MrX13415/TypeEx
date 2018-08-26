@@ -108,6 +108,12 @@ public abstract class KeyHandler {
 			
 		case KeyInfo.X: handleKey_X(textinfo);
 			break;
+			
+		case KeyInfo.Z: handleKey_Z(textinfo);
+			break;
+			
+		case KeyInfo.Y: handleKey_Y(textinfo);
+			break;
 		
 		default: handled = false;
 			break;
@@ -404,5 +410,15 @@ public abstract class KeyHandler {
 	private static void handleKey_X(TextInfo textinfo) {
 		if (KeyInfo.isControlHeld()) textinfo.cut();
 		else handled = false; // type letter "X" 
+	}
+	
+	private static void handleKey_Z(TextInfo textinfo) {
+		if (KeyInfo.isControlHeld()) textinfo.undo();
+		else handled = false;
+	}
+	
+	private static void handleKey_Y(TextInfo textinfo) {
+		if (KeyInfo.isControlHeld()) textinfo.redo();
+		else handled = false;
 	}
 }
