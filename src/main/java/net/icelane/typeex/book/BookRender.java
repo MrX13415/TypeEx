@@ -66,8 +66,8 @@ public abstract class BookRender extends BasicBook {
 	}
 
 	@Override
-	public void onPageChange() {
-		super.onPageChange();
+	public void onPageChange(int prevPage) {
+		super.onPageChange(prevPage);
 		if(isSigning()) textinfo().text(title());
 	}	
 	
@@ -136,7 +136,7 @@ public abstract class BookRender extends BasicBook {
 	public void setSigning(boolean signing) {
 		boolean old = this.signing;
 		this.signing = signing;
-		if (this.signing != old) onPageChange();
+		if (this.signing != old) onPageChange(-1);
 	}
     	
 	public int x() {

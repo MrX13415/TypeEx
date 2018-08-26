@@ -1,9 +1,12 @@
 package net.icelane.typeex.book;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import io.netty.buffer.Unpooled;
 import net.icelane.typeex.book.io.TextInfo;
+import net.icelane.typeex.book.io.UndoInfo;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -12,6 +15,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.client.CPacketCustomPayload;
+import net.minecraftforge.fml.common.network.internal.HandshakeCompletionHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -24,6 +28,7 @@ abstract class BasicBook extends GuiScreen {
     private final ItemStack item;
     
 	private TextInfo textinfo;
+	private HashMap<Integer, UndoInfo> undolist = new HashMap<>();
 	
     private String title = "";
     private NBTTagList pages;
@@ -65,7 +70,7 @@ abstract class BasicBook extends GuiScreen {
     public void initGui()
     {
         Initialize();
-        onPageChange();
+        onPageChange(page);
     }
     
 	public void Initialize() {
@@ -75,11 +80,16 @@ abstract class BasicBook extends GuiScreen {
 		//TODO
 	}
 	
-	public void onPageChange() {
+	public void onPageChange(int prevPage) {
+		undolist.put(page, textinfo.undoinfo());
+		
 		textinfo.text(getPageText());
 		textinfo.moveCursorToEnd();
 		textinfo.selected = false;
-		textinfo.resetUndo();
+		
+		UndoInfo undo = undolist.get(page);
+		if (undo == null) undo = new UndoInfo();
+		textinfo.undoinfo(undo);
 	}	
     
     public TextInfo textinfo() {
@@ -202,7 +212,7 @@ abstract class BasicBook extends GuiScreen {
 	public void page(int index) {
 		int old = page;
 		page = index;
-		if (old != page) onPageChange();
+		if (old != page) onPageChange(old);
 	}
 	
 	public void pageIncrement() {
