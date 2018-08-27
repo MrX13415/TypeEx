@@ -104,7 +104,7 @@ public class TextInfo {
 	 * @param text
 	 */
 	public void text(String text) {
-		text(text, false);
+		text(text, true);
 	}
 	
 	/**
@@ -112,14 +112,13 @@ public class TextInfo {
 	 * 
 	 * @param text
 	 */
-	public void text(String text, boolean noUndo) {
-		if (!noUndo && text != this.text) {
-			undoinfo.doUndo(this);
-		}
-		
+	public void text(String text, boolean undo) {
+		if (text == this.text) return;
 		this.text = text;
 		this.textWrapped = wrapText();
 		validateCursorPosition();
+		
+		if (undo) undoinfo.doUndo(this);
 	}
 
 	public String text() {

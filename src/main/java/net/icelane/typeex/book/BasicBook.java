@@ -81,17 +81,20 @@ abstract class BasicBook extends GuiScreen {
 	}
 	
 	public void onPageChange(int prevPage) {
-		undolist.put(page, textinfo.undoinfo());
+		undolist.put(prevPage, textinfo.undoinfo());
+		
+		textinfo.undoinfo(getUndo(page));
 		
 		textinfo.text(getPageText());
 		textinfo.moveCursorToEnd();
 		textinfo.selected = false;
-		
-		UndoInfo undo = undolist.get(page);
-		if (undo == null) undo = new UndoInfo();
-		textinfo.undoinfo(undo);
 	}	
     
+	public UndoInfo getUndo(int page) {
+		UndoInfo undo = undolist.get(page);
+		return undo != null ? undo : new UndoInfo();
+	}
+	
     public TextInfo textinfo() {
 		return textinfo;
 	}

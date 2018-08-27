@@ -18,20 +18,20 @@ public class UndoInfo {
 	}
 	
 	public void doUndo(TextInfo textinfo) {
-		if (undoindex == (undolist.size() - 1)) {
-			undolist.add(new UndoData(textinfo));
-			undoindex++;
-		} else {
+		if (undoindex < (undolist.size() - 1)) {
 			for (int index = undoindex + 1; index < undolist.size(); index++) {
 				undolist.remove(index);
 			}
 		}
+		
+		undolist.add(new UndoData(textinfo));
+		undoindex++;
 	}
 	
 	public UndoData getPrev() {
 		if (undoindex <= 0) return null;
+		--undoindex;
 		UndoData data = undolist.get(undoindex);
-		if (undoindex > 0) --undoindex;
 		return data;
 	}
 	
