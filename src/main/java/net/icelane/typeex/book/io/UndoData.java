@@ -23,4 +23,10 @@ public class UndoData {
 				textinfo.selectionPosA,
 				textinfo.selectionPosB);
 	}
+
+	@Override
+	public String toString() {
+		return "UndoData [text=" + text + ", cursorPosition=" + cursorPosition + ", selected=" + selected
+				+ ", selectionPosA=" + selectionPosA + ", selectionPosB=" + selectionPosB + "]";
+	}
 }

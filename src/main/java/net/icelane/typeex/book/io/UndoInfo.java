@@ -19,19 +19,25 @@ public class UndoInfo {
 	
 	public void doUndo(TextInfo textinfo) {
 		if (undoindex < (undolist.size() - 1)) {
-			for (int index = undoindex + 1; index < undolist.size(); index++) {
+			for (int index = undolist.size() - 1; index > undoindex; --index) {
 				undolist.remove(index);
 			}
 		}
 		
-		undolist.add(new UndoData(textinfo));
+ 		UndoData data = new UndoData(textinfo);
+		System.out.println("doUndo: " + undoindex + " " + data.toString());
+		undolist.add(data);
 		undoindex++;
 	}
 	
 	public UndoData getPrev() {
+		System.out.println("getPrev: " + undoindex);
 		if (undoindex <= 0) return null;
 		--undoindex;
 		UndoData data = undolist.get(undoindex);
+		System.out.println("getPrev: " + undoindex + " " + data.toString());
+		data = undolist.get(undoindex);
+		System.out.println(data);
 		return data;
 	}
 	

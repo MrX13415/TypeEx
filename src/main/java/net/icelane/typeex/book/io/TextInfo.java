@@ -149,15 +149,16 @@ public class TextInfo {
 	 */
 	public void insert(String text) {
 		text = enforceLimit(text);
+		String firstPart = firstPart();
 		String lastPart = lastPart();
-
+		
 		// handle overwrite mode ...
 		if (overwrite && lastPart.length() > 0)
 			lastPart = lastPart.substring(1);
 
 		// type next char ...
-		text(firstPart() + text + lastPart);
 		cursorPosition += text.length();
+		text(firstPart + text + lastPart);
 	}
 
 	private String enforceLimit(String text) {
