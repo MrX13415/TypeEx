@@ -42,6 +42,8 @@ public abstract class BookRender extends BasicBook {
 	private int Color_CursorBlink = 0x00FFFFFF;
     private int Color_Selection = 0xFF0000FF;
 
+    public int cursorWidth_Normal = 1;
+    private int cursorWidth_Override = 5;
     
     /** Update ticks since the GUI was opened */
     private int updateTicks;
@@ -277,13 +279,28 @@ public abstract class BookRender extends BasicBook {
 	private void drawCursor(int x, int y) {
 		int color = Color_Cursor;
 		if (this.updateTicks / 6 % 2 == 0) color = Color_CursorBlink; 
-		
-        if (textinfo().isCursorWithin()) 
-        	drawInvertRect(x, y - 1, x + 1, y + 1 + this.fontRenderer.FONT_HEIGHT, color);
-        else if (Color.get(color).getAlpha() > 0)
-        	this.fontRenderer.drawString("_", x, y, color);
-	}
 
+        if (textinfo().isCursorWithin())
+        	drawCursorVertical(x, y, color);
+        else if (Color.get(color).getAlpha() > 0)
+        	drawCursorHorizontal(x, y, color);
+	}
+	
+	private void drawCursorHorizontal(int x, int y, int color) {
+		y += 1;
+    	int w = textinfo().overwrite ? cursorWidth_Override : cursorWidth_Normal;
+		int h = this.fontRenderer.FONT_HEIGHT + 1;
+		
+    	drawInvertRect(x, y, w, h, color);
+	}
+	
+	private void drawCursorVertical(int x, int y, int color) {
+    	y += height - 1;
+    	int w = cursorWidth_Override;
+    	int h = 1;
+
+    	drawInvertRect(x, y, w, h, color);
+	}
 	
 	private boolean drawSelection(int x, int y, ChunckInfo chunck) {
 		boolean selStart = chunck.isSelectionStartWithin();
@@ -304,15 +321,17 @@ public abstract class BookRender extends BasicBook {
 		x += selx;
 		y += sely;
 	
-		drawInvertRect(x, y, x + width, y + fontRenderer.FONT_HEIGHT, Color_Selection);
+		drawInvertRect(x, y, width, fontRenderer.FONT_HEIGHT, Color_Selection);
 		return selection;
 	}
 	
 
 //	float u = 0;
 //	long last = System.currentTimeMillis();
-	
-    private void drawInvertRect(int startX, int startY, int endX, int endY, int argb){
+
+    private void drawInvertRect(int x, int y, int width, int height, int argb){
+    	int x2 = x + width;
+    	int y2 = y + height;
     	
 //    	float saturation = 0.3f; // 0.0 - 1.0
 //    	float brightness = 0.75f; // 0.0 - 1.0
@@ -347,10 +366,10 @@ public abstract class BookRender extends BasicBook {
         GlStateManager.enableColorLogic();
         GlStateManager.colorLogicOp(GlStateManager.LogicOp.OR_REVERSE);
         bufferbuilder.begin(7, DefaultVertexFormats.POSITION);
-        bufferbuilder.pos((double)startX, (double)endY, 0.0D).endVertex();
-        bufferbuilder.pos((double)endX, (double)endY, 0.0D).endVertex();
-        bufferbuilder.pos((double)endX, (double)startY, 0.0D).endVertex();
-        bufferbuilder.pos((double)startX, (double)startY, 0.0D).endVertex();
+        bufferbuilder.pos((double)x, (double)y2, 0.0D).endVertex();
+        bufferbuilder.pos((double)x2, (double)y2, 0.0D).endVertex();
+        bufferbuilder.pos((double)x2, (double)y, 0.0D).endVertex();
+        bufferbuilder.pos((double)x, (double)y, 0.0D).endVertex();
         tessellator.draw();
         GlStateManager.disableColorLogic();
         GlStateManager.enableTexture2D();
