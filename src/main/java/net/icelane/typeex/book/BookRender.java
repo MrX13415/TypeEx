@@ -286,16 +286,23 @@ public abstract class BookRender extends BasicBook {
         	drawCursorHorizontal(x, y, color);
 	}
 	
-	private void drawCursorHorizontal(int x, int y, int color) {
-		y += 1;
-    	int w = textinfo().overwrite ? cursorWidth_Override : cursorWidth_Normal;
-		int h = this.fontRenderer.FONT_HEIGHT + 1;
-		
-    	drawInvertRect(x, y, w, h, color);
+	private int cursorWidth() {
+		// - 1 => Leave a gap between the cursor and the next character.
+		int w = fontRenderer.getCharWidth(textinfo().currentChar()) - 1;
+		return (w <= 0 || w > cursorWidth_Override) ? cursorWidth_Override: w;
 	}
 	
 	private void drawCursorVertical(int x, int y, int color) {
-    	y += height - 1;
+		// x -= 1; <= Alternative: Move cursor 1px to the left.
+		y -= 1;
+    	int w = textinfo().overwrite ? cursorWidth() : cursorWidth_Normal;
+		int h = this.fontRenderer.FONT_HEIGHT + 1;
+
+    	drawInvertRect(x, y, w, h, color);
+	}
+	
+	private void drawCursorHorizontal(int x, int y, int color) {
+    	y += this.fontRenderer.FONT_HEIGHT - 1;
     	int w = cursorWidth_Override;
     	int h = 1;
 

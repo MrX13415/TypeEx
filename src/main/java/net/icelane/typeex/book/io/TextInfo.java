@@ -374,6 +374,11 @@ public class TextInfo {
 		return lastPart(textWrapped, cursorPosition);
 	}
 
+	public char currentChar() {
+		if (lastPart().length() == 0) return '\u0000'; // 'Null' character
+		return lastPart().substring(0, 1).charAt(0);
+	}
+	
 	/**
 	 * @return an array containing all lines.
 	 */
