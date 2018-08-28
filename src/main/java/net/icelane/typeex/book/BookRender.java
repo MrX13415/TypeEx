@@ -289,7 +289,9 @@ public abstract class BookRender extends BasicBook {
 	private int cursorWidth() {
 		// - 1 => Leave a gap between the cursor and the next character.
 		int w = fontRenderer.getCharWidth(textinfo().currentChar()) - 1;
-		return (w <= 0 || w > cursorWidth_Override) ? cursorWidth_Override: w;
+		if (w <= 1) return 2; // min size 2px
+		if (w > cursorWidth_Override) return cursorWidth_Override;
+		return w;
 	}
 	
 	private void drawCursorVertical(int x, int y, int color) {
