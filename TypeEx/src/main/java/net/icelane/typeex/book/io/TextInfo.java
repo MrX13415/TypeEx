@@ -540,7 +540,10 @@ public class TextInfo {
 			
 			String current = "";
 			for (char c : text.toCharArray()) {
-				if (width(current + c) >= width) break;
+				int charWidth = width(Character.toString(c));
+				int nextWidth = width(current + c);
+				int difference = nextWidth - width;
+				if (nextWidth > width && difference > (charWidth/2)) break;
 				current += c;
 			}
 			

@@ -255,33 +255,42 @@ public abstract class KeyHandler {
 	}
 		
 	private static void handleKey_ArrowUp(TextInfo textinfo, String firstPart, String lastPart) {
+		// TODO: MAKE CODE FENCY!!
 		
 		int lineCount = textinfo.lineCount(firstPart);
 		if (lineCount < 1) return;
 		
-		LineInfo currentLine = textinfo.line(lineCount - 1);  // current line
-		ChunkInfo[] chunks = currentLine.wordWrap();  // current line
-		int offset = 0;
+		LineInfo lineInfo = textinfo.line(lineCount - 1);  // current line
+		ChunkInfo[] chunks = lineInfo.wordWrap();  // current line
+
+		ChunkInfo prevChunk = null; // previous line (chunk)
+		ChunkInfo currChunk = null; // current line (chunk)
 		
-		ChunkInfo cip = null; // previous line
 		if (chunks.length >= 2 && !chunks[0].isCursorWithin()) {
 			//wrapped lines
-			cip = chunks[chunks.length - 2];
+			for (ChunkInfo chunkInfo : chunks) {
+				if (chunkInfo.isCursorWithin()) {
+					currChunk = chunkInfo;
+					break; 
+				}
+				prevChunk = chunkInfo;
+			}
 		} else if (lineCount >= 2) {
 			//normal lines
-			currentLine = textinfo.line(lineCount - 2);
-			chunks = currentLine.wordWrap();
-			cip = chunks[chunks.length - 1];
-			offset = 1;
+			currChunk = chunks[0];
+			
+			lineInfo = textinfo.line(lineCount - 2);  // previous line
+			chunks = lineInfo.wordWrap();
+			prevChunk = chunks[chunks.length - 1];
 		}
 		
-		if (cip == null) return;
+		if (prevChunk == null) return;
 		
-		int nlPosA = cip.start;
-		int nlPosB = cip.end;
+		int nlPosA = prevChunk.start;
+		int nlPosB = prevChunk.end;
 		
-		int curLinePos = textinfo.cursorPosition - nlPosB - offset;	// Cursor position in the current line.
-		int preLineLength = nlPosB - nlPosA;				// Line length of the previous line.
+		int linePos = prevChunk.cursorPosition(currChunk.cursorWidth()); // textinfo.cursorPosition - nlPosB - offset;	// Cursor position in the current line.
+		int preLineLength = prevChunk.text.length(); // Line length of the previous line.
 		
 		//firstPart = textinfo.wrappedFirstPart();
 		
@@ -298,47 +307,48 @@ public abstract class KeyHandler {
 		// the length of the previous line, then just go to the end of the previous line.    
 		// Otherwise go to the same position in the previous line.
 		textinfo.cursorPosition = 
-				curLinePos >= preLineLength ?
-				nlPosB : nlPosA + curLinePos;
+				linePos >= preLineLength ?
+				nlPosB : nlPosA + linePos;
 	}
 	
 	private static void handleKey_ArrowDown(TextInfo textinfo, String firstPart, String lastPart) {
+		// TODO: MAKE CODE FENCY!!
 		
-		int lcf = textinfo.lineCount(firstPart);
-		int lce = textinfo.lineCount(lastPart);
-		if (lce < 1) return;
+		int lineCountF = textinfo.lineCount(firstPart);
+		int lineCountL = textinfo.lineCount(lastPart);
+		if (lineCountL < 1) return;
 		
-		LineInfo lic = textinfo.line(lcf - 1); // current line
-		LineInfo lin = textinfo.line(lcf); // next line		
-		ChunkInfo[] cisc = lic.wordWrap(); // current line
-		ChunkInfo[] cisn = lin.wordWrap(); // next line
+		LineInfo currLineInfo = textinfo.line(lineCountF - 1); // current line
+		LineInfo nextLineInfo = textinfo.line(lineCountF); // next line		
+		ChunkInfo[] currChunks = currLineInfo.wordWrap(); // current line
+		ChunkInfo[] nextChunks = nextLineInfo.wordWrap(); // next line
 		
-		ChunkInfo cic = null; // current linee
-		ChunkInfo cin = null; // next line
+		ChunkInfo currChunk = null; // current line
+		ChunkInfo nextChunk = null; // next line
 		
-		if (cisc.length >= 2 && !cisc[cisc.length - 1].isCursorWithin()) {
+		if (currChunks.length >= 2 && !currChunks[currChunks.length - 1].isCursorWithin()) {
 			//wrapped lines
-			for (int i = 0; i < cisc.length - 1; i++) {
-				if (cisc[i].isCursorWithin()) {
-					cic = cisc[i];
-					cin = cisc[i + 1];
+			for (int i = 0; i < currChunks.length - 1; i++) {
+				if (currChunks[i].isCursorWithin()) {
+					currChunk = currChunks[i];
+					nextChunk = currChunks[i + 1];
 				}
 			}
-		} else if (lce >= 2) {
+		} else if (lineCountL >= 2) {
 			//normal lines
-			cic = cisc[cisc.length - 1];
-			cin = cisn[0];
+			currChunk = currChunks[currChunks.length - 1];
+			nextChunk = nextChunks[0];
 		}
 		
-		if (cic == null) return;
-		if (cin == null) return;
+		if (currChunk == null) return;
+		if (nextChunk == null) return;
 		
-		int nlPosA = cic.start;
-		int nlPosB = cin.start;
-		int nlPosC = cin.end;
+		int nlPosA = currChunk.start;
+		int nlPosB = nextChunk.start;
+		int nlPosC = nextChunk.end;
 		
-		int curLinePos = textinfo.cursorPosition - nlPosA;	// Cursor position in the current line.
-		int postLineLength = nlPosC - nlPosB;				// Line length of next line.
+		int linePos = nextChunk.cursorPosition(currChunk.cursorWidth()); //textinfo.cursorPosition - nlPosA;	// Cursor position in the current line.
+		int postLineLength = nextChunk.text.length(); //nlPosC - nlPosB;				// Line length of next line.
 		
 		
 //		firstPart = textinfo.wrappedFirstPart();
@@ -361,9 +371,9 @@ public abstract class KeyHandler {
 		// the length of the current line, then just go to the end of the next line.    
 		// Otherwise go to the same position in the next line.
 		textinfo.cursorPosition = 
-				postLineLength < curLinePos ? 
+				postLineLength < linePos ? 
 						nlPosC
-						: nlPosB + curLinePos;
+						: nlPosB + linePos;
 	}
 	
 	private static void handleKey_Home(TextInfo textinfo, String firstPart, String lastPart) {
