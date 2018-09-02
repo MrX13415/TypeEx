@@ -7,6 +7,7 @@ import java.util.HashMap;
 import io.netty.buffer.Unpooled;
 import net.icelane.typeex.book.io.TextInfo;
 import net.icelane.typeex.book.io.UndoInfo;
+import net.icelane.typeex.util.LoremIpsum;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -22,7 +23,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 abstract class BasicBook extends GuiScreen {
 	
-	private static final int pageCountLimit = 50;
+	private static final int pageCountLimit = 50; // pages
+	private static final int pageTextLimit = 256; // characters
 	
 	private final EntityPlayer player;
     private final ItemStack item;
@@ -89,7 +91,7 @@ abstract class BasicBook extends GuiScreen {
 		textinfo.moveCursorToEnd();
 		textinfo.selected = false;
 	}	
-    
+
 	public UndoInfo getUndo(int page) {
 		UndoInfo undo = undolist.get(page);
 		return undo != null ? undo : new UndoInfo();
@@ -114,6 +116,13 @@ abstract class BasicBook extends GuiScreen {
 
     public void setPageText(String text)
     {
+    	if (text.length() > 4 && text.startsWith("!>")) {
+    		if (text.toLowerCase().contains("!>kafka")) fillBook("Kafka", LoremIpsum.kafka);
+    		if (text.toLowerCase().contains("!>lorem")) fillBook("Lorem Ipsum", LoremIpsum.lorem);
+    		
+    		return;
+    	}
+    	
     	if (pages == null) return;
     	if (page < 0) return;
     	if (page > pages.tagCount()) return;
@@ -234,4 +243,28 @@ abstract class BasicBook extends GuiScreen {
 	public boolean isFirstPage() {
 		return page == 0;
 	}
+	
+	private void fillBook(String title, String text) {		
+		page(0);
+		setPageText("\n\n" + title);
+		page(1);
+		
+		int index = 0;
+		
+		while(index < text.length() && pageCount < 50) {
+			if (pageCount <= page()) newPage();
+			
+			int endindex = index + pageTextLimit;
+			if (endindex > text.length()) endindex = text.length();
+			
+			String chunk = text.substring(index, endindex);
+			setPageText(chunk);
+			
+			pageIncrement();
+			index += pageTextLimit;
+		}		
+		page(0);
+		textinfo.text(getPageText());
+	}
+	
 }
