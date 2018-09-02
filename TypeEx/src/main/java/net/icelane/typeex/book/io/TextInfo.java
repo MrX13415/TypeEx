@@ -507,8 +507,10 @@ public class TextInfo {
 
 		public abstract int width();
 
+		public abstract int cursorPosition(int width);
+		
 		public abstract int cursorPosition();
-
+		
 		public abstract int cursorWidth();
 
 		public abstract boolean isCursorWithin();
@@ -532,6 +534,19 @@ public class TextInfo {
 			return textinfo.width(text);
 		}
 
+		public int cursorPosition(String text, int width) {
+			if (text.length() == 0) return 0;
+			if (width == 0) return 0;
+			
+			String current = "";
+			for (char c : text.toCharArray()) {
+				if (width(current + c) >= width) break;
+				current += c;
+			}
+			
+			return current.length();
+		}
+		
 		public int cursorPosition(int start, int end) {
 			if (!isCursorWithin())
 				return -1;
@@ -604,6 +619,11 @@ public class TextInfo {
 		}
 
 		@Override
+		public int cursorPosition(int width) {
+			return cursorPosition(text, width);
+		}
+		
+		@Override
 		public int cursorWidth() {
 			return cursorWidth(text);
 		}
@@ -615,35 +635,35 @@ public class TextInfo {
 
 		@Override
 		public int selectionStartWidth() {
-			throw new UnsupportedOperationException("Use the method in class 'ChunckInfo'!");
+			throw new UnsupportedOperationException("Use the method in class 'ChunkInfo'!");
 			//return selectionStartWidth(text);
 		}
 
 		@Override
 		public boolean isSelectionStartWithin() {
-			throw new UnsupportedOperationException("Use the method in class 'ChunckInfo'!");
+			throw new UnsupportedOperationException("Use the method in class 'ChunkInfo'!");
 			//return selectionStartWithin(start, end);
 		}
 
 		@Override
 		public int selectionEndWidth() {
-			throw new UnsupportedOperationException("Use the method in class 'ChunckInfo'!");
+			throw new UnsupportedOperationException("Use the method in class 'ChunkInfo'!");
 			//return selectionEndWidth(text);
 		}
 
 		@Override
 		public boolean isSelectionEndWithin() {
-			throw new UnsupportedOperationException("Use the method in class 'ChunckInfo'!");
+			throw new UnsupportedOperationException("Use the method in class 'ChunkInfo'!");
 			//return selectionEndWithin(start, end);
 		}
 		
-		public ChunckInfo[] wordWrap() {
-			ArrayList<ChunckInfo> chuncks = new ArrayList<>();
-			ChunckInfo[] out = new ChunckInfo[0];
+		public ChunkInfo[] wordWrap() {
+			ArrayList<ChunkInfo> chunks = new ArrayList<>();
+			ChunkInfo[] out = new ChunkInfo[0];
 
 			if (text.length() == 0) {
-				chuncks.add(new ChunckInfo(this, 0, 0));
-				return chuncks.toArray(out);
+				chunks.add(new ChunkInfo(this, 0, 0));
+				return chunks.toArray(out);
 			}
 
 			int width = 0;
@@ -654,34 +674,34 @@ public class TextInfo {
 				width += charwidth;
 
 				if (width >= textinfo.wordWrap) {
-					chuncks.add(new ChunckInfo(this, start, index));
+					chunks.add(new ChunkInfo(this, start, index));
 					start = index;
 					width = charwidth;
 				}
 
 				if (index == text.length() - 1) {
-					chuncks.add(new ChunckInfo(this, start, index + 1));
+					chunks.add(new ChunkInfo(this, start, index + 1));
 				}
 			}
 
-			if (chuncks.size() == 0) {
-				chuncks.add(new ChunckInfo(this));
+			if (chunks.size() == 0) {
+				chunks.add(new ChunkInfo(this));
 			}
 
-			return chuncks.toArray(out); // textinfo.fontRenderer. listFormattedStringToWidth(line,
+			return chunks.toArray(out); // textinfo.fontRenderer. listFormattedStringToWidth(line,
 											// textinfo.wordWrap).toArray(out);
 		}
 
 	}
 
-	public static class ChunckInfo extends SubTextInfo {
+	public static class ChunkInfo extends SubTextInfo {
 		public final LineInfo lineinfo;
 		public final String text;
 		public final int start;
 		public final int end;
 		public final boolean wrapped;
 
-		protected ChunckInfo(LineInfo lineinfo, int start, int end) {
+		protected ChunkInfo(LineInfo lineinfo, int start, int end) {
 			super(lineinfo.textinfo);
 
 			this.lineinfo = lineinfo;
@@ -693,7 +713,7 @@ public class TextInfo {
 			this.wrapped = this.end != lineinfo.end;
 		}
 
-		protected ChunckInfo(LineInfo lineinfo) {
+		protected ChunkInfo(LineInfo lineinfo) {
 			super(lineinfo.textinfo);
 
 			this.wrapped = false;
@@ -712,7 +732,12 @@ public class TextInfo {
 		public int cursorPosition() {
 			return cursorPosition(start, end);
 		}
-
+		
+		@Override
+		public int cursorPosition(int width) {
+			return cursorPosition(text, width);
+		}
+		
 		@Override
 		public int cursorWidth() {
 			return cursorWidth(text);

@@ -3,7 +3,7 @@ package net.icelane.typeex.book.io;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.icelane.typeex.book.io.TextInfo.ChunckInfo;
+import net.icelane.typeex.book.io.TextInfo.ChunkInfo;
 import net.icelane.typeex.book.io.TextInfo.LineInfo;
 
 /**
@@ -256,22 +256,22 @@ public abstract class KeyHandler {
 		
 	private static void handleKey_ArrowUp(TextInfo textinfo, String firstPart, String lastPart) {
 		
-		int lc = textinfo.lineCount(firstPart);
-		if (lc < 1) return;
+		int lineCount = textinfo.lineCount(firstPart);
+		if (lineCount < 1) return;
 		
-		LineInfo li = textinfo.line(lc - 1);  // current line
-		ChunckInfo[] cis = li.wordWrap();  // current line
+		LineInfo currentLine = textinfo.line(lineCount - 1);  // current line
+		ChunkInfo[] chunks = currentLine.wordWrap();  // current line
 		int offset = 0;
 		
-		ChunckInfo cip = null; // previous line
-		if (cis.length >= 2 && !cis[0].isCursorWithin()) {
+		ChunkInfo cip = null; // previous line
+		if (chunks.length >= 2 && !chunks[0].isCursorWithin()) {
 			//wrapped lines
-			cip = cis[cis.length - 2];
-		} else if (lc >= 2) {
+			cip = chunks[chunks.length - 2];
+		} else if (lineCount >= 2) {
 			//normal lines
-			li = textinfo.line(lc - 2);
-			cis = li.wordWrap();
-			cip = cis[cis.length - 1];
+			currentLine = textinfo.line(lineCount - 2);
+			chunks = currentLine.wordWrap();
+			cip = chunks[chunks.length - 1];
 			offset = 1;
 		}
 		
@@ -310,11 +310,11 @@ public abstract class KeyHandler {
 		
 		LineInfo lic = textinfo.line(lcf - 1); // current line
 		LineInfo lin = textinfo.line(lcf); // next line		
-		ChunckInfo[] cisc = lic.wordWrap(); // current line
-		ChunckInfo[] cisn = lin.wordWrap(); // next line
+		ChunkInfo[] cisc = lic.wordWrap(); // current line
+		ChunkInfo[] cisn = lin.wordWrap(); // next line
 		
-		ChunckInfo cic = null; // current linee
-		ChunckInfo cin = null; // next line
+		ChunkInfo cic = null; // current linee
+		ChunkInfo cin = null; // next line
 		
 		if (cisc.length >= 2 && !cisc[cisc.length - 1].isCursorWithin()) {
 			//wrapped lines

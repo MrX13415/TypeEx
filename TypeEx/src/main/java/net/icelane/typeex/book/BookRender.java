@@ -9,7 +9,7 @@ import org.lwjgl.input.Keyboard;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonParseException;
 
-import net.icelane.typeex.book.io.TextInfo.ChunckInfo;
+import net.icelane.typeex.book.io.TextInfo.ChunkInfo;
 import net.icelane.typeex.book.io.TextInfo.LineInfo;
 import net.icelane.typeex.book.ui.NextPageButton;
 import net.icelane.typeex.util.Color;
@@ -249,23 +249,23 @@ public abstract class BookRender extends BasicBook {
 		
 		for (int index = 0; index < lineCount; index++) {
 			LineInfo line = textinfo().line(index);
-			ChunckInfo[] chuncks = line.wordWrap();
+			ChunkInfo[] chunks = line.wordWrap();
 			
-			for (int cindex = 0; cindex < chuncks.length; cindex++) {
-				ChunckInfo chunck = chuncks[cindex];
+			for (int cindex = 0; cindex < chunks.length; cindex++) {
+				ChunkInfo chunk = chunks[cindex];
 				
-		        fontRenderer.drawString(chunck.text, x, y, 0); // TODO: drawStringalined?
+		        fontRenderer.drawString(chunk.text, x, y, 0); // TODO: drawStringalined?
 
-		        if (chunck.isCursorWithin() && !cursor) {
-		        	drawCursor(x + chunck.cursorWidth(), y);
+		        if (chunk.isCursorWithin() && !cursor) {
+		        	drawCursor(x + chunk.cursorWidth(), y);
 		        	cursor = true;
 		        }
 		        
 		        if(textinfo().selected) {
-			        if(chunck.isSelectionStartWithin() || chunck.isSelectionEndWithin())
-			        	selection = drawSelection(x, y, chunck);
+			        if(chunk.isSelectionStartWithin() || chunk.isSelectionEndWithin())
+			        	selection = drawSelection(x, y, chunk);
 			        else if (selection)
-			        	drawSelection(x, y, chunck);
+			        	drawSelection(x, y, chunk);
 				}
 			
 				y += fontRenderer.FONT_HEIGHT;
@@ -311,20 +311,20 @@ public abstract class BookRender extends BasicBook {
     	drawInvertRect(x, y, w, h, color);
 	}
 	
-	private boolean drawSelection(int x, int y, ChunckInfo chunck) {
-		boolean selStart = chunck.isSelectionStartWithin();
-		boolean selEnd = chunck.isSelectionEndWithin();
+	private boolean drawSelection(int x, int y, ChunkInfo chunk) {
+		boolean selStart = chunk.isSelectionStartWithin();
+		boolean selEnd = chunk.isSelectionEndWithin();
 		boolean selection = selStart && !selEnd;
 		
-		int width = chunck.width();
+		int width = chunk.width();
         int selx = 0;
         int sely = 0;
 
 		if(selStart) {
-			selx = chunck.selectionStartWidth();
-			width = (selEnd ? chunck.selectionEndWidth() : chunck.width()) - selx;
+			selx = chunk.selectionStartWidth();
+			width = (selEnd ? chunk.selectionEndWidth() : chunk.width()) - selx;
 		} else if(selEnd) {
-			width = chunck.selectionEndWidth();
+			width = chunk.selectionEndWidth();
 		}
 		
 		x += selx;
