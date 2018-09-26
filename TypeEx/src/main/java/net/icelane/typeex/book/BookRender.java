@@ -9,8 +9,7 @@ import org.lwjgl.input.Keyboard;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonParseException;
 
-import net.icelane.typeex.book.io.TextInfo.ChunkInfo;
-import net.icelane.typeex.book.io.TextInfo.LineInfo;
+import net.icelane.typeex.book.io.TextInfo.TextChunk;
 import net.icelane.typeex.book.ui.NextPageButton;
 import net.icelane.typeex.util.Color;
 import net.minecraft.client.gui.GuiButton;
@@ -248,11 +247,11 @@ public abstract class BookRender extends BasicBook {
 		int y = 34;
 		
 		for (int index = 0; index < lineCount; index++) {
-			LineInfo line = textinfo().line(index);
-			ChunkInfo[] chunks = line.wordWrap();
+			TextChunk line = textinfo().line(index);
+			TextChunk[] chunks = line.wordWrap();
 			
 			for (int cindex = 0; cindex < chunks.length; cindex++) {
-				ChunkInfo chunk = chunks[cindex];
+				TextChunk chunk = chunks[cindex];
 				
 		        fontRenderer.drawString(chunk.text, x, y, 0); // TODO: drawStringalined?
 
@@ -311,7 +310,7 @@ public abstract class BookRender extends BasicBook {
     	drawInvertRect(x, y, w, h, color);
 	}
 	
-	private boolean drawSelection(int x, int y, ChunkInfo chunk) {
+	private boolean drawSelection(int x, int y, TextChunk chunk) {
 		boolean selStart = chunk.isSelectionStartWithin();
 		boolean selEnd = chunk.isSelectionEndWithin();
 		boolean selection = selStart && !selEnd;

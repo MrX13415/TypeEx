@@ -3,8 +3,7 @@ package net.icelane.typeex.book.io;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.icelane.typeex.book.io.TextInfo.ChunkInfo;
-import net.icelane.typeex.book.io.TextInfo.LineInfo;
+import net.icelane.typeex.book.io.TextInfo.TextChunk;
 
 /**
  * Handle keys and alter the given <code>TextInfo</code> object
@@ -260,15 +259,15 @@ public abstract class KeyHandler {
 		int lineCount = textinfo.lineCount(firstPart);
 		if (lineCount < 1) return;
 		
-		LineInfo lineInfo = textinfo.line(lineCount - 1);  // current line
-		ChunkInfo[] chunks = lineInfo.wordWrap();  // current line
+		TextChunk lineInfo = textinfo.line(lineCount - 1);  // current line
+		TextChunk[] chunks = lineInfo.wordWrap();  // current line
 
-		ChunkInfo prevChunk = null; // previous line (chunk)
-		ChunkInfo currChunk = null; // current line (chunk)
+		TextChunk prevChunk = null; // previous line (chunk)
+		TextChunk currChunk = null; // current line (chunk)
 		
 		if (chunks.length >= 2 && !chunks[0].isCursorWithin()) {
 			//wrapped lines
-			for (ChunkInfo chunkInfo : chunks) {
+			for (TextChunk chunkInfo : chunks) {
 				if (chunkInfo.isCursorWithin()) {
 					currChunk = chunkInfo;
 					break; 
@@ -318,13 +317,13 @@ public abstract class KeyHandler {
 		int lineCountL = textinfo.lineCount(lastPart);
 		if (lineCountL < 1) return;
 		
-		LineInfo currLineInfo = textinfo.line(lineCountF - 1); // current line
-		LineInfo nextLineInfo = textinfo.line(lineCountF); // next line		
-		ChunkInfo[] currChunks = currLineInfo.wordWrap(); // current line
-		ChunkInfo[] nextChunks = nextLineInfo.wordWrap(); // next line
+		TextChunk currLineInfo = textinfo.line(lineCountF - 1); // current line
+		TextChunk nextLineInfo = textinfo.line(lineCountF); // next line		
+		TextChunk[] currChunks = currLineInfo.wordWrap(); // current line
+		TextChunk[] nextChunks = nextLineInfo.wordWrap(); // next line
 		
-		ChunkInfo currChunk = null; // current line
-		ChunkInfo nextChunk = null; // next line
+		TextChunk currChunk = null; // current line
+		TextChunk nextChunk = null; // next line
 		
 		if (currChunks.length >= 2 && !currChunks[currChunks.length - 1].isCursorWithin()) {
 			//wrapped lines

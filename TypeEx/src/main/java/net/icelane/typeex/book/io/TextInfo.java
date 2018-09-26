@@ -173,7 +173,7 @@ public class TextInfo {
 		if (wrappedLines >= 14) {
 			text = StringUtils.stripChars(text, newLine);
 
-			LineInfo last = lastWrappedLine();
+			TextChunk last = lastWrappedLine();
 			int lastWidth = last.width();
 			int lineWidth = lastWidth + width(text);
 
@@ -386,11 +386,11 @@ public class TextInfo {
 		return lines(text, Character.toString(newLine)); // "\" => "\\" e.g. "\n" => "\\n" (because of regex)
 	}
 
-	public LineInfo line(int index) {
-		return new LineInfo(this, index);
+	public TextChunk line(int index) {
+		return TextChunk.line(this, index);
 	}
 
-	public LineInfo lastLine() {
+	public TextChunk lastLine() {
 		return line(lineCount() - 1);
 	}
 
@@ -398,11 +398,11 @@ public class TextInfo {
 		return lineCount(text);
 	}
 
-	public LineInfo wrappedLine(int index) {
-		return new LineInfo(this, true, index);
+	public TextChunk wrappedLine(int index) {
+		return TextChunk.line(this, true, index);
 	}
 
-	public LineInfo lastWrappedLine() {
+	public TextChunk lastWrappedLine() {
 		return wrappedLine(wrappedLineCount() - 1);
 	}
 
@@ -498,43 +498,115 @@ public class TextInfo {
 		return fontRenderer.getStringWidth(text);
 	}
 	
-	public static abstract class SubTextInfo {
+	
+	public static class TextChunk {
+		
 		public final TextInfo textinfo;
-
-		protected SubTextInfo(TextInfo textinfo) { 
+		public final TextChunk chunk;
+		public final String text;
+		public final int start;
+		public final int end;
+		public final boolean wrapped;
+		
+		public TextChunk(TextInfo textinfo, String text, int start, int end) {
+			this(textinfo, null, text, start, end, false);
+		}
+		
+		public TextChunk(TextChunk chunk, String text, int start, int end, boolean wrapped) {
+			this(chunk.textinfo, chunk, text, start, end, wrapped);
+		}
+		
+		private TextChunk(TextInfo textinfo, TextChunk chunk, String text, int start, int end, boolean wrapped) {
 			this.textinfo = textinfo;
+			this.chunk = chunk;
+			this.text = text;
+			this.start = start;
+			this.end = end;
+			this.wrapped = wrapped;
+		}
+		
+		public static TextChunk line(TextInfo textinfo, int index) {
+			return line(textinfo, false, index);
 		}
 
-		public abstract int width();
+		public static TextChunk line(TextInfo textinfo, boolean wrapped, int index) {
+			String text = wrapped ? textinfo.textWrapped() : textinfo.text();
 
-		public abstract int cursorPosition(int width);
-		
-		public abstract int cursorPosition();
-		
-		public abstract int cursorWidth();
+			int start = 0;
+			if (index > 0)
+				start = StringUtils.ordinalIndexOf(text, Character.toString(textinfo.newLine), index) + 1;
 
-		public abstract boolean isCursorWithin();
+			int end = text.indexOf(textinfo.newLine, start);
+			if (end < 0)
+				end = text.length();
 
-		public abstract int selectionStartWidth();
+			text = StringUtils.stripChars(text.substring(start, end), textinfo.newLine);
+			
+			return new TextChunk(textinfo, text, start, end);
+		}
 		
-		public abstract boolean isSelectionStartWithin();
+		public static TextChunk chunk(TextChunk chunk, int start, int end) {
+			String _text = chunk.text.substring(start, end);
+			int _start = chunk.start + start;
+			int _end = chunk.start + end;
+
+			boolean wrapped = _end != chunk.end;
+			
+			return new TextChunk(chunk, _text, _start, _end, wrapped);
+		}
+
+		public static TextChunk chunk(TextChunk chunk) {
+			String text = chunk.text.substring(0);
+			int start = chunk.start + 0;
+			int end = chunk.start + text.length();
+			
+			return new TextChunk(chunk, text, start, end, false);
+		}
 		
-		public abstract int selectionEndWidth();
-		
-		public abstract boolean isSelectionEndWithin();
-		
-		public int cursorWidth(String text) {
-			if (!isCursorWithin())
-				return 0;
-			String s = text.substring(0, cursorPosition());
-			return width(s);
+		public TextChunk[] wordWrap() {
+			ArrayList<TextChunk> chunks = new ArrayList<>();
+			TextChunk[] out = new TextChunk[0];
+
+			if (text.length() == 0) {
+				chunks.add(chunk(this, 0, 0));
+				return chunks.toArray(out);
+			}
+
+			int width = 0;
+			int start = 0;
+
+			for (int index = 0; index < text.length(); index++) {
+				int charwidth = textinfo.fontRenderer.getCharWidth(text.charAt(index));
+				width += charwidth;
+
+				if (width >= textinfo.wordWrap) {
+					chunks.add(chunk(this, start, index));
+					start = index;
+					width = charwidth;
+				}
+
+				if (index == text.length() - 1) {
+					chunks.add(chunk(this, start, index + 1));
+				}
+			}
+
+			if (chunks.size() == 0) {
+				chunks.add(chunk(this));
+			}
+
+			return chunks.toArray(out); // textinfo.fontRenderer. listFormattedStringToWidth(line,
+											// textinfo.wordWrap).toArray(out);
+		}
+				
+		public int width() {
+			return width(text);
 		}
 
 		public int width(String text) {
 			return textinfo.width(text);
 		}
-
-		public int cursorPosition(String text, int width) {
+		
+		public int cursorPosition(int width) {
 			if (text.length() == 0) return 0;
 			if (width == 0) return 0;
 			
@@ -550,226 +622,45 @@ public class TextInfo {
 			return current.length();
 		}
 		
-		public int cursorPosition(int start, int end) {
+		public int cursorPosition() {
 			if (!isCursorWithin())
 				return -1;
 			return textinfo.cursorPosition - start;
 		}
 
-		public boolean isCursorWithin(int start, int end) {
+		public int cursorWidth() {
+			if (!isCursorWithin())
+				return 0;
+			String s = text.substring(0, cursorPosition());
+			return width(s);
+		}
+
+		public boolean isCursorWithin() {
 			return textinfo.cursorPosition >= start && textinfo.cursorPosition <= end;
 		}
 		
-		public int selectionStartWidth(String text, int start) {
+		public int selectionStartWidth() {
 			if (!isSelectionStartWithin())
 				return -1;
 			String s = text.substring(0, textinfo.selectionStart() - start);
 			return textinfo.width(s);
 		}
 		
-		public boolean isSelectionStartWithin(int start, int end) {
+		public boolean isSelectionStartWithin() {
 			return textinfo.selectionStart() >= start && textinfo.selectionStart() <= end;
 		}
 		
-		public int selectionEndWidth(String text, int start) {
+		public int selectionEndWidth() {
 			if (!isSelectionEndWithin())
 				return -1;
 			String s = text.substring(0, textinfo.selectionEnd() - start);
 			return textinfo.width(s);
 		}
 		
-		public boolean isSelectionEndWithin(int start, int end) {
+		public boolean isSelectionEndWithin() {
 			return textinfo.selectionEnd() >= start && textinfo.selectionEnd() <= end;
 		}
 
 	}
-
-	public static class LineInfo extends SubTextInfo {
-		public final String text;
-		public final int start;
-		public final int end;
-
-		protected LineInfo(TextInfo textinfo, int index) {
-			this(textinfo, false, index);
-		}
-
-		protected LineInfo(TextInfo textinfo, boolean wrapped, int index) {
-			super(textinfo);
-
-			String _text = wrapped ? textinfo.textWrapped() : textinfo.text();
-
-			int _start = 0;
-			if (index > 0)
-				_start = StringUtils.ordinalIndexOf(_text, Character.toString(textinfo.newLine), index) + 1;
-
-			int _end = _text.indexOf(textinfo.newLine, _start);
-			if (_end < 0)
-				_end = _text.length();
-
-			start = _start;
-			end = _end;
-			text = StringUtils.stripChars(_text.substring(_start, _end), textinfo.newLine);
-		}
-
-		@Override
-		public int width() {
-			return width(text);
-		}
-
-		@Override
-		public int cursorPosition() {
-			return cursorPosition(start, end);
-		}
-
-		@Override
-		public int cursorPosition(int width) {
-			return cursorPosition(text, width);
-		}
-		
-		@Override
-		public int cursorWidth() {
-			return cursorWidth(text);
-		}
-
-		@Override
-		public boolean isCursorWithin() {
-			return isCursorWithin(start, end);
-		}
-
-		@Override
-		public int selectionStartWidth() {
-			throw new UnsupportedOperationException("Use the method in class 'ChunkInfo'!");
-			//return selectionStartWidth(text);
-		}
-
-		@Override
-		public boolean isSelectionStartWithin() {
-			throw new UnsupportedOperationException("Use the method in class 'ChunkInfo'!");
-			//return selectionStartWithin(start, end);
-		}
-
-		@Override
-		public int selectionEndWidth() {
-			throw new UnsupportedOperationException("Use the method in class 'ChunkInfo'!");
-			//return selectionEndWidth(text);
-		}
-
-		@Override
-		public boolean isSelectionEndWithin() {
-			throw new UnsupportedOperationException("Use the method in class 'ChunkInfo'!");
-			//return selectionEndWithin(start, end);
-		}
-		
-		public ChunkInfo[] wordWrap() {
-			ArrayList<ChunkInfo> chunks = new ArrayList<>();
-			ChunkInfo[] out = new ChunkInfo[0];
-
-			if (text.length() == 0) {
-				chunks.add(new ChunkInfo(this, 0, 0));
-				return chunks.toArray(out);
-			}
-
-			int width = 0;
-			int start = 0;
-
-			for (int index = 0; index < text.length(); index++) {
-				int charwidth = textinfo.fontRenderer.getCharWidth(text.charAt(index));
-				width += charwidth;
-
-				if (width >= textinfo.wordWrap) {
-					chunks.add(new ChunkInfo(this, start, index));
-					start = index;
-					width = charwidth;
-				}
-
-				if (index == text.length() - 1) {
-					chunks.add(new ChunkInfo(this, start, index + 1));
-				}
-			}
-
-			if (chunks.size() == 0) {
-				chunks.add(new ChunkInfo(this));
-			}
-
-			return chunks.toArray(out); // textinfo.fontRenderer. listFormattedStringToWidth(line,
-											// textinfo.wordWrap).toArray(out);
-		}
-
-	}
-
-	public static class ChunkInfo extends SubTextInfo {
-		public final LineInfo lineinfo;
-		public final String text;
-		public final int start;
-		public final int end;
-		public final boolean wrapped;
-
-		protected ChunkInfo(LineInfo lineinfo, int start, int end) {
-			super(lineinfo.textinfo);
-
-			this.lineinfo = lineinfo;
-
-			this.text = lineinfo.text.substring(start, end);
-			this.start = lineinfo.start + start;
-			this.end = lineinfo.start + end;
-
-			this.wrapped = this.end != lineinfo.end;
-		}
-
-		protected ChunkInfo(LineInfo lineinfo) {
-			super(lineinfo.textinfo);
-
-			this.wrapped = false;
-			this.lineinfo = lineinfo;
-			this.text = lineinfo.text.substring(0);
-			this.start = lineinfo.start + 0;
-			this.end = lineinfo.start + text.length();
-		}
-
-		@Override
-		public int width() {
-			return width(text);
-		}
-
-		@Override
-		public int cursorPosition() {
-			return cursorPosition(start, end);
-		}
-		
-		@Override
-		public int cursorPosition(int width) {
-			return cursorPosition(text, width);
-		}
-		
-		@Override
-		public int cursorWidth() {
-			return cursorWidth(text);
-		}
-
-		@Override
-		public boolean isCursorWithin() {
-			return isCursorWithin(start, wrapped ? end - 1 : end);
-		}
-		
-		@Override
-		public int selectionStartWidth() {
-			return selectionStartWidth(text, start);
-		}
-
-		@Override
-		public boolean isSelectionStartWithin() {
-			return isSelectionStartWithin(start, end);
-		}
-
-		@Override
-		public int selectionEndWidth() {
-			return selectionEndWidth(text, start);
-		}
-
-		@Override
-		public boolean isSelectionEndWithin() {
-			return isSelectionEndWithin(start, end);
-		}
-
-	}
+	
 }
