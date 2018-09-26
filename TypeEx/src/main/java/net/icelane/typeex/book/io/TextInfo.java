@@ -10,7 +10,6 @@ import java.util.ArrayList;
 
 import net.icelane.typeex.util.StringUtils;
 import net.minecraft.client.gui.FontRenderer;
-import scala.reflect.internal.Trees.Return;
 
 /**
  * Holds text and additional information about cursor and editing.

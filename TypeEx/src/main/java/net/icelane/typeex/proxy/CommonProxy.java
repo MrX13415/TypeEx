@@ -1,9 +1,7 @@
 package net.icelane.typeex.proxy;
 
-import net.icelane.typeex.ForgeMod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 public class CommonProxy {
 	

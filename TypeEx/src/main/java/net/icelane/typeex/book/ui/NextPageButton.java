@@ -1,11 +1,9 @@
 package net.icelane.typeex.book.ui;
 
 import net.icelane.typeex.book.BookRender;
-import net.icelane.typeex.net.minecraft.client.gui.GuiScreenBook;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 

@@ -1,7 +1,6 @@
 package net.icelane.typeex.book;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import io.netty.buffer.Unpooled;
@@ -16,7 +15,6 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.client.CPacketCustomPayload;
-import net.minecraftforge.fml.common.network.internal.HandshakeCompletionHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 

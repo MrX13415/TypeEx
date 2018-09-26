@@ -16,7 +16,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.auth.NTCredentials;
 
 import net.icelane.typeex.book.io.IKeyListener;
 import net.icelane.typeex.book.io.KeyInfo;
