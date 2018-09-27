@@ -125,9 +125,16 @@ abstract class BasicBook extends GuiScreen {
         modified = true;
     }
     
+    /** 
+     * ^!>mycommand[=value]\n$<br>
+     * !>lorem<br><br>
+     * !>foo=bar<br><br>
+     * @param text
+     * @return
+     */
     private boolean bookCommand(String text) {
     	if (!text.contains("!>")) return false;
-    	
+
     	int start = 0;
     	if (text.startsWith("!>")) start = 2;
     	if (text.contains("\n!>")) start = text.indexOf("\n!>") + 3;
@@ -135,8 +142,16 @@ abstract class BasicBook extends GuiScreen {
     	int end = text.indexOf("\n", start);
     	if (end < 0) return false;
     	
-    	String command = text.substring(start, end);
-    	boolean result = onBookCommand(command);
+    	String input = text.substring(start, end);
+    	String command = input;
+    	String value = "";
+    	if (input.contains("=")) {
+    		String comp[] = input.split("=");
+    		command = comp[0].trim();
+    		if (comp.length > 1) value = comp[1].trim();
+    	}
+    	
+    	boolean result = onBookCommand(command, value);
     	
     	try {
     		text = getPageText();
@@ -144,7 +159,7 @@ abstract class BasicBook extends GuiScreen {
     		if (text.length() >= end) {
     			String part = text.substring(start - 2, end);
         		// remove command from current page ...
-    			if (part.equals("!>" + command)) {
+    			if (part.equals("!>" + input)) {
     				text = text.substring(0, start - 2) + text.substring(end);
     				pages.set(page, new NBTTagString(text));
     				textinfo.text(getPageText());
@@ -157,7 +172,7 @@ abstract class BasicBook extends GuiScreen {
     	return result;
     }
     
-    public boolean onBookCommand(String command) {
+    public boolean onBookCommand(String command, String value) {
     	switch (command) {
 		case "1234":
 			fillBook("1234...", LoremIpsum._1234); break;

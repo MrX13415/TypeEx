@@ -58,7 +58,7 @@ public abstract class BookRender extends BasicBook {
     private float rainbowSaturation = 1.0f;
     private float rainbowBrightness = 1.0f;
     private float rainbowHue        = 0.0f;
-	private boolean rainbowupdate;
+	//private boolean rainbowupdate;
 	
     /** Update ticks since the GUI was opened */
     private int updateTicks;
@@ -89,7 +89,12 @@ public abstract class BookRender extends BasicBook {
 	}	
 	
 	@Override
-    public boolean onBookCommand(String command) {
+    public boolean onBookCommand(String command, String value) {
+		int color = 0;
+		try { 
+			color = (int)Long.parseLong(value, 16);
+		} catch (Exception e) { }
+		
     	switch (command) {
 		case "rainbowcursor":
 			rainbowCoursor = !rainbowCoursor; break;
@@ -97,17 +102,31 @@ public abstract class BookRender extends BasicBook {
 			rainbowSelection = !rainbowSelection; break;
 		case "rainbowtext":
 			rainbowText = !rainbowText; break;
+		case "cursorcolor":
+			rainbowCoursor = false;
+			if (value.length() == 0) color = DEFAULT_COLOR_CURSOR;
+			setColor_Cursor(color); break;
+		case "cursorblink":
+			rainbowCoursor = false;
+			if (value.length() == 0) color = DEFAULT_COLOR_CURSORBLINK;
+			setColor_CursorBlink(color); break;
 		case "selectioncolor":
 			rainbowSelection = false;
-			switch (getColor_Selection()) {
-			case DEFAULT_COLOR_SELECTION:
-				setColor_Selection(DEFAULT_COLOR_SELECTION_ALTERNATIV); break;
-			case DEFAULT_COLOR_SELECTION_ALTERNATIV:
-				setColor_Selection(DEFAULT_COLOR_SELECTION); break;
+			if (value.length() == 0) {
+				switch (getColor_Selection()) {
+				case DEFAULT_COLOR_SELECTION:
+					color = DEFAULT_COLOR_SELECTION_ALTERNATIV; break;
+				case DEFAULT_COLOR_SELECTION_ALTERNATIV:
+					color = DEFAULT_COLOR_SELECTION; break;
+				}
 			}
-			break;
+			setColor_Selection(color); break;
+		case "textcolor":
+			rainbowText = false;
+			if (value.length() == 0) color = DEFAULT_COLOR_TEXT;
+			setColor_Text(color); break;
 		default:
-			return super.onBookCommand(command);
+			return super.onBookCommand(command, value);
 		}
 
     	return true;
