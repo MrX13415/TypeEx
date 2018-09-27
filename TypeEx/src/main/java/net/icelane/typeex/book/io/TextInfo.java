@@ -635,7 +635,16 @@ public class TextInfo {
 		}
 
 		public boolean isCursorWithin() {
+			if (wrapped && isCursorAtEnd()) return false;
 			return textinfo.cursorPosition >= start && textinfo.cursorPosition <= end;
+		}
+		
+		public boolean isCursorAtEnd() {
+			return textinfo.cursorPosition == end;
+		}
+		
+		public boolean isCursorAtStart() {
+			return textinfo.cursorPosition == start;
 		}
 		
 		public int selectionStartWidth() {

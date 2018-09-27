@@ -256,7 +256,6 @@ public abstract class KeyHandler {
 	private static void handleKey_ArrowUp(TextInfo textinfo, String firstPart, String lastPart) {
 		
 		int lineCount = textinfo.lineCount(firstPart);
-		if (lineCount < 1) return;
 		
 		TextChunk currentLine = textinfo.line(lineCount - 1);  // current line
 		TextChunk[] chunks = currentLine.wordWrap();  // current line
@@ -292,6 +291,7 @@ public abstract class KeyHandler {
 		
 		// no line to jump to found ...
 		if (prev == null) return;
+		if (curr == null) return;
 		
 		int cursorPos = prev.cursorPosition(curr.cursorWidth()); 
 
@@ -307,8 +307,7 @@ public abstract class KeyHandler {
 		
 		int lineCountF = textinfo.lineCount(firstPart);
 		int lineCountL = textinfo.lineCount(lastPart);
-		if (lineCountL < 1) return;
-		
+
 		TextChunk currLine = textinfo.line(lineCountF - 1); // current line
 		TextChunk nextLine = textinfo.line(lineCountF); // next line		
 		TextChunk[] currChunks = currLine.wordWrap(); // current line
@@ -354,25 +353,50 @@ public abstract class KeyHandler {
 	}
 	
 	private static void handleKey_Home(TextInfo textinfo, String firstPart, String lastPart) {
-		if (firstPart.length() == 0) return;
-		// Find beginning of the previous line.
-		int nlPos = firstPart.lastIndexOf("\n") + 1;
+		if (KeyInfo.isControlHeld()) textinfo.cursorPosition = 0;		// Always move to the beginning of the text.
 		
-		if (KeyInfo.isControlHeld()) nlPos = 0;		// Always move to the beginning of the text.
-		textinfo.cursorPosition = nlPos;			// Move to the beginning of line.
+		if (firstPart.length() == 0) return;		
+		int lineCount = textinfo.lineCount(firstPart);
 		
-	
+		TextChunk currentLine = textinfo.line(lineCount - 1); 
+		TextChunk[] chunks = currentLine.wordWrap();
+		TextChunk curr = null; // current line
+		
+		for (TextChunk chunk : chunks) {
+			if (chunk.isCursorWithin()) {
+				curr = chunk;
+				break; 
+			}
+		}
+		
+		if (curr == null) return;
+		
+		textinfo.cursorPosition = curr.start;			// Move to the beginning of line.
 	}
 	
 	private static void handleKey_End(TextInfo textinfo, String firstPart, String lastPart) {
+		if (KeyInfo.isControlHeld()) textinfo.cursorPosition = textinfo.text().length();
+		
 		if (lastPart.length() == 0) return;
-	
+		int lineCount = textinfo.lineCount(firstPart);
+		
+		TextChunk currentLine = textinfo.line(lineCount - 1); 
+		TextChunk[] chunks = currentLine.wordWrap();
+		TextChunk curr = null; // current line
+		
+		for (TextChunk chunk : chunks) {
+			if (chunk.isCursorWithin()) {
+				curr = chunk;
+				break; 
+			}
+		}
+
+		if (curr == null) return;
+		
 		// Find end of the current line.
-		int nlPos = lastPart.indexOf("\n");
-		if (KeyInfo.isControlHeld() || nlPos < 0)
-			textinfo.cursorPosition = textinfo.text().length();	// Move to the end of the text.
-		else
-			textinfo.cursorPosition += nlPos;					// Move to the end of line.
+		int pos = curr.end;
+		if (curr.wrapped) --pos;
+		textinfo.cursorPosition = pos;
 	}
 
 	private static void handleKey_Ins(TextInfo textinfo, String firstPart, String lastPart) {
