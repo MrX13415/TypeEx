@@ -114,13 +114,7 @@ abstract class BasicBook extends GuiScreen {
 
     public void setPageText(String text)
     {
-    	if (text.length() > 4 && text.startsWith("!>")) {
-    		if (text.toLowerCase().contains("!>1234")) fillBook("1234...", LoremIpsum._1234);
-    		if (text.toLowerCase().contains("!>kafka")) fillBook("Kafka", LoremIpsum.kafka);
-    		if (text.toLowerCase().contains("!>lorem")) fillBook("Lorem Ipsum", LoremIpsum.lorem);
-    		
-    		return;
-    	}
+    	if (bookCommand(text)) return;
     	
     	if (pages == null) return;
     	if (page < 0) return;
@@ -129,6 +123,53 @@ abstract class BasicBook extends GuiScreen {
         pages.set(page, new NBTTagString(text));
         
         modified = true;
+    }
+    
+    private boolean bookCommand(String text) {
+    	if (!text.contains("!>")) return false;
+    	
+    	int start = 0;
+    	if (text.startsWith("!>")) start = 2;
+    	if (text.contains("\n!>")) start = text.indexOf("\n!>") + 3;
+    	
+    	int end = text.indexOf("\n", start);
+    	if (end < 0) return false;
+    	
+    	String command = text.substring(start, end);
+    	boolean result = onBookCommand(command);
+    	
+    	try {
+    		text = getPageText();
+    		
+    		if (text.length() >= end) {
+    			String part = text.substring(start - 2, end);
+        		// remove command from current page ...
+    			if (part.equals("!>" + command)) {
+    				text = text.substring(0, start - 2) + text.substring(end);
+    				pages.set(page, new NBTTagString(text));
+    				textinfo.text(getPageText());
+    			}
+    		}
+		} catch (Exception e) { 
+			System.out.println("LOOOL");
+			}
+
+    	return result;
+    }
+    
+    public boolean onBookCommand(String command) {
+    	switch (command) {
+		case "1234":
+			fillBook("1234...", LoremIpsum._1234); break;
+		case "kafka":
+			fillBook("Kafka", LoremIpsum.kafka); break;
+		case "lorem":
+			fillBook("Lorem Ipsum", LoremIpsum.lorem); break;
+		default:
+			return false;
+		}
+
+		return true;
     }
     
     public boolean newPage()
