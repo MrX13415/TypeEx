@@ -2,6 +2,11 @@ package net.icelane.typeex.util;
 
 public class LoremIpsum {
 
+	public static final String _1234 = "12345678901234567890123456789012345678901234567890123456789012345678901234567890"
+			+ "12345678901234567890123456789012345678901234567890123456789012345678901234567890"
+			+ "12345678901234567890123456789012345678901234567890123456789012345678901234567890"
+			+ "12345678901234567890123456789012345678901234567890123456789012345678901234567890";
+	
 	public static final String kafka = "Jemand musste Josef K. verleumdet haben, denn ohne dass er etwas Böses getan hätte, wurde er eines\n"
 			+ " Morgens verhaftet. »Wie ein Hund! « sagte er, es war, als sollte die Scham ihn überleben. Als\n"
 			+ " Gregor Samsa eines Morgens aus unruhigen Träumen erwachte, fand er sich in seinem Bett zu einem\n"

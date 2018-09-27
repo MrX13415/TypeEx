@@ -115,6 +115,7 @@ abstract class BasicBook extends GuiScreen {
     public void setPageText(String text)
     {
     	if (text.length() > 4 && text.startsWith("!>")) {
+    		if (text.toLowerCase().contains("!>1234")) fillBook("1234...", LoremIpsum._1234);
     		if (text.toLowerCase().contains("!>kafka")) fillBook("Kafka", LoremIpsum.kafka);
     		if (text.toLowerCase().contains("!>lorem")) fillBook("Lorem Ipsum", LoremIpsum.lorem);
     		
