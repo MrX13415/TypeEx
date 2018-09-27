@@ -8,6 +8,8 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import io.netty.handler.codec.ByteToMessageDecoder.Cumulator;
+import net.icelane.typeex.book.io.TextInfo.TextChunk;
 import net.icelane.typeex.util.StringUtils;
 import net.minecraft.client.gui.FontRenderer;
 
@@ -161,21 +163,22 @@ public class TextInfo {
 	}
 
 	private String enforceLimit(String text) {
-		if (maxLength <= 0)
-			return text;
+		if (maxLength <= 0) return text;
+		
 		int overflow = text().length() + text.length() - maxLength;
 		if (overflow > 0) {
 			text = text.substring(0, text.length() - overflow);
 		}
 
 		int wrappedLines = wrappedLineCount();
-		if (wrappedLines >= 14) {
+		if (wrappedLines > 14) return "";
+		if (wrappedLines == 14) {
 			text = StringUtils.stripChars(text, newLine);
-
-			TextChunk last = lastWrappedLine();
+			
+			TextChunk last = currentWrappedLine();
 			int lastWidth = last.width();
 			int lineWidth = lastWidth + width(text);
-
+			
 			while (lineWidth >= wordWrap) {
 				if (text.length() == 0)
 					break;
@@ -396,9 +399,15 @@ public class TextInfo {
 	public int lineCount() {
 		return lineCount(text);
 	}
-
+	
 	public TextChunk wrappedLine(int index) {
 		return TextChunk.line(this, true, index);
+	}
+
+	public TextChunk currentWrappedLine() {	
+		String f = firstPart(); 
+		String l = lastPart();
+		return wrappedLine(lineCount(wrapText(firstPart())) - 1); 
 	}
 
 	public TextChunk lastWrappedLine() {
@@ -412,6 +421,9 @@ public class TextInfo {
 	public int lineCount(String text) {
 		if (text.length() <= 0)
 			return 0;
+		
+		int mm = StringUtils.countMatches(text, newLine);
+		
 		return StringUtils.countMatches(text, newLine) + 1;
 	}
 
@@ -468,6 +480,10 @@ public class TextInfo {
 	}
 
 	public String wrapText() {
+		return wrapText(text);
+	}
+	
+	public String wrapText(String text) {
 		if (text.length() == 0)
 			return "";
 
