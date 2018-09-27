@@ -254,125 +254,103 @@ public abstract class KeyHandler {
 	}
 		
 	private static void handleKey_ArrowUp(TextInfo textinfo, String firstPart, String lastPart) {
-		// TODO: MAKE CODE FENCY!!
 		
 		int lineCount = textinfo.lineCount(firstPart);
 		if (lineCount < 1) return;
 		
-		TextChunk lineInfo = textinfo.line(lineCount - 1);  // current line
-		TextChunk[] chunks = lineInfo.wordWrap();  // current line
+		TextChunk currentLine = textinfo.line(lineCount - 1);  // current line
+		TextChunk[] chunks = currentLine.wordWrap();  // current line
 
-		TextChunk prevChunk = null; // previous line (chunk)
-		TextChunk currChunk = null; // current line (chunk)
+		TextChunk prev = null; // previous line (chunk)
+		TextChunk curr = null; // current line (chunk)
 		
+		// Find the current line/chunk and the previous line/chunk to jump to.
 		if (chunks.length >= 2 && !chunks[0].isCursorWithin()) {
-			//wrapped lines
-			for (TextChunk chunkInfo : chunks) {
-				if (chunkInfo.isCursorWithin()) {
-					currChunk = chunkInfo;
+			// Wrapped lines:
+			// The current line is splitted into chunks
+			// and the cursor is not in the first "chunk".
+			 
+			for (TextChunk chunk : chunks) {
+				if (chunk.isCursorWithin()) {
+					curr = chunk;
 					break; 
 				}
-				prevChunk = chunkInfo;
+				prev = chunk;
 			}
-		} else if (lineCount >= 2) {
-			//normal lines
-			currChunk = chunks[0];
 			
-			lineInfo = textinfo.line(lineCount - 2);  // previous line
-			chunks = lineInfo.wordWrap();
-			prevChunk = chunks[chunks.length - 1];
+		} else if (lineCount >= 2) {
+			// Normal lines:
+			// We are dealing with a "normal" (non splitted) line
+			// or the cursor is in the first "chunk" of a splitted line.
+			// Also there is at least another line we can jump to.
+			
+			curr = chunks[0];
+			currentLine = textinfo.line(lineCount - 2);  // previous line
+			chunks = currentLine.wordWrap();
+			prev = chunks[chunks.length - 1];
 		}
 		
-		if (prevChunk == null) return;
+		// no line to jump to found ...
+		if (prev == null) return;
 		
-		int nlPosA = prevChunk.start;
-		int nlPosB = prevChunk.end;
-		
-		int linePos = prevChunk.cursorPosition(currChunk.cursorWidth()); // textinfo.cursorPosition - nlPosB - offset;	// Cursor position in the current line.
-		int preLineLength = prevChunk.text.length(); // Line length of the previous line.
-		
-		//firstPart = textinfo.wrappedFirstPart();
-		
-//		if (!firstPart.contains("\n")) return;
-//		// Pos A: Index of the new line char before the last new line char.
-//		// Pos B: Index of the last new line char in the first text part.
-//		int nlPosB = firstPart.lastIndexOf("\n");
-//		int nlPosA = firstPart.substring(0, nlPosB).lastIndexOf("\n");
-//
-//		int curLinePos = textinfo.cursorPosition - nlPosB;	// Cursor position in the current line.
-//		int preLineLength = nlPosB - nlPosA;				// Line length of the previous line.
-		
-		// If the length of the current line is greater then
+		int cursorPos = prev.cursorPosition(curr.cursorWidth()); 
+
+		// If the cursor position of the current line is greater then
 		// the length of the previous line, then just go to the end of the previous line.    
 		// Otherwise go to the same position in the previous line.
 		textinfo.cursorPosition = 
-				linePos >= preLineLength ?
-				nlPosB : nlPosA + linePos;
+				cursorPos >= prev.text.length() ?
+				prev.end : prev.start + cursorPos;
 	}
 	
 	private static void handleKey_ArrowDown(TextInfo textinfo, String firstPart, String lastPart) {
-		// TODO: MAKE CODE FENCY!!
 		
 		int lineCountF = textinfo.lineCount(firstPart);
 		int lineCountL = textinfo.lineCount(lastPart);
 		if (lineCountL < 1) return;
 		
-		TextChunk currLineInfo = textinfo.line(lineCountF - 1); // current line
-		TextChunk nextLineInfo = textinfo.line(lineCountF); // next line		
-		TextChunk[] currChunks = currLineInfo.wordWrap(); // current line
-		TextChunk[] nextChunks = nextLineInfo.wordWrap(); // next line
+		TextChunk currLine = textinfo.line(lineCountF - 1); // current line
+		TextChunk nextLine = textinfo.line(lineCountF); // next line		
+		TextChunk[] currChunks = currLine.wordWrap(); // current line
+		TextChunk[] nextChunks = nextLine.wordWrap(); // next line
 		
-		TextChunk currChunk = null; // current line
-		TextChunk nextChunk = null; // next line
+		TextChunk curr = null; // current line
+		TextChunk next = null; // next line
 		
 		if (currChunks.length >= 2 && !currChunks[currChunks.length - 1].isCursorWithin()) {
-			//wrapped lines
+			// Wrapped lines:
+			// The current line is splitted into chunks
+			// and the cursor is not in the last "chunk".
+
 			for (int i = 0; i < currChunks.length - 1; i++) {
 				if (currChunks[i].isCursorWithin()) {
-					currChunk = currChunks[i];
-					nextChunk = currChunks[i + 1];
+					curr = currChunks[i];
+					next = currChunks[i + 1];
 				}
 			}
+			
 		} else if (lineCountL >= 2) {
-			//normal lines
-			currChunk = currChunks[currChunks.length - 1];
-			nextChunk = nextChunks[0];
+			// Normal lines:
+			// We are dealing with a "normal" (non splitted) line
+			// or the cursor is in the last "chunk" of a splitted line.
+			// Also there is at least another line we can jump to.
+			
+			curr = currChunks[currChunks.length - 1];
+			next = nextChunks[0];
 		}
 		
-		if (currChunk == null) return;
-		if (nextChunk == null) return;
+		// Nothing to jump to ...
+		if (curr == null) return;
+		if (next == null) return;
 		
-		int nlPosA = currChunk.start;
-		int nlPosB = nextChunk.start;
-		int nlPosC = nextChunk.end;
-		
-		int linePos = nextChunk.cursorPosition(currChunk.cursorWidth()); //textinfo.cursorPosition - nlPosA;	// Cursor position in the current line.
-		int postLineLength = nextChunk.text.length(); //nlPosC - nlPosB;				// Line length of next line.
-		
-		
-//		firstPart = textinfo.wrappedFirstPart();
-//		lastPart = textinfo.wrappedLastPart();
-		
-//		if (!lastPart.contains("\n")) return;
-//		// Pos A: Index of the last new line char in the first text part. 
-//		// Pos B: Index of the first new line char in the last text part.
-//		// Pos C: Index of the second new line char in the last text part.	
-//		int nlPosA = firstPart.lastIndexOf("\n");
-//		int nlPosB = lastPart.indexOf("\n");			
-//		int nlPosC = lastPart.indexOf("\n", nlPosB + 1);		
-//		
-//		if (nlPosC < 0) nlPosC = lastPart.length();			// No second line, so us the end of the text as pos. C.
-//		
-//		int curLinePos = textinfo.cursorPosition - nlPosA; 	// Cursor position in the current line.
-//		int postLineLength = nlPosC - nlPosB;				    // Line length of next line.
-		
+		int cursorPos = next.cursorPosition(curr.cursorWidth());
+
 		// If the length of the next line is smaller then
 		// the length of the current line, then just go to the end of the next line.    
 		// Otherwise go to the same position in the next line.
 		textinfo.cursorPosition = 
-				postLineLength < linePos ? 
-						nlPosC
-						: nlPosB + linePos;
+				next.text.length() < cursorPos ? 
+				next.end : next.start + cursorPos;
 	}
 	
 	private static void handleKey_Home(TextInfo textinfo, String firstPart, String lastPart) {
