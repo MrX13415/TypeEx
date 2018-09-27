@@ -34,16 +34,32 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public abstract class BookRender extends BasicBook {
 
     public static final ResourceLocation BOOK_GUI_TEXTURES = new ResourceLocation("textures/gui/book.png");
-
+    
+    public static final int DEFAULT_COLOR_TEXT = 0xFF000000;
+    public static final int DEFAULT_COLOR_CURSOR = 0xFF000000;
+    public static final int DEFAULT_COLOR_CURSORBLINK = 0x00FFFFFF;
+    public static final int DEFAULT_COLOR_SELECTION = 0xFF0000FF;
+    public static final int DEFAULT_COLOR_SELECTION_ALTERNATIV = 0xFFBFA086; //hue = 0.075f; saturation = 0.3f; brightness = 0.75f;
+    
+    
     // Colors: ARGB
-    private int Color_Cursor = 0xFF000000;
-
-	private int Color_CursorBlink = 0x00FFFFFF;
-    private int Color_Selection = 0xFF0000FF;
+    private int Color_Text = DEFAULT_COLOR_TEXT;
+    private int Color_Cursor = DEFAULT_COLOR_CURSOR;
+	private int Color_CursorBlink = DEFAULT_COLOR_CURSORBLINK;
+    private int Color_Selection = DEFAULT_COLOR_SELECTION;
 
     public int cursorWidth_Normal = 1;
     private int cursorWidth_Override = 5;
+
+    private boolean rainbowText;
+    private boolean rainbowSelection;
+    private boolean rainbowCoursor;
     
+    private float rainbowSaturation = 1.0f;
+    private float rainbowBrightness = 1.0f;
+    private float rainbowHue        = 0.0f;
+	private boolean rainbowupdate;
+	
     /** Update ticks since the GUI was opened */
     private int updateTicks;
     
@@ -72,6 +88,31 @@ public abstract class BookRender extends BasicBook {
 		if(isSigning()) textinfo().text(title());
 	}	
 	
+	@Override
+    public boolean onBookCommand(String command) {
+    	switch (command) {
+		case "rainbowcursor":
+			rainbowCoursor = !rainbowCoursor; break;
+		case "rainbowselection":
+			rainbowSelection = !rainbowSelection; break;
+		case "rainbowtext":
+			rainbowText = !rainbowText; break;
+		case "selectioncolor":
+			rainbowSelection = false;
+			switch (getColor_Selection()) {
+			case DEFAULT_COLOR_SELECTION:
+				setColor_Selection(DEFAULT_COLOR_SELECTION_ALTERNATIV); break;
+			case DEFAULT_COLOR_SELECTION_ALTERNATIV:
+				setColor_Selection(DEFAULT_COLOR_SELECTION); break;
+			}
+			break;
+		default:
+			return super.onBookCommand(command);
+		}
+
+    	return true;
+    }
+
     /**
      * Adds the buttons (and other controls) to the screen in question. Called when the GUI is displayed and when the
      * window resizes, the buttonList is cleared beforehand.
@@ -117,6 +158,19 @@ public abstract class BookRender extends BasicBook {
 		return updateTicks;
 	}
     
+	/**
+	 * Toggles between true and false every time the given amount of milliseconds has elapses.</br> 
+	 * Minimum is 50 milliseconds.
+	 * 
+	 * @param ms Milliseconds to elapse.
+	 * @return true or false at intervals of the given time span.
+	 */
+	public boolean millisElapsed(int ms) {
+		if (ms < 50) ms = 50;
+		return this.updateTicks / (ms/50) % 2 == 1;
+	}
+	
+	
     /**
      * Called from the main game loop to update the screen.
      */
@@ -151,6 +205,24 @@ public abstract class BookRender extends BasicBook {
 	
 	public int height() {
 		return 192;
+	}
+	
+
+	public int getRainbowARGB() {
+		rainbowHue += 0.0001;
+// Alternate method:
+//		if (millisElapsed(50)) {
+//			if (!rainbowupdate)
+//				rainbowHue +=0.005;
+//			rainbowupdate = true;
+//		} else rainbowupdate = false;
+
+    	if (rainbowHue >= 1) rainbowHue = 0;    	
+    	return Color.hsb2argb(rainbowHue, rainbowSaturation, rainbowBrightness); 
+	}
+	
+	public Color getRainbowColor() {	
+    	return new Color(getRainbowARGB()); 
 	}
 	
 	private void drawSigningPage() {
@@ -253,7 +325,8 @@ public abstract class BookRender extends BasicBook {
 			for (int cindex = 0; cindex < chunks.length; cindex++) {
 				TextChunk chunk = chunks[cindex];
 				
-		        fontRenderer.drawString(chunk.text, x, y, 0); // TODO: drawStringalined?
+				int color = rainbowText ? getRainbowARGB() : Color_Text;
+		        fontRenderer.drawString(chunk.text, x, y, color); // TODO: drawStringalined?
 
 		        if (chunk.isCursorWithin() && !cursor) {
 		        	drawCursor(x + chunk.cursorWidth(), y);
@@ -276,8 +349,10 @@ public abstract class BookRender extends BasicBook {
 	}
 	
 	private void drawCursor(int x, int y) {
-		int color = Color_Cursor;
-		if (this.updateTicks / 6 % 2 == 0) color = Color_CursorBlink; 
+		int color = rainbowCoursor ? getRainbowARGB() : Color_Cursor;
+
+		// every 300ms hide the cursor
+		if (millisElapsed(300)) color = Color_CursorBlink; 
 
         if (textinfo().isCursorWithin())
         	drawCursorVertical(x, y, color);
@@ -329,44 +404,18 @@ public abstract class BookRender extends BasicBook {
 		x += selx;
 		y += sely;
 	
-		drawInvertRect(x, y, width, fontRenderer.FONT_HEIGHT, Color_Selection);
+		int color = rainbowSelection ? getRainbowARGB() : Color_Selection;
+		drawInvertRect(x, y, width, fontRenderer.FONT_HEIGHT, color);
 		return selection;
 	}
 	
-
-//	float u = 0;
-//	long last = System.currentTimeMillis();
-
     private void drawInvertRect(int x, int y, int width, int height, int argb){
     	int x2 = x + width;
     	int y2 = y + height;
-    	
-//    	float saturation = 0.3f; // 0.0 - 1.0
-//    	float brightness = 0.75f; // 0.0 - 1.0
-//    	int alpha = 255;
-//    	
-//    	u = 0.075f;
-//    	
-//    	java.awt.Color awtc = java.awt.Color.getHSBColor(u, saturation, brightness);
-//
-//    	if (System.currentTimeMillis() - last > 5) {
-//    		u+=0.001;
-//    		last = System.currentTimeMillis();
-//    	}
-//    	    	
-//    	if (u >= 1) u = 0;
-//
-//		int hex = 0; 
-//		hex += alpha << 24;
-//		hex += awtc.getRed() << 16;
-//		hex += awtc.getGreen() << 8;
-//		hex += awtc.getBlue();
-	        
+
     	//Unravel colorfuckery
     	Color color = new Color(argb); 
-    	
-    //	System.out.println(u + " | " + color);
-    
+ 	    
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
         GlStateManager.color(color.red, color.green, color.blue, color.alpha);
@@ -477,5 +526,62 @@ public abstract class BookRender extends BasicBook {
     {
         Keyboard.enableRepeatEvents(false);
     }
+
+	public int getColor_Text() {
+		return Color_Text;
+	}
+
+	public void setColor_Text(int color_Text) {
+		Color_Text = color_Text;
+	}
+
+	public int getColor_Cursor() {
+		return Color_Cursor;
+	}
+
+	public void setColor_Cursor(int color_Cursor) {
+		Color_Cursor = color_Cursor;
+	}
+
+	public int getColor_CursorBlink() {
+		return Color_CursorBlink;
+	}
+
+	public void setColor_CursorBlink(int color_CursorBlink) {
+		Color_CursorBlink = color_CursorBlink;
+	}
+
+	public int getColor_Selection() {
+		return Color_Selection;
+	}
+
+	public void setColor_Selection(int color_Selection) {
+		Color_Selection = color_Selection;
+	}
+
+	public boolean isRainbowFont() {
+		return rainbowText;
+	}
+
+	public void setRainbowText(boolean rainbowText) {
+		this.rainbowText = rainbowText;
+	}
+
+	public boolean isRainbowCoursor() {
+		return rainbowCoursor;
+	}
+
+	public void setRainbowCoursor(boolean rainbowCoursor) {
+		this.rainbowCoursor = rainbowCoursor;
+	}
+
+	public float getRainbowBrightness() {
+		return rainbowBrightness;
+	}
+
+	public void setRainbowBrightness(float rainbowBrightness) {
+		this.rainbowBrightness = rainbowBrightness;
+	}
+    
     
 }
